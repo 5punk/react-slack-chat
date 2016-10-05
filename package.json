@@ -1,0 +1,29 @@
+{
+  "name": "react-slack",
+  "version": "1.0.0",
+  "description": "A React Component Plugin for Integrating a Slack Community Chat",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^3.7.1",
+    "eslint-config-standard": "^6.2.0",
+    "eslint-config-standard-react": "^4.2.0",
+    "react-scripts": "0.6.1"
+  },
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "author": "Avanish Pathak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/apathak1/react-slack-plugin/issues"
+  },
+  "homepage": "https://github.com/apathak1/react-slack-plugin#readme"
+}
