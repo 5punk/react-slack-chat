@@ -13,7 +13,7 @@ ReactDOM.render(
     <p className='App-intro'>
       To get started, edit <code>src/App.js</code> and save to reload.
     </p>
-    <ReactSlackChat apiToken=' />
+    <ReactSlackChat apiToken='' />
   </div>,
   document.getElementById('root')
 );
