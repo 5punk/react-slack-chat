@@ -1,8 +1,51 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import $ from 'jquery';
+import { rtm } from 'slack';
 import './ReactSlackChat.css';
 
+class User {
+  constructor(args) {
+    this.name = args.name;
+    this.color = args.color;
+    this.id = args.id;
+    this.real_name = args.real_name;
+    // sizes available: image_24, image_32, image_48, image_72, image_192, image_512
+    this.image = args.profile.image_48;
+  }
+}
+
 class ReactSlackChat extends Component {
+  static PropTypes = {
+    apiToken: PropTypes.string.isRequired
+  };
+
+  constructor(args) {
+    super(args);
+    // Create Bot
+    this.bot = rtm.client();
+    // setup state
+    this.state = {
+      // failed flag
+      failed: false,
+      // List of Online users
+      onlineUsers: []
+    };
+    // Connect bot
+    this.connectBot.call(this)
+      .then((users) => {
+        console.log('got users', users);
+        this.setState({
+          onlineUsers: users
+        });
+      })
+      .catch((err) => {
+        console.log('could not intialize slack bot', err);
+        this.setState({
+          failed: true
+        });
+      });
+  }
+
   bindAnimations() {
     // Handle ChatBox Interactions
     $(document).ready(function() {
@@ -231,10 +274,38 @@ class ReactSlackChat extends Component {
     });
   }
 
+  isValidOnlineUser(user) {
+    // return true if
+    // user should be active / online
+    return user.presence === 'active'
+      // And is NOT a bot
+      && !user.is_bot
+      // slackbot hack, it thinks its not a bot :/
+      && user.name.indexOf('slackbot') === -1
+  }
 
-
-  getUserList() {
-
+  connectBot() {
+    return new Promise((resolve, reject) => {
+      try {
+        // start the bot, get the initial payload
+        this.bot.started((payload) => {
+          console.log(payload);
+          let onlineUsers = [];
+          // Create new User object for each online user found
+          // Add to our list only if the user is valid
+          payload.users.map((user) => this.isValidOnlineUser(user)
+            ? onlineUsers.push(new User(user))
+            : null
+          );
+          // extract and resolve return the users
+          return resolve(onlineUsers);
+        });
+        // tell the bot to listen
+        this.bot.listen({ token: this.props.apiToken });
+      } catch (err) {
+        return reject(err);
+      }
+    });
   }
 
   componentDidMount() {
@@ -243,6 +314,12 @@ class ReactSlackChat extends Component {
   }
 
   render() {
+    // If Slack communications have failed or errored out
+    // do not render anything
+    if (this.state.failed) {
+      return false;
+    }
+    // Looks like nothing failed, let's start to render our chatbox
     const chatbox = <div className='chatbox'>
       <div className='demo'>
         <svg className='sidebar s-path' viewBox='0 0 300 500'>
@@ -254,11 +331,15 @@ class ReactSlackChat extends Component {
         <div className='static'>
         </div>
         <div className='sidebar-content'>
-          <div className='contact'>
-            <img src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/elastic-man.png' alt='' className='contact__photo' />
-            <span className='contact__name'>Ethan Hawke</span>
-            <span className='contact__status online'></span>
-          </div>
+          {
+            this.state.onlineUsers.map((user) =>
+              <div className='contact' key={user.id}>
+                <img src={user.image} alt='' className='contact__photo' />
+                <span className='contact__name'>{user.real_name}</span>
+                <span className='contact__status online'></span>
+              </div>
+            )
+          }
         </div>
         <div className='chat'>
           <span className='chat__back'></span>

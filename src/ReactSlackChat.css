@@ -273,7 +273,7 @@ svg {
   position: relative;
   top: 4rem;
   left: -1rem;
-  width: 18rem;
+  width: 19rem;
   padding-right: 0.5rem;
   padding-left: 0.5rem;
   max-height: 18rem;
@@ -309,7 +309,7 @@ svg {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 5.5rem;
+  height: 4.5rem;
   padding: 1rem 1rem 1rem 4rem;
   background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/elastic-search.png");
   background-repeat: no-repeat;
