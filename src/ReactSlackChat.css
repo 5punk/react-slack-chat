@@ -20,20 +20,18 @@
   bottom: 0%;
   left: 0%;
   margin-top: -25rem;
-  width: 30rem;
-  height: 50rem;
+  width: 18rem;
+  height: 30rem;
 }
 
 .static {
-  height: 100%;
-  font-size: 1.8rem;
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
   background: transparent;
 }
 .static:before, .static:after {
   content: "";
   position: absolute;
-  left: 7rem;
+  left: 4rem;
   width: 2rem;
   height: 2rem;
   margin-left: -1rem;
@@ -47,10 +45,10 @@
           animation: arrows 1.5s infinite;
 }
 .static:before {
-  top: 15rem;
+  top: 6rem;
 }
 .static:after {
-  top: 35rem;
+  top: 24rem;
 }
 .static__text {
   width: 9rem;
@@ -107,7 +105,6 @@
   margin-right: 1.5rem;
 }
 .contact__name {
-  font-size: 1.2rem;
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 .contact__status {
@@ -184,7 +181,7 @@ svg {
   left: 0;
   width: 100%;
   height: 100%;
-  padding: 2.5rem 0 5.5rem 2.5rem;
+  padding: 2.5rem 0 5.5rem 1rem;
   -webkit-transition: opacity 200ms;
   transition: opacity 200ms;
   opacity: 0;
@@ -243,8 +240,7 @@ svg {
 .chat__status {
   position: absolute;
   top: 2rem;
-  right: 6.5rem;
-  font-size: 1.2rem;
+  right: 4.5rem;
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
   text-transform: uppercase;
   color: #B1A9A9;
@@ -253,8 +249,7 @@ svg {
   display: inline-block;
   position: absolute;
   top: 3rem;
-  right: 6.5rem;
-  font-size: 2rem;
+  right: 4.5rem;
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
   color: #36343D;
 }
@@ -275,12 +270,13 @@ svg {
   opacity: 1;
 }
 .chat__messages {
-  position: absolute;
-  top: 7.5rem;
-  left: 2.5rem;
-  width: 27.5rem;
-  height: 37rem;
-  padding-right: 2.5rem;
+  position: relative;
+  top: 4rem;
+  left: -1rem;
+  width: 18rem;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  max-height: 18rem;
   overflow-y: auto;
 }
 .chat__msgRow {
@@ -295,14 +291,13 @@ svg {
   display: inline-block;
   max-width: 60%;
   padding: 1rem;
-  font-size: 1.4rem;
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 .chat__message.mine {
   color: #2B2342;
   border: 1px solid #DFDFDF;
   position: relative;
-  right: 5rem;
+  right: 3rem;
 }
 .chat__message.notMine {
   float: right;
@@ -321,7 +316,6 @@ svg {
   background-position: 1rem 1.5rem;
   background-color: #E9EAF3;
   color: #2B2342;
-  font-size: 1.4rem;
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
 }
 

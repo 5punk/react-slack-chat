@@ -156,7 +156,7 @@ class ReactSlackChat extends Component {
         $clone.css('top');
         $clone.css({
           top: '1.8rem',
-          left: '25rem'
+          left: '15rem'
         });
       }
 
@@ -231,6 +231,12 @@ class ReactSlackChat extends Component {
     });
   }
 
+
+
+  getUserList() {
+
+  }
+
   componentDidMount() {
     // Handle Animations
     this.bindAnimations();
@@ -241,7 +247,7 @@ class ReactSlackChat extends Component {
       <div className='demo'>
         <svg className='sidebar s-path' viewBox='0 0 300 500'>
           <path className='chat-clickable' fill='#ccc' d='M0,0 50,0 a0,250 0 1,1 0,500 L0,500' />
-          <text x="50%" y="8%" className='help-text chat-clickable' fill='#666' fontSize='25' transform='rotate(90 30,30)'>
+          <text x="56%" y="8%" className='help-text chat-clickable' fill='#666' fontSize='25' transform='rotate(90 30,30)'>
             Click for help
           </text>
         </svg>
@@ -267,6 +273,15 @@ class ReactSlackChat extends Component {
             </div>
             <div className='chat__msgRow'>
               <div className='chat__message notMine'>Wow!</div>
+            </div>
+            <div className='chat__msgRow'>
+              <div className='chat__message notMine'>Very elastic! Such easings!</div>
+            </div>
+            <div className='chat__msgRow'>
+              <div className='chat__message mine'>Such SVG, much Javascript, very CSS!</div>
+            </div>
+            <div className='chat__msgRow'>
+              <div className='chat__message notMine'>Very elastic! Such easings!</div>
             </div>
             <div className='chat__msgRow'>
               <div className='chat__message notMine'>Very elastic! Such easings!</div>
