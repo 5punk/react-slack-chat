@@ -4,9 +4,10 @@
   "description": "A React Component Plugin for Integrating a Slack Community Chat",
   "private": true,
   "devDependencies": {
+    "babel-eslint": "^7.0.0",
     "eslint": "^3.7.1",
-    "eslint-config-standard": "^6.2.0",
-    "eslint-config-standard-react": "^4.2.0",
+    "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-standard": "^2.0.1",
     "react-scripts": "0.6.1"
   },
   "dependencies": {
@@ -20,9 +21,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "author": "Avanish Pathak",
   "license": "ISC",

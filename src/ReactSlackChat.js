@@ -8,17 +8,13 @@ class User {
     this.name = args.name;
     this.color = args.color;
     this.id = args.id;
-    this.real_name = args.real_name;
+    this.real_name = args.real_name || args.name;
     // sizes available: image_24, image_32, image_48, image_72, image_192, image_512
     this.image = args.profile.image_48;
   }
 }
 
 class ReactSlackChat extends Component {
-  static PropTypes = {
-    apiToken: PropTypes.string.isRequired
-  };
-
   constructor(args) {
     super(args);
     // Create Bot
@@ -31,7 +27,7 @@ class ReactSlackChat extends Component {
       onlineUsers: []
     };
     // Connect bot
-    this.connectBot.call(this)
+    this.connectBot(this)
       .then((users) => {
         console.log('got users', users);
         this.setState({
@@ -49,20 +45,20 @@ class ReactSlackChat extends Component {
   bindAnimations() {
     // Handle ChatBox Interactions
     $(document).ready(function() {
-      var $demo = $('.demo'),
-        $path = $('.s-path path'),
-        $sCont = $('.sidebar-content'),
-        $chat = $('.chat'),
-        $helpText = $('.help-text'),
-        demoTop = $demo.offset().top,
-        demoLeft = $demo.offset().left,
-        diffX = 0,
-        curX = 0,
-        finalX = 0,
-        frame = 1000 / 60,
-        animTime = 600,
-        sContTrans = 200,
-        animating = false;
+      var $demo = $('.demo');
+      var $path = $('.s-path path');
+      var $sCont = $('.sidebar-content');
+      var $chat = $('.chat');
+      var $helpText = $('.help-text');
+      var demoTop = $demo.offset().top;
+      var demoLeft = $demo.offset().left;
+      var diffX = 0;
+      var curX = 0;
+      var finalX = 0;
+      var frame = 1000 / 60;
+      var animTime = 600;
+      var sContTrans = 200;
+      var animating = false;
 
       var easings = {
         smallElastic: function(t, b, c, d) {
@@ -80,32 +76,32 @@ class ReactSlackChat extends Component {
         return 'M0,0 ' + top + ',0 a' + ax + ',250 0 1,' + dir + ' 0,500 L0,500';
       }
 
-      var startD = createD(50, 0, 1),
-        midD = createD(125, 75, 0),
-        finalD = createD(300, 0, 1),
-        clickMidD = createD(300, 80, 0),
-        clickMidDRev = createD(200, 100, 1),
-        clickD = createD(300, 0, 1),
-        currentPath = startD;
+      var startD = createD(50, 0, 1);
+      var midD = createD(125, 75, 0);
+      var finalD = createD(300, 0, 1);
+      var clickMidD = createD(300, 80, 0);
+      var clickMidDRev = createD(200, 100, 1);
+      var clickD = createD(300, 0, 1);
+      var currentPath = startD;
 
       function newD(num1, num2) {
-        var d = $path.attr('d'),
-          num2 = num2 || 250,
-          nd = d.replace(/\ba(\d+),(\d+)\b/gi, 'a' + num1 + ',' + num2);
+        var d = $path.attr('d');
+        num2 = num2 || 250;
+        var nd = d.replace(/\ba(\d+),(\d+)\b/gi, 'a' + num1 + ',' + num2);
         return nd;
       }
 
       function animatePathD(path, d, time, handlers, callback, easingTop, easingX) {
-        var steps = Math.floor(time / frame),
-          curStep = 0,
-          oldArr = currentPath.split(' '),
-          newArr = d.split(' '),
-          oldTop = +oldArr[1].split(',')[0],
-          topDiff = +newArr[1].split(',')[0] - oldTop,
-          nextTop,
-          nextX,
-          easingTop = easings[easingTop] || easings.smallElastic,
-          easingX = easings[easingX] || easingTop;
+        var steps = Math.floor(time / frame);
+        var curStep = 0;
+        var oldArr = currentPath.split(' ');
+        var newArr = d.split(' ');
+        var oldTop = +oldArr[1].split(',')[0];
+        var topDiff = +newArr[1].split(',')[0] - oldTop;
+        var nextTop;
+        var nextX;
+        easingTop = easings[easingTop] || easings.smallElastic;
+        easingX = easings[easingX] || easingTop;
 
         $(document).off('mousedown mouseup');
 
@@ -132,7 +128,6 @@ class ReactSlackChat extends Component {
       }
 
       function handlers1() {
-
         $(document).on('mousedown touchstart', '.chat-clickable', function(e) {
           diffX = 300;
           curX = Math.floor(300 / 2);
@@ -156,7 +151,6 @@ class ReactSlackChat extends Component {
             });
           }
         });
-
       }
 
       handlers1();
@@ -186,10 +180,10 @@ class ReactSlackChat extends Component {
       }
 
       function moveImage(that) {
-        var $img = $(that).find('.contact__photo'),
-          top = $img.offset().top - demoTop,
-          left = $img.offset().left - demoLeft,
-          $clone = $img.clone().addClass('cloned');
+        var $img = $(that).find('.contact__photo');
+        var top = $img.offset().top - demoTop;
+        var left = $img.offset().left - demoLeft;
+        var $clone = $img.clone().addClass('cloned');
 
         $clone.css({
           top: top,
@@ -204,10 +198,10 @@ class ReactSlackChat extends Component {
       }
 
       function ripple(elem, e) {
-        var elTop = elem.offset().top,
-          elLeft = elem.offset().left,
-          x = e.pageX - elLeft,
-          y = e.pageY - elTop;
+        var elTop = elem.offset().top;
+        var elLeft = elem.offset().left;
+        var x = e.pageX - elLeft;
+        var y = e.pageY - elTop;
         var $ripple = $('<div class="ripple"></div>');
         $ripple.css({
           top: y,
@@ -219,9 +213,9 @@ class ReactSlackChat extends Component {
       $(document).on('click', '.contact', function(e) {
         if (animating) return;
         animating = true;
-        var that = this,
-          name = $(this).find('.contact__name').text(),
-          online = $(this).find('.contact__status').hasClass('online');
+        var that = this;
+        var name = $(this).find('.contact__name').text();
+        var online = $(this).find('.contact__status').hasClass('online');
         $('.chat__name').text(name);
         $('.chat__online').removeClass('active');
         if (online) $('.chat__online').addClass('active');
@@ -277,11 +271,11 @@ class ReactSlackChat extends Component {
   isValidOnlineUser(user) {
     // return true if
     // user should be active / online
-    return user.presence === 'active'
+    return user.presence === 'active' &&
       // And is NOT a bot
-      && !user.is_bot
+      !user.is_bot &&
       // slackbot hack, it thinks its not a bot :/
-      && user.name.indexOf('slackbot') === -1
+      user.name.indexOf('slackbot') === -1;
   }
 
   connectBot() {
@@ -385,5 +379,10 @@ class ReactSlackChat extends Component {
     );
   }
 }
+
+// PropTypes validation
+ReactSlackChat.propTypes = {
+  apiToken: PropTypes.string.isRequired
+};
 
 export default ReactSlackChat;
