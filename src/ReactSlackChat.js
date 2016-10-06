@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
-import logo from './logo.svg';
-import './App.css';
+import './ReactSlackChat.css';
 
-class App extends Component {
-  componentDidMount() {
+class ReactSlackChat extends Component {
+  bindAnimations() {
     // Handle ChatBox Interactions
     $(document).ready(function() {
       var $demo = $('.demo'),
@@ -40,7 +39,7 @@ class App extends Component {
 
       var startD = createD(50, 0, 1),
         midD = createD(125, 75, 0),
-        finalD = createD(200, 0, 1),
+        finalD = createD(300, 0, 1),
         clickMidD = createD(300, 80, 0),
         clickMidDRev = createD(200, 100, 1),
         clickD = createD(300, 0, 1),
@@ -229,8 +228,12 @@ class App extends Component {
         demoTop = $demo.offset().top;
         demoLeft = $demo.offset().left;
       });
-
     });
+  }
+
+  componentDidMount() {
+    // Handle Animations
+    this.bindAnimations();
   }
 
   render() {
@@ -280,18 +283,11 @@ class App extends Component {
     </div>;
 
     return (
-      <div className='App'>
-        <div className='App-header'>
-          <img src={logo} className='App-logo' alt='logo' />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className='App-intro'>
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+      <div>
         {chatbox}
       </div>
     );
   }
 }
 
-export default App;
+export default ReactSlackChat;
