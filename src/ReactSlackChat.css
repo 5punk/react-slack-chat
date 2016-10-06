@@ -155,7 +155,7 @@ svg {
   height: 100%;
 }
 
-.s-path {
+.s-path path {
   cursor: -webkit-grab;
   cursor: grab;
 }

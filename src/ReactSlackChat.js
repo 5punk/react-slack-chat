@@ -90,7 +90,7 @@ class ReactSlackChat extends Component {
 
       function handlers1() {
 
-        $(document).on('mousedown touchstart', '.s-path', function(e) {
+        $(document).on('mousedown touchstart', '.chat-clickable', function(e) {
           diffX = 300;
           curX = Math.floor(300 / 2);
           $path.attr('d', newD(curX));
@@ -240,8 +240,8 @@ class ReactSlackChat extends Component {
     const chatbox = <div className='chatbox'>
       <div className='demo'>
         <svg className='sidebar s-path' viewBox='0 0 300 500'>
-          <path className='' fill='#ccc' d='M0,0 50,0 a0,250 0 1,1 0,500 L0,500' />
-          <text x="50%" y="8%" className='help-text' fill='#666' fontSize='25' transform='rotate(90 30,30)'>
+          <path className='chat-clickable' fill='#ccc' d='M0,0 50,0 a0,250 0 1,1 0,500 L0,500' />
+          <text x="50%" y="8%" className='help-text chat-clickable' fill='#666' fontSize='25' transform='rotate(90 30,30)'>
             Click for help
           </text>
         </svg>
