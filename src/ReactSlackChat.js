@@ -284,7 +284,7 @@ class ReactSlackChat extends Component {
         // start the bot, get the initial payload
         this.bot.started((payload) => {
           console.log(payload);
-          let onlineUsers = [];
+          const onlineUsers = [];
           // Create new User object for each online user found
           // Add to our list only if the user is valid
           payload.users.map((user) => this.isValidOnlineUser(user)

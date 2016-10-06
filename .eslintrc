@@ -11,6 +11,7 @@
   "rules": {
     "arrow-parens": 0,
     "semi": [2, "always"],
+    "prefer-const": 2,
     "no-multiple-empty-lines": 0,
     "space-before-function-paren": 0,
     "generator-star-spacing": 0,
