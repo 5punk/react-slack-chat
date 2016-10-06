@@ -82,6 +82,7 @@
 .sidebar-content.active {
   z-index: 2;
   opacity: 1;
+  overflow-y: auto;
 }
 
 .contact {
