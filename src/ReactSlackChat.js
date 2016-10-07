@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import $ from 'jquery';
-import { rtm } from 'slack';
+import classNames from 'classnames';
+import { rtm, channels, chat } from 'slack';
 import './ReactSlackChat.css';
 
 class User {
@@ -24,14 +25,26 @@ class ReactSlackChat extends Component {
       // failed flag
       failed: false,
       // List of Online users
-      onlineUsers: []
+      onlineUsers: [],
+      channels: [],
+      activeChannel: [],
+      messages: [],
+      postMyMessage: '',
+      refreshTime: 2000
     };
+    // Bind Load Messages function
+    this.loadMessages = this.loadMessages.bind(this);
+    this.getUserImg = this.getUserImg.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.postMessage = this.postMessage.bind(this);
+    this.bindAnimations = this.bindAnimations.bind(this);
     // Connect bot
     this.connectBot(this)
-      .then((users) => {
-        console.log('got users', users);
+      .then((data) => {
+        console.log('got data', data);
         this.setState({
-          onlineUsers: users
+          onlineUsers: data.onlineUsers,
+          channels: data.channels
         });
       })
       .catch((err) => {
@@ -176,6 +189,10 @@ class ReactSlackChat extends Component {
             $helpText.show();
           }, 'inCubic');
         }, sContTrans);
+        this.setState({
+          activeChannel: null,
+          activeChannelInterval: null
+        });
         $(document).off('click', closeSidebar);
       }
 
@@ -210,7 +227,7 @@ class ReactSlackChat extends Component {
         elem.append($ripple);
       }
 
-      $(document).on('click', '.contact', function(e) {
+      $(document).on('click', '.contact', function showChat(e) {
         if (animating) return;
         animating = true;
         var that = this;
@@ -271,9 +288,9 @@ class ReactSlackChat extends Component {
   isValidOnlineUser(user) {
     // return true if
     // user should be active / online
-    return user.presence === 'active' &&
+    // user.presence === 'active' &&
+    return !user.is_bot &&
       // And is NOT a bot
-      !user.is_bot &&
       // slackbot hack, it thinks its not a bot :/
       user.name.indexOf('slackbot') === -1;
   }
@@ -284,15 +301,21 @@ class ReactSlackChat extends Component {
         // start the bot, get the initial payload
         this.bot.started((payload) => {
           console.log(payload);
-          const onlineUsers = [];
           // Create new User object for each online user found
           // Add to our list only if the user is valid
+          const onlineUsers = [];
+          // extract and resolve return the users
           payload.users.map((user) => this.isValidOnlineUser(user)
             ? onlineUsers.push(new User(user))
             : null
           );
-          // extract and resolve return the users
-          return resolve(onlineUsers);
+          // get the channels we need
+          const channels = [];
+          payload.channels.map((channel) => {
+            // This channel is requested
+            this.props.channelId.indexOf(channel.id) > -1 ? channels.push(channel) : null;
+          })
+          return resolve({ channels, onlineUsers });
         });
         // tell the bot to listen
         this.bot.listen({ token: this.props.apiToken });
@@ -300,6 +323,85 @@ class ReactSlackChat extends Component {
         return reject(err);
       }
     });
+  }
+
+  loadMessages(channel) {
+    const that = this;
+    // Set this channel as active channel
+    this.setState({
+      activeChannel: channel,
+      // get the history of channel at regular intevals
+      activeChannelInterval: setInterval(() => {
+        const messagesLength = that.state.messages.length;
+        channels.history({
+          token: this.props.apiToken,
+          channel: channel.id
+        }, (err, data) => {
+          if (err) {
+            console.log(`There was an error loading messages for ${channel.name}. ${err}`);
+            return this.setState({
+              failed: true
+            });
+          }
+          // loaded channel history
+          console.log('got data', data);
+          // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
+          setTimeout(() => {
+            const chatMessages = $('.chat__messages')[0];
+            chatMessages.scrollHeight < chatMessages.scrollTop + 350 || messagesLength === 0 ? chatMessages.scrollTop = chatMessages.scrollHeight : null;
+          }, 0);
+          return this.setState({
+            messages: data.messages.reverse()
+          });
+        });
+      }, this.state.refreshTime)
+    });
+  }
+
+  getUserImg(userId) {
+    let image;
+    this.state.onlineUsers.map((user) => {
+      if (user.id === userId) {
+        image = user.image;
+      }
+    });
+    return image;
+  }
+
+  handleChange(e) {
+    this.setState({
+      postMyMessage: e.target.value
+    });
+    if (e.key === 'Enter') {
+      console.log('do postMessage');
+      this.postMessage(this.state.postMyMessage);
+    }
+    return;
+  }
+
+  postMessage(text) {
+    console.log('Posting message');
+    chat.postMessage({
+      token: this.props.apiToken,
+      channel: this.state.activeChannel.id,
+      text,
+      username: this.props.botName
+    }, (err, data) => {
+      if (err) {
+        console.log('failed to post', data, 'err:', err);
+        return;
+      }
+      console.log('Successfully posted message', text, 'response:', data);
+      // Adjust scroll height
+      setTimeout(() => {
+        const chatMessages = $('.chat__messages')[0];
+        chatMessages.scrollTop = chatMessages.scrollHeight
+      }, this.state.refreshTime);
+      this.setState({
+        postMyMessage: ''
+      });
+      this.forceUpdate();
+    })
   }
 
   componentDidMount() {
@@ -326,10 +428,10 @@ class ReactSlackChat extends Component {
         </div>
         <div className='sidebar-content'>
           {
-            this.state.onlineUsers.map((user) =>
-              <div className='contact' key={user.id}>
-                <img src={user.image} alt='' className='contact__photo' />
-                <span className='contact__name'>{user.real_name}</span>
+            this.state.channels.map((channel) =>
+              <div className='contact' key={channel.id} onClick={ () => this.loadMessages(channel) }>
+                <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='' className='contact__photo' />
+                <span className='contact__name'>{channel.name}</span>
                 <span className='contact__status online'></span>
               </div>
             )
@@ -343,31 +445,27 @@ class ReactSlackChat extends Component {
             <span className='chat__name'>Huehue Huehue</span>
           </div>
           <div className='chat__messages'>
-            <div className='chat__msgRow'>
-              <div className='chat__message mine'>Such SVG, much Javascript, very CSS!</div>
+            <div className='chat__msgRow mine'>
+              <div className='chat__message'>Such SVG, much Javascript, very CSS!</div>
             </div>
-            <div className='chat__msgRow'>
-              <div className='chat__message notMine'>Wow!</div>
+            <div className='chat__msgRow notMine'>
+              <div className='chat__message'>Wow!</div>
             </div>
-            <div className='chat__msgRow'>
-              <div className='chat__message notMine'>Very elastic! Such easings!</div>
-            </div>
-            <div className='chat__msgRow'>
-              <div className='chat__message mine'>Such SVG, much Javascript, very CSS!</div>
-            </div>
-            <div className='chat__msgRow'>
-              <div className='chat__message notMine'>Very elastic! Such easings!</div>
-            </div>
-            <div className='chat__msgRow'>
-              <div className='chat__message notMine'>Very elastic! Such easings!</div>
-            </div>
-            <div className='chat__msgRow'>
-              <div className='chat__message mine'>
-                Check out my other <a href='http://codepen.io/suez/public/' target='_blank'>pens</a>
+            {
+              this.state.messages.map((message) =>
+              <div className={classNames('chat__msgRow', message.username === this.props.botName ? 'mine' : 'notMine')} key={message.ts}>
+                <div className='chat__message'>{message.text}</div>
+                <img src={this.getUserImg(message.user)} alt='' className='contact__photo' />
               </div>
-            </div>
+              )
+            }
           </div>
-          <input type='text' className='chat__input' placeholder='Your message' />
+          <input type='text' className='chat__input'
+            value={this.state.postMyMessage}
+            placeholder='Enter your message...'
+            onKeyPress={(e) => e.key === 'Enter' ? this.postMessage(this.state.postMyMessage) : null}
+            onChange={ (e) => this.handleChange(e) }
+          />
         </div>
       </div>
     </div>;
@@ -382,7 +480,9 @@ class ReactSlackChat extends Component {
 
 // PropTypes validation
 ReactSlackChat.propTypes = {
-  apiToken: PropTypes.string.isRequired
+  apiToken: PropTypes.string.isRequired,
+  channelId: PropTypes.array.isRequired,
+  botName: PropTypes.string
 };
 
 export default ReactSlackChat;
