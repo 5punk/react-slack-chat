@@ -29,6 +29,7 @@ class App extends Component {
           botName='5punk-bot'
           apiToken='xoxp-63486550359-63sfes26502-88fewfw67777-119aab37r32r32r316e0296c3da'
           channelId={['C1CSMYV9']}
+          helpText='Optional Help Text'
         />
       )
   }

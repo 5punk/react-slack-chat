@@ -294,7 +294,7 @@ class ReactSlackChat extends Component {
     const chatbox = <div>
       <div className={classNames('card transition', this.state.chatbox.active ? 'active' : '', this.state.chatbox.chatActiveView ? 'chat-active' : '')} onClick={this.openChatBox}>
         <div className='help-header'>
-          <h2 className='transition'>Help?</h2>
+          <h2 className='transition'>{this.props.helpText || 'Help?'}</h2>
           <h2 className='sub-text'>Click on a channel to interact.</h2>
         </div>
         <div className='card_circle transition'></div>
@@ -357,7 +357,8 @@ class ReactSlackChat extends Component {
 ReactSlackChat.propTypes = {
   apiToken: PropTypes.string.isRequired,
   channelId: PropTypes.array.isRequired,
-  botName: PropTypes.string
+  botName: PropTypes.string,
+  helpText: PropTypes.string
 };
 
 export default ReactSlackChat;
