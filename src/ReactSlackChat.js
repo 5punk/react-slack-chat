@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import $ from 'jquery';
 import classNames from 'classnames';
 import { rtm, channels, chat } from 'slack';
+import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
 import './ReactSlackChat.css';
 
 class User {
@@ -35,6 +35,9 @@ class ReactSlackChat extends Component {
         active: false,
         channelActiveView: false,
         chatActiveView: false
+      },
+      messageFormatter: {
+        emoji: false
       }
     };
     // Bind Slack Message functions
@@ -47,7 +50,19 @@ class ReactSlackChat extends Component {
     this.closeChatBox = this.closeChatBox.bind(this);
     this.goToChatView = this.goToChatView.bind(this);
     this.goToChannelView = this.goToChannelView.bind(this);
+    // Utils
+    this.displayFormattedMessage = this.displayFormattedMessage.bind(this);
 
+    // Initiate Emoji Library
+    emojiLoader()
+      .then(() => {
+        this.setState({
+          messageFormatter: {
+            emoji: true
+          }
+        });
+      })
+      .catch((err) => console.log(`Cant initiate emoji library ${err}`));
     // Connect bot
     this.connectBot(this)
       .then((data) => {
@@ -67,6 +82,33 @@ class ReactSlackChat extends Component {
 
   arraysIdentical(a, b) {
     return JSON.stringify(a) === JSON.stringify(b);
+  }
+
+  displayFormattedMessage(message) {
+    // messages text
+    let messageText = message.text;
+    // who's message is this?
+    const myMessage = message.username === this.props.botName;
+    // check if emoji library is enabled
+    if (this.state.messageFormatter.emoji) {
+      messageText = emojiParser(messageText);
+    }
+    return <div className={classNames('chat__msgRow', myMessage ? 'mine' : 'notMine')} key={message.ts}>
+      {
+        myMessage
+          ? this.props.userImage
+            ? <img src={this.props.userImage} className='user__contact__photo' />
+            : <div className='user__contact__generated__image'>{this.props.botName.charAt(0)}</div>
+          : null
+      }
+      <div className='chat__message' dangerouslySetInnerHTML={{__html: messageText}}></div>
+      {
+        // Show remote users image only if message isn't customers
+        !myMessage
+          ? <img src={this.getUserImg(message.user)} alt='' className='chat__contact__photo' />
+          : null
+      }
+    </div>
   }
 
   isValidOnlineUser(user) {
@@ -131,7 +173,7 @@ class ReactSlackChat extends Component {
         if (!this.arraysIdentical(this.state.messages, data.messages.reverse())) {
           // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
           setTimeout(() => {
-            const chatMessages = $('.chat__messages')[0];
+            const chatMessages = this.refs.reactSlakChatMessages;
             chatMessages.scrollHeight < chatMessages.scrollTop + 550 ||
               messagesLength === 0
               ? chatMessages.scrollTop = chatMessages.scrollHeight
@@ -196,7 +238,7 @@ class ReactSlackChat extends Component {
       console.log('Successfully posted message', text, 'response:', data);
       // Adjust scroll height
       setTimeout(() => {
-        const chatMessages = $('.chat__messages')[0];
+        const chatMessages = this.refs.reactSlakChatMessages;
         chatMessages.scrollTop = chatMessages.scrollHeight
       }, this.state.refreshTime);
       this.setState({
@@ -319,7 +361,7 @@ class ReactSlackChat extends Component {
               <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='' className='channel__header__photo' />
             </div>
           </div>
-          <div className='chat__messages'>
+          <div className='chat__messages' ref='reactSlakChatMessages'>
             <div className='chat__msgRow mine'>
               <div className='chat__message'>Such SVG, much Javascript, very CSS!</div>
             </div>
@@ -327,12 +369,7 @@ class ReactSlackChat extends Component {
               <div className='chat__message'>Wow!</div>
             </div>
             {
-              this.state.messages.map((message) =>
-              <div className={classNames('chat__msgRow', message.username === this.props.botName ? 'mine' : 'notMine')} key={message.ts}>
-                <div className='chat__message'>{message.text}</div>
-                <img src={this.getUserImg(message.user)} alt='' className='chat__contact__photo' />
-              </div>
-              )
+              this.state.messages.map((message) => this.displayFormattedMessage(message))
             }
           </div>
           <input type='text' className='chat__input'
@@ -358,7 +395,8 @@ ReactSlackChat.propTypes = {
   apiToken: PropTypes.string.isRequired,
   channelId: PropTypes.array.isRequired,
   botName: PropTypes.string,
-  helpText: PropTypes.string
+  helpText: PropTypes.string,
+  userImage: PropTypes.string
 };
 
 export default ReactSlackChat;
