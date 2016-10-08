@@ -1,6 +1,8 @@
 # React Slack Chat
 
-A beautiful Gooey / Material Design Slack Chat Web Integrating Widget.
+A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget.
+
+Give your users the Perfect Support / Engagement experience, with the comfort of Slack.
 
 Throw your website visitors into a Slack Channel Community, where they can search for answers or get replies from online Slack Users.
 
