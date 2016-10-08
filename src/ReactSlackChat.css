@@ -91,6 +91,27 @@
   height: 48px;
   float: right;
 }
+.user__contact__photo {
+  float: left;
+  margin-top: 2px;
+  padding-bottom: 1px;
+  height: 42px;
+  border-radius: 50%;
+  margin-right: 10px
+}
+.user__contact__generated__image {
+  float: left;
+  margin-top: 2px;
+  font-size: 2.2em;
+  color: #fff;
+  padding-right: 12px;
+  padding-left: 12px;
+  padding-bottom: 1px;
+  background: #3487f7;
+  height: 42px;
+  border-radius: 50%;
+  margin-right: 10px
+}
 .chat__name {
   left: 1rem;
   top: 1.2rem;
@@ -281,5 +302,7 @@ p {
     text-align: center;
     z-index: 9999;
 }
-
+.gh-emoji {
+  height: 24px;
+}
 /* End Slack chat box */
