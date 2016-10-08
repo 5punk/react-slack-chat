@@ -37,15 +37,17 @@ class ReactSlackChat extends Component {
         chatActiveView: false
       }
     };
-    // Bind Load Messages function
+    // Bind Slack Message functions
     this.loadMessages = this.loadMessages.bind(this);
     this.getUserImg = this.getUserImg.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.postMessage = this.postMessage.bind(this);
+    // Bind UI Animation functions
     this.openChatBox = this.openChatBox.bind(this);
     this.closeChatBox = this.closeChatBox.bind(this);
     this.goToChatView = this.goToChatView.bind(this);
     this.goToChannelView = this.goToChannelView.bind(this);
+
     // Connect bot
     this.connectBot(this)
       .then((data) => {
@@ -61,6 +63,10 @@ class ReactSlackChat extends Component {
           failed: true
         });
       });
+  }
+
+  arraysIdentical(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
   }
 
   isValidOnlineUser(user) {
@@ -106,7 +112,7 @@ class ReactSlackChat extends Component {
   loadMessages(channel) {
     const that = this;
     // define loadMessages function
-    const getFromSlack = () => {
+    const getMessagesFromSlack = () => {
       const messagesLength = that.state.messages.length;
       channels.history({
         token: this.props.apiToken,
@@ -120,18 +126,26 @@ class ReactSlackChat extends Component {
         }
         // loaded channel history
         console.log('got data', data);
-        // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
-        setTimeout(() => {
-          const chatMessages = $('.chat__messages')[0];
-          chatMessages.scrollHeight < chatMessages.scrollTop + 350 || messagesLength === 0 ? chatMessages.scrollTop = chatMessages.scrollHeight : null;
-        }, 0);
+        // Scroll down only if the stored messages and received messages are not the same
+        // reverse() mutates the array
+        if (!this.arraysIdentical(this.state.messages, data.messages.reverse())) {
+          // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
+          setTimeout(() => {
+            const chatMessages = $('.chat__messages')[0];
+            chatMessages.scrollHeight < chatMessages.scrollTop + 550 ||
+              messagesLength === 0
+              ? chatMessages.scrollTop = chatMessages.scrollHeight
+              : null;
+          }, 0);
+        }
+
         return this.setState({
-          messages: data.messages.reverse()
+          messages: data.messages
         });
       });
     };
     // Call it once
-    getFromSlack();
+    getMessagesFromSlack();
     // Set this channel as active channel
     // Set the function to be called at regular intervals
     this.setState({
@@ -142,7 +156,7 @@ class ReactSlackChat extends Component {
         chatActiveView: true
       },
       // get the history of channel at regular intevals
-      activeChannelInterval: setInterval(getFromSlack, this.state.refreshTime)
+      activeChannelInterval: setInterval(getMessagesFromSlack, this.state.refreshTime)
     });
   }
 
