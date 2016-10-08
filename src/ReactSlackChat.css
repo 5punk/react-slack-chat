@@ -1,95 +1,79 @@
 /* Slack Chat box */
-.chatbox {
-  height: 100%;
-}
+@import url('http://fonts.googleapis.com/css?family=Raleway:400,200');
 
-.demo button,
-.demo input {
-  border: 0;
-  outline: none;
+/* Element Visibility */
+.transition { transition: .8s cubic-bezier(.3, 0, 0, 1.3) }
+.card {
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);
+  -moz-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);
+    height: 60px;
+    overflow: hidden;
+    position: fixed;
+    right: 40px;
+    bottom: 0;
+    width: 300px;
+    cursor: pointer;
 }
-
-.demo *, .demo *:before, .demo :after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+.card.active {
+    cursor: default;
+    height: 500px;
+    width: 300px;
+    z-index: 99999;
 }
-
-.demo {
-  position: absolute;
-  bottom: 0%;
-  left: 0%;
-  margin-top: -25rem;
-  width: 18rem;
-  height: 30rem;
+.card.active .card_circle {
+    background-size: cover;
+    border-radius: 0;
 }
-
-.static {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
-  background: transparent;
+.card.active h2 {
+    background: #3487f7;
+    color: #fff;
+    padding: 5px;
 }
-.static:before, .static:after {
-  content: "";
-  position: absolute;
-  left: 4rem;
-  width: 2rem;
-  height: 2rem;
-  margin-left: -1rem;
-  margin-top: -1rem;
-  border: 2px solid #999;
-  border-left: none;
-  border-bottom: none;
-  -webkit-transform: rotate(45deg);
-          transform: rotate(45deg);
-  -webkit-animation: arrows 1.5s infinite;
-          animation: arrows 1.5s infinite;
-}
-.static:before {
-  top: 6rem;
-}
-.static:after {
-  top: 24rem;
-}
-.static__text {
-  width: 9rem;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -5rem;
-  -webkit-transform: translate3d(0, -50%, 0);
-          transform: translate3d(0, -50%, 0);
-  color: #999;
-  -webkit-perspective: 1px;
-          perspective: 1px;
-  -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-}
-
-.sidebar-content {
-  z-index: -1;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding-top: 1rem;
+.card .channels {
+  visibility: hidden;
   opacity: 0;
-  -webkit-transition: opacity 200ms, z-index 0s 0s;
-  transition: opacity 200ms, z-index 0s 0s;
-  background-color: #E9EAF3;
-  overflow: hidden;
+  transition: visibility 0s, opacity 0.5s linear;
 }
-.sidebar-content.active {
-  z-index: 2;
-  opacity: 1;
+.card.active .channel-active.channels {
   overflow-y: auto;
+  visibility: visible;
+  transition: visibility 0s, opacity 0.5s linear;
+  opacity: 1;
+  overflow-x: hidden
 }
-
+.card.active.channel-active .help-header {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+.card.active.chat-active .help-header {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+.card.active.chat-active .channels {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+.card .chat {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+.card.active.chat-active .chat {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s, opacity 0.5s linear;
+}
+/* Chat styles */
 .contact {
   position: relative;
-  width: 100%;
+  width: 95%;
   height: 5rem;
-  padding-left: 1.7rem;
+  padding-left: 1rem;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -107,8 +91,26 @@
   height: 48px;
   float: right;
 }
+.chat__name {
+  left: 1rem;
+  top: 1.2rem;
+  position: relative
+}
+.chat__contact__photo {
+  border-radius: 50%;
+  height: 42px;
+  float: right;
+}
+.channel__header__photo {
+  border-radius: 50%;
+  height: 48px;
+  float: right;
+  position: relative;
+  left: 5rem;
+  bottom: 0.5rem;
+}
 .contact__name {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
 }
 .contact__status {
   position: absolute;
@@ -125,98 +127,6 @@
 .contact__status.online {
   opacity: 1;
 }
-
-.search {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 5.5rem;
-  padding-left: 1.5rem;
-  background: #999;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-
-svg {
-  overflow: visible;
-}
-
-.sidebar {
-  z-index: 1;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.s-path path {
-  cursor: -webkit-grab;
-  cursor: grab;
-}
-
-.cloned {
-  position: absolute;
-  z-index: 10;
-  -webkit-transition: top 0.3s, left 0.3s;
-  transition: top 0.3s, left 0.3s;
-  -webkit-transition-delay: 0.2s;
-          transition-delay: 0.2s;
-  -webkit-transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-          transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-}
-.cloned.removed {
-  -webkit-transition: opacity 0.2s 0;
-  transition: opacity 0.2s 0;
-  opacity: 0;
-}
-
-.chat {
-  display: none;
-  z-index: 5;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 2.5rem 0 5.5rem 1rem;
-  -webkit-transition: opacity 200ms;
-  transition: opacity 200ms;
-  opacity: 0;
-}
-.chat.active {
-  opacity: 1;
-  background: #fff;
-}
-.chat.active:before {
-  width: 100%;
-}
-.chat:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 0.5rem;
-  background: #1CC6AE;
-  width: 0;
-  -webkit-transition: width 0.2s;
-  transition: width 0.2s;
-}
-. {
-  position: relative;
-  display: inline-block;
-  width: 2rem;
-  height: 2rem;
-  margin-top: 0.5rem;
-  margin-left: -0.6rem;
-  cursor: pointer;
-}
 .chat__back:hover:before {
   -webkit-transform: translateX(-0.3rem) rotate(-45deg);
           transform: translateX(-0.3rem) rotate(-45deg);
@@ -230,7 +140,7 @@ svg {
   left: 1.6rem;
   width: 1.5rem;
   height: 1.5rem;
-  border: 2px solid #545675;
+  border: 2px solid #ccc;
   border-right: none;
   border-bottom: none;
   -webkit-transform: rotate(-45deg);
@@ -241,29 +151,27 @@ svg {
   transition: transform 0.3s, -webkit-transform 0.3s;
 }
 .chat__status {
-  position: absolute;
-  top: 2rem;
-  right: 4.5rem;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  position: relative;
+  left: 4.6rem;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
   text-transform: uppercase;
-  color: #B1A9A9;
+  color: #fff;
 }
 .chat__person {
   display: inline-block;
-  position: absolute;
-  top: 3rem;
-  right: 4.5rem;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
-  color: #36343D;
+  position: relative;
+  top: 2rem;
+  right: 1.5rem;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
+  color: #fff;
 }
 .chat__online {
   position: absolute;
-  top: 50%;
-  left: -1.5rem;
-  margin-top: -3px;
+  left: 45px;
+  top: 5px;
   width: 8px;
   height: 8px;
-  border: 2px solid #00B570;
+  border: 2px solid #43dea3;
   border-radius: 50%;
   opacity: 0;
   -webkit-transition: opacity 0.3s;
@@ -274,12 +182,11 @@ svg {
 }
 .chat__messages {
   position: relative;
-  top: 4rem;
-  left: -1rem;
-  width: 19rem;
+  bottom: 16rem;
+  width: 95%;
   padding-right: 0.5rem;
   padding-left: 0.5rem;
-  max-height: 18rem;
+  max-height: 21.5rem;
   overflow-y: auto;
 }
 .chat__msgRow {
@@ -302,7 +209,7 @@ svg {
   word-wrap: break-word;
   margin-right: 10px;
   padding: 0.8rem;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
 }
 .mine .chat__message {
   color: #2B2342;
@@ -317,59 +224,62 @@ svg {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
-  height: 4.5rem;
+  width: 73%;
+  height: 1.5rem;
   padding: 1rem 1rem 1rem 4rem;
   background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/elastic-search.png");
   background-repeat: no-repeat;
-  background-position: 1rem 1.5rem;
+  background-position: 1rem 1rem;
   background-color: #E9EAF3;
   color: #2B2342;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
 }
-
-.ripple {
+.card .sub-text {
+  visibility: hidden;
+  transition: visibility 0s, opacity 0.5s linear;
+  opacity: 0;
+}
+.card.active .sub-text {
+  visibility: visible;
+  transition: visibility 0s, opacity 0.5s linear;
+  opacity: 1;
+}
+.card.active h2 small { color: #fff }
+.card.active p { margin-top: 300px }
+.help-header {
+  background: #3487f7;
+  position: relative;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.chat-header {
   position: absolute;
-  width: 10rem;
-  height: 10rem;
-  margin-left: -5rem;
-  margin-top: -5rem;
-  background: rgba(0, 0, 0, 0.4);
-  -webkit-transform: scale(0);
-          transform: scale(0);
-  -webkit-animation: animRipple 0.3s;
-          animation: animRipple 0.3s;
-  border-radius: 50%;
+  top: 0px;
+  z-index: 9999;
+  left: 0rem;
+  width: 100%;
+  height: 6rem;
+  background: #3487f7;
 }
-
-@-webkit-keyframes animRipple {
-  to {
-    -webkit-transform: scale(2.5);
-            transform: scale(2.5);
-    opacity: 0;
-  }
+.card h2 {
+    color: #ffffff;
+    font-family: 'Raleway', sans-serif;
+    font-size: 24px;
+    font-weight: 200;
+    margin-top: 0px;
+    text-align: center;
+    width: 100%;
+    z-index: 9999;
 }
-
-@keyframes animRipple {
-  to {
-    -webkit-transform: scale(2.5);
-            transform: scale(2.5);
-    opacity: 0;
-  }
-}
-@-webkit-keyframes arrows {
-  to {
-    -webkit-transform: translateX(100%) rotate(45deg);
-            transform: translateX(100%) rotate(45deg);
-    opacity: 0;
-  }
-}
-@keyframes arrows {
-  to {
-    -webkit-transform: translateX(100%) rotate(45deg);
-            transform: translateX(100%) rotate(45deg);
-    opacity: 0;
-  }
+p {
+    color: rgba(0,0,0,.6);
+    font-family: 'Raleway', sans-serif;
+    font-size: 100%;
+    font-weight: normal;
+    margin-top: 200px;
+    position: absolute;
+    text-align: center;
+    z-index: 9999;
 }
 
 /* End Slack chat box */

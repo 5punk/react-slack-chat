@@ -30,14 +30,22 @@ class ReactSlackChat extends Component {
       activeChannel: [],
       messages: [],
       postMyMessage: '',
-      refreshTime: 2000
+      refreshTime: 2000,
+      chatbox: {
+        active: false,
+        channelActiveView: false,
+        chatActiveView: false
+      }
     };
     // Bind Load Messages function
     this.loadMessages = this.loadMessages.bind(this);
     this.getUserImg = this.getUserImg.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.postMessage = this.postMessage.bind(this);
-    this.bindAnimations = this.bindAnimations.bind(this);
+    this.openChatBox = this.openChatBox.bind(this);
+    this.closeChatBox = this.closeChatBox.bind(this);
+    this.goToChatView = this.goToChatView.bind(this);
+    this.goToChannelView = this.goToChannelView.bind(this);
     // Connect bot
     this.connectBot(this)
       .then((data) => {
@@ -53,236 +61,6 @@ class ReactSlackChat extends Component {
           failed: true
         });
       });
-  }
-
-  bindAnimations() {
-    // Handle ChatBox Interactions
-    $(document).ready(function() {
-      var $demo = $('.demo');
-      var $path = $('.s-path path');
-      var $sCont = $('.sidebar-content');
-      var $chat = $('.chat');
-      var $helpText = $('.help-text');
-      var demoTop = $demo.offset().top;
-      var demoLeft = $demo.offset().left;
-      var diffX = 0;
-      var curX = 0;
-      var finalX = 0;
-      var frame = 1000 / 60;
-      var animTime = 600;
-      var sContTrans = 200;
-      var animating = false;
-
-      var easings = {
-        smallElastic: function(t, b, c, d) {
-          var ts = (t /= d) * t;
-          var tc = ts * t;
-          return b + c * (33 * tc * ts + -106 * ts * ts + 126 * tc + -67 * ts + 15 * t);
-        },
-        inCubic: function(t, b, c, d) {
-          var tc = (t /= d) * t * t;
-          return b + c * (tc);
-        }
-      };
-
-      function createD(top, ax, dir) {
-        return 'M0,0 ' + top + ',0 a' + ax + ',250 0 1,' + dir + ' 0,500 L0,500';
-      }
-
-      var startD = createD(50, 0, 1);
-      var midD = createD(125, 75, 0);
-      var finalD = createD(300, 0, 1);
-      var clickMidD = createD(300, 80, 0);
-      var clickMidDRev = createD(200, 100, 1);
-      var clickD = createD(300, 0, 1);
-      var currentPath = startD;
-
-      function newD(num1, num2) {
-        var d = $path.attr('d');
-        num2 = num2 || 250;
-        var nd = d.replace(/\ba(\d+),(\d+)\b/gi, 'a' + num1 + ',' + num2);
-        return nd;
-      }
-
-      function animatePathD(path, d, time, handlers, callback, easingTop, easingX) {
-        var steps = Math.floor(time / frame);
-        var curStep = 0;
-        var oldArr = currentPath.split(' ');
-        var newArr = d.split(' ');
-        var oldTop = +oldArr[1].split(',')[0];
-        var topDiff = +newArr[1].split(',')[0] - oldTop;
-        var nextTop;
-        var nextX;
-        easingTop = easings[easingTop] || easings.smallElastic;
-        easingX = easings[easingX] || easingTop;
-
-        $(document).off('mousedown mouseup');
-
-        function animate() {
-          curStep++;
-          nextTop = easingTop(curStep, oldTop, topDiff, steps);
-          nextX = easingX(curStep, curX, finalX - curX, steps);
-          oldArr[1] = nextTop + ',0';
-          oldArr[2] = 'a' + Math.abs(nextX) + ',250';
-          oldArr[4] = (nextX >= 0) ? '1,1' : '1,0';
-          $path.attr('d', oldArr.join(' '));
-          if (curStep > steps) {
-            curX = 0;
-            diffX = 0;
-            $path.attr('d', d);
-            currentPath = d;
-            if (handlers) handlers1();
-            if (callback) callback();
-            return;
-          }
-          requestAnimationFrame(animate);
-        }
-        animate();
-      }
-
-      function handlers1() {
-        $(document).on('mousedown touchstart', '.chat-clickable', function(e) {
-          diffX = 300;
-          curX = Math.floor(300 / 2);
-          $path.attr('d', newD(curX));
-        });
-
-        $(document).on('mouseup touchend', function() {
-          $(document).off('mousemove touchmove');
-          if (animating) return;
-          if (!diffX) return;
-          if (diffX < 40) {
-            animatePathD($path, newD(0), animTime, true);
-          } else {
-            // Hide help text
-            $helpText.hide();
-            animatePathD($path, finalD, animTime, false, function() {
-              $sCont.addClass('active');
-              setTimeout(function() {
-                $(document).on('click', closeSidebar);
-              }, sContTrans);
-            });
-          }
-        });
-      }
-
-      handlers1();
-
-      function closeSidebar(e) {
-        if ($(e.target).closest('.sidebar-content').length ||
-          $(e.target).closest('.chat').length) return;
-        if (animating) return;
-        animating = true;
-        $sCont.removeClass('active');
-        $chat.removeClass('active');
-        $('.cloned').addClass('removed');
-        finalX = -75;
-        setTimeout(function() {
-          animatePathD($path, midD, animTime / 3, false, function() {
-            $chat.hide();
-            $('.cloned').remove();
-            finalX = 0;
-            curX = -75;
-            animatePathD($path, startD, animTime / 3 * 2, true);
-            animating = false;
-            // Show help text
-            $helpText.show();
-          }, 'inCubic');
-        }, sContTrans);
-        this.setState({
-          activeChannel: null,
-          activeChannelInterval: null
-        });
-        $(document).off('click', closeSidebar);
-      }
-
-      function moveImage(that) {
-        var $img = $(that).find('.contact__photo');
-        var top = $img.offset().top - demoTop;
-        var left = $img.offset().left - demoLeft;
-        var $clone = $img.clone().addClass('cloned');
-
-        $clone.css({
-          top: top,
-          left: left
-        });
-        $demo.append($clone);
-        $clone.css('top');
-        $clone.css({
-          top: '1.8rem',
-          left: '15rem'
-        });
-      }
-
-      function ripple(elem, e) {
-        var elTop = elem.offset().top;
-        var elLeft = elem.offset().left;
-        var x = e.pageX - elLeft;
-        var y = e.pageY - elTop;
-        var $ripple = $('<div class="ripple"></div>');
-        $ripple.css({
-          top: y,
-          left: x
-        });
-        elem.append($ripple);
-      }
-
-      $(document).on('click', '.contact', function showChat(e) {
-        if (animating) return;
-        animating = true;
-        var that = this;
-        var name = $(this).find('.contact__name').text();
-        var online = $(this).find('.contact__status').hasClass('online');
-        $('.chat__name').text(name);
-        $('.chat__online').removeClass('active');
-        if (online) $('.chat__online').addClass('active');
-        ripple($(that), e);
-        setTimeout(function() {
-          $sCont.removeClass('active');
-          moveImage(that);
-          finalX = -80;
-          setTimeout(function() {
-            $('.ripple').remove();
-            animatePathD($path, clickMidD, animTime / 3, false, function() {
-              curX = -80;
-              finalX = 0;
-              animatePathD($path, clickD, animTime * 2 / 3, true, function() {
-                $chat.show();
-                $chat.css('top');
-                $chat.addClass('active');
-                animating = false;
-              });
-            }, 'inCubic');
-          }, sContTrans);
-        }, sContTrans);
-      });
-
-      $(document).on('click', '.chat__back', function() {
-        if (animating) return;
-        animating = true;
-        $chat.removeClass('active');
-        $('.cloned').addClass('removed');
-        setTimeout(function() {
-          $('.cloned').remove();
-          $chat.hide();
-          finalX = 100;
-          animatePathD($path, clickMidDRev, animTime / 3, false, function() {
-            curX = 100;
-            finalX = 0;
-            animatePathD($path, finalD, animTime * 2 / 3, true, function() {
-              $sCont.addClass('active');
-              $(document).on('click', closeSidebar);
-              animating = false;
-            });
-          }, 'inCubic');
-        }, sContTrans);
-      });
-
-      $(window).on('resize', function() {
-        demoTop = $demo.offset().top;
-        demoLeft = $demo.offset().left;
-      });
-    });
   }
 
   isValidOnlineUser(user) {
@@ -327,34 +105,44 @@ class ReactSlackChat extends Component {
 
   loadMessages(channel) {
     const that = this;
+    // define loadMessages function
+    const getFromSlack = () => {
+      const messagesLength = that.state.messages.length;
+      channels.history({
+        token: this.props.apiToken,
+        channel: channel.id
+      }, (err, data) => {
+        if (err) {
+          console.log(`There was an error loading messages for ${channel.name}. ${err}`);
+          return this.setState({
+            failed: true
+          });
+        }
+        // loaded channel history
+        console.log('got data', data);
+        // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
+        setTimeout(() => {
+          const chatMessages = $('.chat__messages')[0];
+          chatMessages.scrollHeight < chatMessages.scrollTop + 350 || messagesLength === 0 ? chatMessages.scrollTop = chatMessages.scrollHeight : null;
+        }, 0);
+        return this.setState({
+          messages: data.messages.reverse()
+        });
+      });
+    };
+    // Call it once
+    getFromSlack();
     // Set this channel as active channel
+    // Set the function to be called at regular intervals
     this.setState({
       activeChannel: channel,
+      chatbox: {
+        active: true,
+        channelActiveView: false,
+        chatActiveView: true
+      },
       // get the history of channel at regular intevals
-      activeChannelInterval: setInterval(() => {
-        const messagesLength = that.state.messages.length;
-        channels.history({
-          token: this.props.apiToken,
-          channel: channel.id
-        }, (err, data) => {
-          if (err) {
-            console.log(`There was an error loading messages for ${channel.name}. ${err}`);
-            return this.setState({
-              failed: true
-            });
-          }
-          // loaded channel history
-          console.log('got data', data);
-          // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
-          setTimeout(() => {
-            const chatMessages = $('.chat__messages')[0];
-            chatMessages.scrollHeight < chatMessages.scrollTop + 350 || messagesLength === 0 ? chatMessages.scrollTop = chatMessages.scrollHeight : null;
-          }, 0);
-          return this.setState({
-            messages: data.messages.reverse()
-          });
-        });
-      }, this.state.refreshTime)
+      activeChannelInterval: setInterval(getFromSlack, this.state.refreshTime)
     });
   }
 
@@ -404,9 +192,82 @@ class ReactSlackChat extends Component {
     })
   }
 
+  goToChannelView(e) {
+    // Close Chat box only if not already open
+    if (this.state.chatbox.active) {
+      this.setState({
+        chatbox: {
+          active: true,
+          channelActiveView: true,
+          chatActiveView: false,
+        },
+        messages: []
+      });
+      // Clear load messages time interval
+      if (this.state.activeChannelInterval) {
+        clearInterval(this.state.activeChannelInterval);
+      }
+    }
+    e.stopPropagation();
+    return false;
+  }
+
+  goToChatView(e, channel) {
+    // Close Chat box only if not already open
+    if (this.state.chatbox.active) {
+      this.setState({
+        chatbox: {
+          active: true,
+          channelActiveView: false,
+          chatActiveView: true,
+        }
+      });
+      this.loadMessages(channel);
+    }
+    e.stopPropagation();
+    return false;
+  }
+
+  openChatBox(e) {
+    // Open Chat box only if not already open
+    if (!this.state.chatbox.active) {
+      this.setState({
+        chatbox: {
+          active: true,
+          channelActiveView: true,
+          chatActiveView: false,
+        }
+      });
+    }
+    e.stopPropagation();
+    return false;
+  }
+
+  closeChatBox(e) {
+    // Close Chat box only if not already open
+    if (this.state.chatbox.active) {
+      this.setState({
+        chatbox: {
+          active: false,
+          channelActiveView: false,
+          chatActiveView: false,
+        }
+      });
+      // Clear load messages time interval
+      if (this.state.activeChannelInterval) {
+        clearInterval(this.state.activeChannelInterval);
+      }
+    }
+    e.stopPropagation();
+    return false;
+  }
+
   componentDidMount() {
-    // Handle Animations
-    this.bindAnimations();
+    // Attach click listener to dom to close chatbox if clicked outside
+    window.addEventListener('click', (e) => {
+      // Check if chatbox is active
+      return this.state.chatbox.active ? this.closeChatBox(e) : null
+    });
   }
 
   render() {
@@ -416,33 +277,33 @@ class ReactSlackChat extends Component {
       return false;
     }
     // Looks like nothing failed, let's start to render our chatbox
-    const chatbox = <div className='chatbox'>
-      <div className='demo'>
-        <svg className='sidebar s-path' viewBox='0 0 300 500'>
-          <path className='chat-clickable' fill='#ccc' d='M0,0 50,0 a0,250 0 1,1 0,500 L0,500' />
-          <text x="56%" y="8%" className='help-text chat-clickable' fill='#666' fontSize='25' transform='rotate(90 30,30)'>
-            Click for help
-          </text>
-        </svg>
-        <div className='static'>
+    const chatbox = <div>
+      <div className={classNames('card transition', this.state.chatbox.active ? 'active' : '', this.state.chatbox.chatActiveView ? 'chat-active' : '')} onClick={this.openChatBox}>
+        <div className='help-header'>
+          <h2 className='transition'>Help?</h2>
+          <h2 className='sub-text'>Click on a channel to interact.</h2>
         </div>
-        <div className='sidebar-content'>
+        <div className='card_circle transition'></div>
+        <div className={classNames('channels transition', this.state.chatbox.channelActiveView ? 'channel-active' : '')}>
           {
             this.state.channels.map((channel) =>
-              <div className='contact' key={channel.id} onClick={ () => this.loadMessages(channel) }>
-                <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='' className='contact__photo' />
-                <span className='contact__name'>{channel.name}</span>
-                <span className='contact__status online'></span>
-              </div>
+            <div className='contact' key={channel.id} onClick={ (e) => this.goToChatView(e, channel) }>
+              <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='' className='contact__photo' />
+              <span className='contact__name'>{channel.name}</span>
+              <span className='contact__status online'></span>
+            </div>
             )
           }
         </div>
-        <div className='chat'>
-          <span className='chat__back'></span>
-          <span className='chat__status'>status</span>
-          <div className='chat__person'>
-            <span className='chat__online active'></span>
-            <span className='chat__name'>Huehue Huehue</span>
+        <div className={classNames('chat')}>
+          <div className='chat-header'>
+            <span className='chat__back' onClick={this.goToChannelView}></span>
+            <div className='chat__person'>
+              <span className='chat__status'>status</span>
+              <span className='chat__online active'></span>
+              <span className='chat__name'>{this.state.activeChannel.name}</span>
+              <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='' className='channel__header__photo' />
+            </div>
           </div>
           <div className='chat__messages'>
             <div className='chat__msgRow mine'>
@@ -455,7 +316,7 @@ class ReactSlackChat extends Component {
               this.state.messages.map((message) =>
               <div className={classNames('chat__msgRow', message.username === this.props.botName ? 'mine' : 'notMine')} key={message.ts}>
                 <div className='chat__message'>{message.text}</div>
-                <img src={this.getUserImg(message.user)} alt='' className='contact__photo' />
+                <img src={this.getUserImg(message.user)} alt='' className='chat__contact__photo' />
               </div>
               )
             }
