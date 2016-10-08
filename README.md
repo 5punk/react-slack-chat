@@ -6,8 +6,8 @@ Throw your website visitors into a Slack Channel Community, where they can searc
 
 ## Pre Requisites
 
-1. Setup a Slack Bot
-2. Note the API Token
+1. Setup a [Slack Bot](https://api.slack.com/bot-users) for your team.
+2. Encode / Obfuscate the apiToken if you need to publish it to a public Github Repository.
 
 Note: Do not post / publish your Secret API Token as Plain Text to a public Github Repository.
 
@@ -18,7 +18,7 @@ Install React Slack Chat by
 `npm install --save react-slack-chat`
 
 
-### Example Usage:
+## Example Usage:
 ```
 import ReactSlackChat from 'react-slack-chat';
 
@@ -30,8 +30,27 @@ class App extends Component {
           apiToken='xoxp-63486550359-63sfes26502-88fewfw67777-119aab37r32r32r316e0296c3da'
           channelId={['C1CSMYV9']}
           helpText='Optional Help Text'
+          userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
         />
       )
   }
 }
 ```
+
+## Options
+
+Below are a list of props the `<ReactSlackChat />` component accepts
+
+  * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot.
+  * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://api.slack.com/bot-users).
+  * `channelId`: [REQUIRED] At least one slack channel id needs to be passed for the first channel view.
+  * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
+  * `userImage`: [OPTIONAL] A image URL for the user (Does not need to be unique).
+
+#### Features
+
+* Emoji support
+* Auto scroll on new messages
+* Multiple channel support
+* Auto generated user icons if `userImage` is not supplied
+* Material UI with Animations
