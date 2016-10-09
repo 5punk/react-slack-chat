@@ -22,7 +22,7 @@ Install React Slack Chat by
 
 ## Example Usage:
 ```
-import ReactSlackChat from 'react-slack-chat';
+import { ReactSlackChat } from 'react-slack-chat';
 
 class App extends Component {
   render() {
