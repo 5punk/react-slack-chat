@@ -6,6 +6,8 @@ Give your users the Perfect Support / Engagement experience, with the comfort of
 
 Throw your website visitors into a Slack Channel Community, where they can search for answers or get replies from online Slack Users.
 
+![Image of React Component In Action]()
+
 ## Pre Requisites
 
 1. Setup a [Slack Bot](https://api.slack.com/bot-users) for your team.

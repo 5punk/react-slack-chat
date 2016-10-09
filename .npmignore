@@ -7,3 +7,4 @@ src
 .eslintrc
 .gitignore
 webpack.config.js
+docs
