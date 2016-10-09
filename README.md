@@ -53,7 +53,7 @@ Below are a list of props the `<ReactSlackChat />` component accepts
 
 ## Screenshots
 
-![Image of Mobile View](https://github.com/5punk/react-slack-chat/blob/master/docs/mobileView.png?raw=true) ![Image of Special Mentions](https://github.com/5punk/react-slack-chat/blob/master/docs/spcialMentions.png?raw=true)
+![Image of Mobile View](https://github.com/5punk/react-slack-chat/blob/master/docs/mobileView.png?raw=true) ![Image of Special Mentions](https://github.com/5punk/react-slack-chat/blob/master/docs/specialMentions.png?raw=true)
 
 #### Features
 
