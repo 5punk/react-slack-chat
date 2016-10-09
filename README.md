@@ -62,5 +62,6 @@ Below are a list of props the `<ReactSlackChat />` component accepts
 * Special message UI if user is mentioned
 * Auto generated user icons if `userImage` is not supplied
 * Material UI with Animations
+* Remembers selected channel
 * Emoji support
 * Auto scroll on new messages
