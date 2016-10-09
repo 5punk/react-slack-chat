@@ -2,20 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import { rtm, channels, chat } from 'slack';
 import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
+import User from './User';
 import './ReactSlackChat.css';
 
-class User {
-  constructor(args) {
-    this.name = args.name;
-    this.color = args.color;
-    this.id = args.id;
-    this.real_name = args.real_name || args.name;
-    // sizes available: image_24, image_32, image_48, image_72, image_192, image_512
-    this.image = args.profile.image_48;
-  }
-}
-
-class ReactSlackChat extends Component {
+export class ReactSlackChat extends Component {
   constructor(args) {
     super(args);
     // Create Bot
@@ -320,7 +310,7 @@ class ReactSlackChat extends Component {
 
   componentDidMount() {
     // Attach click listener to dom to close chatbox if clicked outside
-    window.addEventListener('click', (e) => {
+    addEventListener('click', (e) => {
       // Check if chatbox is active
       return this.state.chatbox.active ? this.closeChatBox(e) : null
     });
@@ -398,5 +388,3 @@ ReactSlackChat.propTypes = {
   helpText: PropTypes.string,
   userImage: PropTypes.string
 };
-
-export default ReactSlackChat;
