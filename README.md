@@ -6,7 +6,7 @@ Give your users the Perfect Support / Engagement experience, with the comfort of
 
 Throw your website visitors into a Slack Channel Community, where they can search for answers or get replies from online Slack Users.
 
-![Image of React Component In Action]()
+![Image of React Component In Action](https://github.com/5punk/react-slack-chat/blob/master/docs/ReactSlackChat.gif?raw=true)
 
 ## Pre Requisites
 
