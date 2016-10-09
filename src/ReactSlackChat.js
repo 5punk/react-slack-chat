@@ -81,17 +81,21 @@ export class ReactSlackChat extends Component {
     const myMessage = message.username === this.props.botName;
     // check if emoji library is enabled
     if (this.state.messageFormatter.emoji) {
+      // parse plain text to emoji
       messageText = emojiParser(messageText);
     }
+    // check if user was mentioned by anyone else remotely
+    const wasIMentioned = !myMessage && message.text.indexOf(`@${this.props.botName}`) > -1;
     return <div className={classNames('chat__msgRow', myMessage ? 'mine' : 'notMine')} key={message.ts}>
       {
         myMessage
+          // show customer image
           ? this.props.userImage
             ? <img src={this.props.userImage} className='user__contact__photo' />
             : <div className='user__contact__generated__image'>{this.props.botName.charAt(0)}</div>
           : null
       }
-      <div className='chat__message' dangerouslySetInnerHTML={{__html: messageText}}></div>
+      <div className={classNames('chat__message', wasIMentioned ? 'mentioned' : '')} dangerouslySetInnerHTML={{__html: messageText}}></div>
       {
         // Show remote users image only if message isn't customers
         !myMessage
