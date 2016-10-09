@@ -182,15 +182,8 @@ export class ReactSlackChat extends Component {
     };
     // Call it once
     getMessagesFromSlack();
-    // Set this channel as active channel
     // Set the function to be called at regular intervals
     this.setState({
-      activeChannel: channel,
-      chatbox: {
-        active: true,
-        channelActiveView: false,
-        chatActiveView: true
-      },
       // get the history of channel at regular intevals
       activeChannelInterval: setInterval(getMessagesFromSlack, this.state.refreshTime)
     });
@@ -251,6 +244,8 @@ export class ReactSlackChat extends Component {
           channelActiveView: true,
           chatActiveView: false,
         },
+        activeChannel: [],
+        activeChannelInterval: null,
         messages: []
       });
       // Clear load messages time interval
@@ -266,12 +261,14 @@ export class ReactSlackChat extends Component {
     // Close Chat box only if not already open
     if (this.state.chatbox.active) {
       this.setState({
+        activeChannel: channel,
         chatbox: {
           active: true,
           channelActiveView: false,
           chatActiveView: true,
         }
       });
+      // Set this channel as active channel
       this.loadMessages(channel);
     }
     e.stopPropagation();
@@ -288,6 +285,11 @@ export class ReactSlackChat extends Component {
           chatActiveView: false,
         }
       });
+      // Look to see if an active channel was already chosen...
+      if (Object.keys(this.state.activeChannel).length > 0) {
+        // If yes, load that chat view instead
+        setTimeout(() => this.goToChatView(e, this.state.activeChannel), 0);
+      }
     }
     e.stopPropagation();
     return false;
