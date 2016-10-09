@@ -3,8 +3,9 @@ import classNames from 'classnames';
 import { rtm, channels, chat } from 'slack';
 import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
 import User from './User';
+import './ReactSlackChat.css';
 
-class ReactSlackChat extends Component {
+export class ReactSlackChat extends Component {
   constructor(args) {
     super(args);
     // Create Bot
@@ -387,5 +388,3 @@ ReactSlackChat.propTypes = {
   helpText: PropTypes.string,
   userImage: PropTypes.string
 };
-
-export default ReactSlackChat;

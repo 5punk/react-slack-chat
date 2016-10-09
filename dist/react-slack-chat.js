@@ -54,8 +54,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(1);
-	module.exports = __webpack_require__(144);
+	module.exports = __webpack_require__(1);
 
 
 /***/ },
@@ -67,6 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.ReactSlackChat = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -86,6 +86,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _User2 = _interopRequireDefault(_User);
 
+	__webpack_require__(144);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -94,7 +96,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ReactSlackChat = function (_Component) {
+	var ReactSlackChat = exports.ReactSlackChat = function (_Component) {
 	  _inherits(ReactSlackChat, _Component);
 
 	  function ReactSlackChat(args) {
@@ -558,8 +560,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  helpText: _react.PropTypes.string,
 	  userImage: _react.PropTypes.string
 	};
-
-	exports.default = ReactSlackChat;
 
 /***/ },
 /* 2 */
@@ -8691,9 +8691,351 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 144 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(145);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(147)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./ReactSlackChat.css", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./ReactSlackChat.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 145 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(146)();
+	// imports
+	exports.push([module.id, "@import url(http://fonts.googleapis.com/css?family=Raleway:400,200);", ""]);
+
+	// module
+	exports.push([module.id, "/* Slack Chat box */\r\n\r\n/* Element Visibility */\r\n.transition { transition: .8s cubic-bezier(.3, 0, 0, 1.3) }\r\n.card {\r\n    background-color: #fff;\r\n    box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n  -webkit-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n  -moz-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n    height: 60px;\r\n    overflow: hidden;\r\n    position: fixed;\r\n    right: 40px;\r\n    bottom: 0;\r\n    width: 300px;\r\n    cursor: pointer;\r\n}\r\n.card.active {\r\n    cursor: default;\r\n    height: 500px;\r\n    width: 300px;\r\n    z-index: 99999;\r\n}\r\n.card.active .card_circle {\r\n    background-size: cover;\r\n    border-radius: 0;\r\n}\r\n.card.active h2 {\r\n    background: #3487f7;\r\n    color: #fff;\r\n    padding: 5px;\r\n}\r\n.card .channels {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active .channel-active.channels {\r\n  overflow-y: auto;\r\n  visibility: visible;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 1;\r\n  overflow-x: hidden\r\n}\r\n.card.active.channel-active .help-header {\r\n  visibility: visible;\r\n  opacity: 1;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .help-header {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .channels {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card .chat {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .chat {\r\n  visibility: visible;\r\n  opacity: 1;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n/* Chat styles */\r\n.contact {\r\n  position: relative;\r\n  width: 95%;\r\n  height: 5rem;\r\n  padding-left: 1rem;\r\n  display: -webkit-box;\r\n  display: -webkit-flex;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  -webkit-box-align: center;\r\n  -webkit-align-items: center;\r\n      -ms-flex-align: center;\r\n          align-items: center;\r\n  cursor: pointer;\r\n  overflow: hidden;\r\n}\r\n.contact__photo {\r\n  border-radius: 50%;\r\n  margin-right: 1.5rem;\r\n  height: 48px;\r\n  float: right;\r\n}\r\n.user__contact__photo {\r\n  float: left;\r\n  margin-top: 2px;\r\n  padding-bottom: 1px;\r\n  height: 42px;\r\n  border-radius: 50%;\r\n  margin-right: 10px\r\n}\r\n.user__contact__generated__image {\r\n  float: left;\r\n  margin-top: 2px;\r\n  font-size: 2.2em;\r\n  color: #fff;\r\n  padding-right: 12px;\r\n  padding-left: 12px;\r\n  padding-bottom: 1px;\r\n  background: #3487f7;\r\n  height: 42px;\r\n  border-radius: 50%;\r\n  margin-right: 10px\r\n}\r\n.chat__name {\r\n  left: 1rem;\r\n  top: 1.2rem;\r\n  position: relative\r\n}\r\n.chat__contact__photo {\r\n  border-radius: 50%;\r\n  height: 42px;\r\n  float: right;\r\n}\r\n.channel__header__photo {\r\n  border-radius: 50%;\r\n  height: 48px;\r\n  float: right;\r\n  position: relative;\r\n  left: 5rem;\r\n  bottom: 0.5rem;\r\n}\r\n.contact__name {\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.contact__status {\r\n  position: absolute;\r\n  top: 2.1rem;\r\n  right: 1.5rem;\r\n  width: 8px;\r\n  height: 8px;\r\n  border: 2px solid #00B570;\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  -webkit-transition: opacity 0.3s;\r\n  transition: opacity 0.3s;\r\n}\r\n.contact__status.online {\r\n  opacity: 1;\r\n}\r\n.chat__back:hover:before {\r\n  -webkit-transform: translateX(-0.3rem) rotate(-45deg);\r\n          transform: translateX(-0.3rem) rotate(-45deg);\r\n}\r\n.chat__back:before {\r\n  content: \"\";\r\n  position: absolute;\r\n  display: block;\r\n  cursor: pointer;\r\n  top: 2.4rem;\r\n  left: 1.6rem;\r\n  width: 1.5rem;\r\n  height: 1.5rem;\r\n  border: 2px solid #ccc;\r\n  border-right: none;\r\n  border-bottom: none;\r\n  -webkit-transform: rotate(-45deg);\r\n          transform: rotate(-45deg);\r\n  -webkit-transition: -webkit-transform 0.3s;\r\n  transition: -webkit-transform 0.3s;\r\n  transition: transform 0.3s;\r\n  transition: transform 0.3s, -webkit-transform 0.3s;\r\n}\r\n.chat__status {\r\n  position: relative;\r\n  left: 4.6rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n  text-transform: uppercase;\r\n  color: #fff;\r\n}\r\n.chat__person {\r\n  display: inline-block;\r\n  position: relative;\r\n  top: 2rem;\r\n  right: 1.5rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n  color: #fff;\r\n}\r\n.chat__online {\r\n  position: absolute;\r\n  left: 45px;\r\n  top: 5px;\r\n  width: 8px;\r\n  height: 8px;\r\n  border: 2px solid #43dea3;\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  -webkit-transition: opacity 0.3s;\r\n  transition: opacity 0.3s;\r\n}\r\n.chat__online.active {\r\n  opacity: 1;\r\n}\r\n.chat__messages {\r\n  position: relative;\r\n  bottom: 16rem;\r\n  width: 95%;\r\n  padding-right: 0.5rem;\r\n  padding-left: 0.5rem;\r\n  max-height: 21.5rem;\r\n  overflow-y: auto;\r\n}\r\n.chat__msgRow {\r\n  margin-bottom: 0.5rem;\r\n}\r\n.chat__msgRow:after {\r\n  content: \"\";\r\n  display: table;\r\n  clear: both;\r\n}\r\n.chat__msgRow.mine {\r\n  text-align: left;\r\n}\r\n.chat__msgRow.notMine {\r\n  text-align: right;\r\n}\r\n.chat__message {\r\n  display: inline-block;\r\n  max-width: 60%;\r\n  word-wrap: break-word;\r\n  margin-right: 10px;\r\n  padding: 0.8rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.mine .chat__message {\r\n  color: #2B2342;\r\n  border: 1px solid #DFDFDF;\r\n  position: relative;\r\n}\r\n.notMine .chat__message {\r\n  color: #23244E;\r\n  background: #E9EAF3;\r\n}\r\n.chat__input {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 73%;\r\n  height: 1.5rem;\r\n  padding: 1rem 1rem 1rem 4rem;\r\n  background-image: url(\"https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/elastic-search.png\");\r\n  background-repeat: no-repeat;\r\n  background-position: 1rem 1rem;\r\n  background-color: #E9EAF3;\r\n  color: #2B2342;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.card .sub-text {\r\n  visibility: hidden;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 0;\r\n}\r\n.card.active .sub-text {\r\n  visibility: visible;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 1;\r\n}\r\n.card.active h2 small { color: #fff }\r\n.card.active p { margin-top: 300px }\r\n.help-header {\r\n  background: #3487f7;\r\n  position: relative;\r\n  padding-top: 20px;\r\n  padding-bottom: 20px;\r\n}\r\n.chat-header {\r\n  position: absolute;\r\n  top: 0px;\r\n  z-index: 9999;\r\n  left: 0rem;\r\n  width: 100%;\r\n  height: 6rem;\r\n  background: #3487f7;\r\n}\r\n.card h2 {\r\n    color: #ffffff;\r\n    font-family: 'Raleway', sans-serif;\r\n    font-size: 24px;\r\n    font-weight: 200;\r\n    margin-top: 0px;\r\n    text-align: center;\r\n    width: 100%;\r\n    z-index: 9999;\r\n}\r\np {\r\n    color: rgba(0,0,0,.6);\r\n    font-family: 'Raleway', sans-serif;\r\n    font-size: 100%;\r\n    font-weight: normal;\r\n    margin-top: 200px;\r\n    position: absolute;\r\n    text-align: center;\r\n    z-index: 9999;\r\n}\r\n.gh-emoji {\r\n  height: 24px;\r\n}\r\n/* End Slack chat box */\r\n", ""]);
+
+	// exports
+
+
+/***/ },
+/* 146 */
 /***/ function(module, exports) {
 
-	// removed by extract-text-webpack-plugin
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 147 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0,
+		styleElementsInsertedAtTop = [];
+
+	module.exports = function(list, options) {
+		if(false) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+
+		// By default, add <style> tags to the bottom of <head>.
+		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+
+	function insertStyleElement(options, styleElement) {
+		var head = getHeadElement();
+		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+		if (options.insertAt === "top") {
+			if(!lastStyleElementInsertedAtTop) {
+				head.insertBefore(styleElement, head.firstChild);
+			} else if(lastStyleElementInsertedAtTop.nextSibling) {
+				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+			} else {
+				head.appendChild(styleElement);
+			}
+			styleElementsInsertedAtTop.push(styleElement);
+		} else if (options.insertAt === "bottom") {
+			head.appendChild(styleElement);
+		} else {
+			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		}
+	}
+
+	function removeStyleElement(styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+		if(idx >= 0) {
+			styleElementsInsertedAtTop.splice(idx, 1);
+		}
+	}
+
+	function createStyleElement(options) {
+		var styleElement = document.createElement("style");
+		styleElement.type = "text/css";
+		insertStyleElement(options, styleElement);
+		return styleElement;
+	}
+
+	function createLinkElement(options) {
+		var linkElement = document.createElement("link");
+		linkElement.rel = "stylesheet";
+		insertStyleElement(options, linkElement);
+		return linkElement;
+	}
+
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement(options));
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement(options);
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement(options);
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+			};
+		}
+
+		update(obj);
+
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+
+	var replaceText = (function () {
+		var textStore = [];
+
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var sourceMap = obj.sourceMap;
+
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+
+		var blob = new Blob([css], { type: "text/css" });
+
+		var oldSrc = linkElement.href;
+
+		linkElement.href = URL.createObjectURL(blob);
+
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
 
 /***/ }
 /******/ ])
