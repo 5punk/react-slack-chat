@@ -1,7 +1,7 @@
 {
   "name": "react-slack-chat",
-  "version": "1.0.0",
-  "description": "A React Component Plugin for Integrating a Slack Community Chat",
+  "version": "0.0.1",
+  "description": "A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget.",
   "private": true,
   "main": "./dist/react-slack-chat.js",
   "devDependencies": {
