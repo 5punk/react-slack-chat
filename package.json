@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A React Component Plugin for Integrating a Slack Community Chat",
   "private": true,
+  "main": "./dist/react-slack-chat.js",
   "devDependencies": {
     "babel-eslint": "^7.0.0",
     "eslint": "^3.7.1",
