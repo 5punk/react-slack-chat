@@ -2,7 +2,7 @@
   "name": "react-slack-chat",
   "version": "0.0.1",
   "description": "A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget.",
-  "private": true,
+  "private": false,
   "main": "./dist/react-slack-chat.js",
   "devDependencies": {
     "babel-core": "^6.17.0",
