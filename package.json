@@ -37,5 +37,9 @@
   "bugs": {
     "url": "https://github.com/apathak1/react-slack-plugin/issues"
   },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/5punk/react-slack-chat.git"
+  },
   "homepage": "https://github.com/apathak1/react-slack-plugin#readme"
 }
