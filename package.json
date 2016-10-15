@@ -1,6 +1,6 @@
 {
   "name": "react-slack-chat",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget.",
   "private": false,
   "main": "./dist/react-slack-chat.js",
@@ -38,8 +38,8 @@
     "url": "https://github.com/apathak1/react-slack-plugin/issues"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/5punk/react-slack-chat.git"
+    "type": "git",
+    "url": "https://github.com/5punk/react-slack-chat.git"
   },
   "homepage": "https://github.com/apathak1/react-slack-plugin#readme"
 }
