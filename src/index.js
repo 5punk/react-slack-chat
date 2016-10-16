@@ -18,6 +18,7 @@ ReactDOM.render(
       apiToken='xoxp-63486550359-63sfes26502-88fewfw67777-119aab37r32r32r316e0296c3da'
       channelId={['C1VCFWV9', 'C1VELSCSC']}
       helpText='Need Help?'
+      debugMode={true}
       userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
     />
   </div>,
