@@ -113,18 +113,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // List of Online users
 	      onlineUsers: [],
 	      channels: [],
-	      activeChannel: [],
 	      messages: [],
 	      postMyMessage: '',
-	      refreshTime: 2000,
 	      chatbox: {
 	        active: false,
 	        channelActiveView: false,
 	        chatActiveView: false
-	      },
-	      messageFormatter: {
-	        emoji: false
 	      }
+	    };
+	    // Set class variables
+	    _this.refreshTime = 2000;
+	    _this.activeChannel = [];
+	    _this.activeChannelInterval = null;
+	    _this.messageFormatter = {
+	      emoji: false //default
 	    };
 	    // Bind Slack Message functions
 	    _this.loadMessages = _this.loadMessages.bind(_this);
@@ -141,23 +143,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    // Initiate Emoji Library
 	    (0, _ghEmoji.load)().then(function () {
-	      _this.setState({
-	        messageFormatter: {
-	          emoji: true
-	        }
-	      });
+	      _this.messageFormatter = {
+	        emoji: true
+	      };
 	    }).catch(function (err) {
-	      return console.log('Cant initiate emoji library ' + err);
+	      return _this.debugLog('Cant initiate emoji library ' + err);
 	    });
 	    // Connect bot
 	    _this.connectBot(_this).then(function (data) {
-	      console.log('got data', data);
+	      _this.debugLog('got data', data);
 	      _this.setState({
 	        onlineUsers: data.onlineUsers,
 	        channels: data.channels
 	      });
 	    }).catch(function (err) {
-	      console.log('could not intialize slack bot', err);
+	      _this.debugLog('could not intialize slack bot', err);
 	      _this.setState({
 	        failed: true
 	      });
@@ -166,6 +166,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  _createClass(ReactSlackChat, [{
+	    key: 'debugLog',
+	    value: function debugLog() {
+	      console.log(("production"));
+	      if (("production") !== 'production' || this.props.debugMode) {
+	        var _console;
+
+	        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	          args[_key] = arguments[_key];
+	        }
+
+	        return (_console = console).log.apply(_console, ['[ReactSlackChat]'].concat(args));
+	      }
+	    }
+	  }, {
 	    key: 'arraysIdentical',
 	    value: function arraysIdentical(a, b) {
 	      return JSON.stringify(a) === JSON.stringify(b);
@@ -178,18 +192,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // who's message is this?
 	      var myMessage = message.username === this.props.botName;
 	      // check if emoji library is enabled
-	      if (this.state.messageFormatter.emoji) {
+	      if (this.messageFormatter.emoji) {
+	        // parse plain text to emoji
 	        messageText = (0, _ghEmoji.parse)(messageText);
 	      }
+	      // check if user was mentioned by anyone else remotely
+	      var wasIMentioned = !myMessage && message.text.indexOf('@' + this.props.botName) > -1;
 	      return _react2.default.createElement(
 	        'div',
 	        { className: (0, _classnames2.default)('chat__msgRow', myMessage ? 'mine' : 'notMine'), key: message.ts },
-	        myMessage ? this.props.userImage ? _react2.default.createElement('img', { src: this.props.userImage, className: 'user__contact__photo' }) : _react2.default.createElement(
+	        myMessage
+	        // show customer image
+	        ? this.props.userImage ? _react2.default.createElement('img', { src: this.props.userImage, className: 'user__contact__photo' }) : _react2.default.createElement(
 	          'div',
 	          { className: 'user__contact__generated__image' },
 	          this.props.botName.charAt(0)
 	        ) : null,
-	        _react2.default.createElement('div', { className: 'chat__message', dangerouslySetInnerHTML: { __html: messageText } }),
+	        _react2.default.createElement('div', { className: (0, _classnames2.default)('chat__message', wasIMentioned ? 'mentioned' : ''), dangerouslySetInnerHTML: { __html: messageText } }),
 
 	        // Show remote users image only if message isn't customers
 	        !myMessage ? _react2.default.createElement('img', { src: this.getUserImg(message.user), alt: '', className: 'chat__contact__photo' }) : null
@@ -215,7 +234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        try {
 	          // start the bot, get the initial payload
 	          _this2.bot.started(function (payload) {
-	            console.log(payload);
+	            _this2.debugLog(payload);
 	            // Create new User object for each online user found
 	            // Add to our list only if the user is valid
 	            var onlineUsers = [];
@@ -252,42 +271,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	          channel: channel.id
 	        }, function (err, data) {
 	          if (err) {
-	            console.log('There was an error loading messages for ' + channel.name + '. ' + err);
+	            _this3.debugLog('There was an error loading messages for ' + channel.name + '. ' + err);
 	            return _this3.setState({
 	              failed: true
 	            });
 	          }
 	          // loaded channel history
-	          console.log('got data', data);
+	          _this3.debugLog('got data', data);
 	          // Scroll down only if the stored messages and received messages are not the same
 	          // reverse() mutates the array
 	          if (!_this3.arraysIdentical(_this3.state.messages, data.messages.reverse())) {
-	            // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
-	            setTimeout(function () {
+	            // Got new messages
+	            return _this3.setState({
+	              messages: data.messages
+	            }, function () {
+	              // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
 	              var chatMessages = _this3.refs.reactSlakChatMessages;
 	              chatMessages.scrollHeight < chatMessages.scrollTop + 550 || messagesLength === 0 ? chatMessages.scrollTop = chatMessages.scrollHeight : null;
-	            }, 0);
+	            });
 	          }
-
-	          return _this3.setState({
-	            messages: data.messages
-	          });
+	          return;
 	        });
 	      };
 	      // Call it once
 	      getMessagesFromSlack();
-	      // Set this channel as active channel
 	      // Set the function to be called at regular intervals
-	      this.setState({
-	        activeChannel: channel,
-	        chatbox: {
-	          active: true,
-	          channelActiveView: false,
-	          chatActiveView: true
-	        },
-	        // get the history of channel at regular intevals
-	        activeChannelInterval: setInterval(getMessagesFromSlack, this.state.refreshTime)
-	      });
+	      // get the history of channel at regular intevals
+	      this.activeChannelInterval = setInterval(getMessagesFromSlack, this.refreshTime);
 	    }
 	  }, {
 	    key: 'getUserImg',
@@ -307,7 +317,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        postMyMessage: e.target.value
 	      });
 	      if (e.key === 'Enter') {
-	        console.log('do postMessage');
+	        this.debugLog('do postMessage');
 	        this.postMessage(this.state.postMyMessage);
 	      }
 	      return;
@@ -317,23 +327,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function postMessage(text) {
 	      var _this4 = this;
 
-	      console.log('Posting message');
+	      this.debugLog('Posting message');
 	      _slack.chat.postMessage({
 	        token: this.props.apiToken,
-	        channel: this.state.activeChannel.id,
+	        channel: this.activeChannel.id,
 	        text: text,
 	        username: this.props.botName
 	      }, function (err, data) {
 	        if (err) {
-	          console.log('failed to post', data, 'err:', err);
+	          _this4.debugLog('failed to post', data, 'err:', err);
 	          return;
 	        }
-	        console.log('Successfully posted message', text, 'response:', data);
+	        _this4.debugLog('Successfully posted message', text, 'response:', data);
 	        // Adjust scroll height
 	        setTimeout(function () {
 	          var chatMessages = _this4.refs.reactSlakChatMessages;
 	          chatMessages.scrollTop = chatMessages.scrollHeight;
-	        }, _this4.state.refreshTime);
+	        }, _this4.refreshTime);
 	        _this4.setState({
 	          postMyMessage: ''
 	        });
@@ -343,6 +353,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'goToChannelView',
 	    value: function goToChannelView(e) {
+	      // stop propagation so we can prevent any other click events from firing
+	      e.stopPropagation();
 	      // Close Chat box only if not already open
 	      if (this.state.chatbox.active) {
 	        this.setState({
@@ -353,34 +365,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	          },
 	          messages: []
 	        });
+	        this.activeChannel = [];
 	        // Clear load messages time interval
-	        if (this.state.activeChannelInterval) {
-	          clearInterval(this.state.activeChannelInterval);
+	        if (this.activeChannelInterval) {
+	          clearInterval(this.activeChannelInterval);
+	          this.activeChannelInterval = null;
 	        }
 	      }
-	      e.stopPropagation();
 	      return false;
 	    }
 	  }, {
 	    key: 'goToChatView',
 	    value: function goToChatView(e, channel) {
+	      var _this5 = this;
+
+	      // stop propagation so we can prevent any other click events from firing
+	      e.stopPropagation();
 	      // Close Chat box only if not already open
 	      if (this.state.chatbox.active) {
+	        this.activeChannel = channel;
 	        this.setState({
 	          chatbox: {
 	            active: true,
 	            channelActiveView: false,
 	            chatActiveView: true
 	          }
+	        }, function () {
+	          return _this5.loadMessages(channel);
 	        });
-	        this.loadMessages(channel);
+	        // Set this channel as active channel
 	      }
-	      e.stopPropagation();
 	      return false;
 	    }
 	  }, {
 	    key: 'openChatBox',
 	    value: function openChatBox(e) {
+	      var _this6 = this;
+
+	      // stop propagation so we can prevent any other click events from firing
+	      e.stopPropagation();
+	      // persist click event to stopPropagation later
+	      e.persist();
 	      // Open Chat box only if not already open
 	      if (!this.state.chatbox.active) {
 	        this.setState({
@@ -389,14 +414,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	            channelActiveView: true,
 	            chatActiveView: false
 	          }
+	        }, function () {
+	          // Look to see if an active channel was already chosen...
+	          if (Object.keys(_this6.activeChannel).length > 0) {
+	            // If yes, load that chat view instead
+	            _this6.goToChatView(e, _this6.activeChannel);
+	          }
 	        });
 	      }
-	      e.stopPropagation();
 	      return false;
 	    }
 	  }, {
 	    key: 'closeChatBox',
 	    value: function closeChatBox(e) {
+	      var _this7 = this;
+
+	      // stop propagation so we can prevent any other click events from firing
+	      e.stopPropagation();
 	      // Close Chat box only if not already open
 	      if (this.state.chatbox.active) {
 	        this.setState({
@@ -405,30 +439,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	            channelActiveView: false,
 	            chatActiveView: false
 	          }
+	        }, function () {
+	          // Clear load messages time interval
+	          if (_this7.activeChannelInterval) {
+	            clearInterval(_this7.activeChannelInterval);
+	          }
 	        });
-	        // Clear load messages time interval
-	        if (this.state.activeChannelInterval) {
-	          clearInterval(this.state.activeChannelInterval);
-	        }
 	      }
-	      e.stopPropagation();
 	      return false;
 	    }
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var _this5 = this;
+	      var _this8 = this;
 
 	      // Attach click listener to dom to close chatbox if clicked outside
 	      addEventListener('click', function (e) {
 	        // Check if chatbox is active
-	        return _this5.state.chatbox.active ? _this5.closeChatBox(e) : null;
+	        return _this8.state.chatbox.active ? _this8.closeChatBox(e) : null;
 	      });
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this6 = this;
+	      var _this9 = this;
 
 	      // If Slack communications have failed or errored out
 	      // do not render anything
@@ -464,7 +498,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              return _react2.default.createElement(
 	                'div',
 	                { className: 'contact', key: channel.id, onClick: function onClick(e) {
-	                    return _this6.goToChatView(e, channel);
+	                    return _this9.goToChatView(e, channel);
 	                  } },
 	                _react2.default.createElement('img', { src: 'http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png', alt: '', className: 'contact__photo' }),
 	                _react2.default.createElement(
@@ -495,7 +529,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                _react2.default.createElement(
 	                  'span',
 	                  { className: 'chat__name' },
-	                  this.state.activeChannel.name
+	                  this.activeChannel.name
 	                ),
 	                _react2.default.createElement('img', { src: 'http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png', alt: '', className: 'channel__header__photo' })
 	              )
@@ -522,17 +556,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	                )
 	              ),
 	              this.state.messages.map(function (message) {
-	                return _this6.displayFormattedMessage(message);
+	                return _this9.displayFormattedMessage(message);
 	              })
 	            ),
 	            _react2.default.createElement('input', { type: 'text', className: 'chat__input',
 	              value: this.state.postMyMessage,
 	              placeholder: 'Enter your message...',
 	              onKeyPress: function onKeyPress(e) {
-	                return e.key === 'Enter' ? _this6.postMessage(_this6.state.postMyMessage) : null;
+	                return e.key === 'Enter' ? _this9.postMessage(_this9.state.postMyMessage) : null;
 	              },
 	              onChange: function onChange(e) {
-	                return _this6.handleChange(e);
+	                return _this9.handleChange(e);
 	              }
 	            })
 	          )
@@ -558,7 +592,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  channelId: _react.PropTypes.array.isRequired,
 	  botName: _react.PropTypes.string,
 	  helpText: _react.PropTypes.string,
-	  userImage: _react.PropTypes.string
+	  userImage: _react.PropTypes.string,
+	  debugMode: _react.PropTypes.bool
 	};
 
 /***/ },
@@ -8724,7 +8759,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.push([module.id, "@import url(http://fonts.googleapis.com/css?family=Raleway:400,200);", ""]);
 
 	// module
-	exports.push([module.id, "/* Slack Chat box */\r\n\r\n/* Element Visibility */\r\n.transition { transition: .8s cubic-bezier(.3, 0, 0, 1.3) }\r\n.card {\r\n    background-color: #fff;\r\n    box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n  -webkit-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n  -moz-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n    height: 60px;\r\n    overflow: hidden;\r\n    position: fixed;\r\n    right: 40px;\r\n    bottom: 0;\r\n    width: 300px;\r\n    cursor: pointer;\r\n}\r\n.card.active {\r\n    cursor: default;\r\n    height: 500px;\r\n    width: 300px;\r\n    z-index: 99999;\r\n}\r\n.card.active .card_circle {\r\n    background-size: cover;\r\n    border-radius: 0;\r\n}\r\n.card.active h2 {\r\n    background: #3487f7;\r\n    color: #fff;\r\n    padding: 5px;\r\n}\r\n.card .channels {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active .channel-active.channels {\r\n  overflow-y: auto;\r\n  visibility: visible;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 1;\r\n  overflow-x: hidden\r\n}\r\n.card.active.channel-active .help-header {\r\n  visibility: visible;\r\n  opacity: 1;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .help-header {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .channels {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card .chat {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .chat {\r\n  visibility: visible;\r\n  opacity: 1;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n/* Chat styles */\r\n.contact {\r\n  position: relative;\r\n  width: 95%;\r\n  height: 5rem;\r\n  padding-left: 1rem;\r\n  display: -webkit-box;\r\n  display: -webkit-flex;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  -webkit-box-align: center;\r\n  -webkit-align-items: center;\r\n      -ms-flex-align: center;\r\n          align-items: center;\r\n  cursor: pointer;\r\n  overflow: hidden;\r\n}\r\n.contact__photo {\r\n  border-radius: 50%;\r\n  margin-right: 1.5rem;\r\n  height: 48px;\r\n  float: right;\r\n}\r\n.user__contact__photo {\r\n  float: left;\r\n  margin-top: 2px;\r\n  padding-bottom: 1px;\r\n  height: 42px;\r\n  border-radius: 50%;\r\n  margin-right: 10px\r\n}\r\n.user__contact__generated__image {\r\n  float: left;\r\n  margin-top: 2px;\r\n  font-size: 2.2em;\r\n  color: #fff;\r\n  padding-right: 12px;\r\n  padding-left: 12px;\r\n  padding-bottom: 1px;\r\n  background: #3487f7;\r\n  height: 42px;\r\n  border-radius: 50%;\r\n  margin-right: 10px\r\n}\r\n.chat__name {\r\n  left: 1rem;\r\n  top: 1.2rem;\r\n  position: relative\r\n}\r\n.chat__contact__photo {\r\n  border-radius: 50%;\r\n  height: 42px;\r\n  float: right;\r\n}\r\n.channel__header__photo {\r\n  border-radius: 50%;\r\n  height: 48px;\r\n  float: right;\r\n  position: relative;\r\n  left: 5rem;\r\n  bottom: 0.5rem;\r\n}\r\n.contact__name {\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.contact__status {\r\n  position: absolute;\r\n  top: 2.1rem;\r\n  right: 1.5rem;\r\n  width: 8px;\r\n  height: 8px;\r\n  border: 2px solid #00B570;\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  -webkit-transition: opacity 0.3s;\r\n  transition: opacity 0.3s;\r\n}\r\n.contact__status.online {\r\n  opacity: 1;\r\n}\r\n.chat__back:hover:before {\r\n  -webkit-transform: translateX(-0.3rem) rotate(-45deg);\r\n          transform: translateX(-0.3rem) rotate(-45deg);\r\n}\r\n.chat__back:before {\r\n  content: \"\";\r\n  position: absolute;\r\n  display: block;\r\n  cursor: pointer;\r\n  top: 2.4rem;\r\n  left: 1.6rem;\r\n  width: 1.5rem;\r\n  height: 1.5rem;\r\n  border: 2px solid #ccc;\r\n  border-right: none;\r\n  border-bottom: none;\r\n  -webkit-transform: rotate(-45deg);\r\n          transform: rotate(-45deg);\r\n  -webkit-transition: -webkit-transform 0.3s;\r\n  transition: -webkit-transform 0.3s;\r\n  transition: transform 0.3s;\r\n  transition: transform 0.3s, -webkit-transform 0.3s;\r\n}\r\n.chat__status {\r\n  position: relative;\r\n  left: 4.6rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n  text-transform: uppercase;\r\n  color: #fff;\r\n}\r\n.chat__person {\r\n  display: inline-block;\r\n  position: relative;\r\n  top: 2rem;\r\n  right: 1.5rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n  color: #fff;\r\n}\r\n.chat__online {\r\n  position: absolute;\r\n  left: 45px;\r\n  top: 5px;\r\n  width: 8px;\r\n  height: 8px;\r\n  border: 2px solid #43dea3;\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  -webkit-transition: opacity 0.3s;\r\n  transition: opacity 0.3s;\r\n}\r\n.chat__online.active {\r\n  opacity: 1;\r\n}\r\n.chat__messages {\r\n  position: relative;\r\n  bottom: 16rem;\r\n  width: 95%;\r\n  padding-right: 0.5rem;\r\n  padding-left: 0.5rem;\r\n  max-height: 21.5rem;\r\n  overflow-y: auto;\r\n}\r\n.chat__msgRow {\r\n  margin-bottom: 0.5rem;\r\n}\r\n.chat__msgRow:after {\r\n  content: \"\";\r\n  display: table;\r\n  clear: both;\r\n}\r\n.chat__msgRow.mine {\r\n  text-align: left;\r\n}\r\n.chat__msgRow.notMine {\r\n  text-align: right;\r\n}\r\n.chat__message {\r\n  display: inline-block;\r\n  max-width: 60%;\r\n  word-wrap: break-word;\r\n  margin-right: 10px;\r\n  padding: 0.8rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.mine .chat__message {\r\n  color: #2B2342;\r\n  border: 1px solid #DFDFDF;\r\n  position: relative;\r\n}\r\n.notMine .chat__message {\r\n  color: #23244E;\r\n  background: #E9EAF3;\r\n}\r\n.chat__input {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 73%;\r\n  height: 1.5rem;\r\n  padding: 1rem 1rem 1rem 4rem;\r\n  background-image: url(\"https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/elastic-search.png\");\r\n  background-repeat: no-repeat;\r\n  background-position: 1rem 1rem;\r\n  background-color: #E9EAF3;\r\n  color: #2B2342;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.card .sub-text {\r\n  visibility: hidden;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 0;\r\n}\r\n.card.active .sub-text {\r\n  visibility: visible;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 1;\r\n}\r\n.card.active h2 small { color: #fff }\r\n.card.active p { margin-top: 300px }\r\n.help-header {\r\n  background: #3487f7;\r\n  position: relative;\r\n  padding-top: 20px;\r\n  padding-bottom: 20px;\r\n}\r\n.chat-header {\r\n  position: absolute;\r\n  top: 0px;\r\n  z-index: 9999;\r\n  left: 0rem;\r\n  width: 100%;\r\n  height: 6rem;\r\n  background: #3487f7;\r\n}\r\n.card h2 {\r\n    color: #ffffff;\r\n    font-family: 'Raleway', sans-serif;\r\n    font-size: 24px;\r\n    font-weight: 200;\r\n    margin-top: 0px;\r\n    text-align: center;\r\n    width: 100%;\r\n    z-index: 9999;\r\n}\r\np {\r\n    color: rgba(0,0,0,.6);\r\n    font-family: 'Raleway', sans-serif;\r\n    font-size: 100%;\r\n    font-weight: normal;\r\n    margin-top: 200px;\r\n    position: absolute;\r\n    text-align: center;\r\n    z-index: 9999;\r\n}\r\n.gh-emoji {\r\n  height: 24px;\r\n}\r\n/* End Slack chat box */\r\n", ""]);
+	exports.push([module.id, "/* Slack Chat box */\r\n\r\n/* Element Visibility */\r\n.transition { transition: .8s cubic-bezier(.3, 0, 0, 1.3) }\r\n.card {\r\n    background-color: #fff;\r\n    box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n  -webkit-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n  -moz-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n    height: 60px;\r\n    overflow: hidden;\r\n    position: fixed;\r\n    right: 40px;\r\n    bottom: 0;\r\n    width: 300px;\r\n    cursor: pointer;\r\n}\r\n.card.active {\r\n    cursor: default;\r\n    height: 500px;\r\n    width: 300px;\r\n    z-index: 99999;\r\n}\r\n.card.active .card_circle {\r\n    background-size: cover;\r\n    border-radius: 0;\r\n}\r\n.card.active h2 {\r\n    background: #3487f7;\r\n    color: #fff;\r\n    padding: 5px;\r\n}\r\n.card .channels {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active .channel-active.channels {\r\n  overflow-y: auto;\r\n  visibility: visible;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 1;\r\n  overflow-x: hidden\r\n}\r\n.card.active.channel-active .help-header {\r\n  visibility: visible;\r\n  opacity: 1;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .help-header {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .channels {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card .chat {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .chat {\r\n  visibility: visible;\r\n  opacity: 1;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n/* Chat styles */\r\n.contact {\r\n  position: relative;\r\n  width: 95%;\r\n  height: 5rem;\r\n  padding-left: 1rem;\r\n  display: -webkit-box;\r\n  display: -webkit-flex;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  -webkit-box-align: center;\r\n  -webkit-align-items: center;\r\n      -ms-flex-align: center;\r\n          align-items: center;\r\n  cursor: pointer;\r\n  overflow: hidden;\r\n}\r\n.contact__photo {\r\n  border-radius: 50%;\r\n  margin-right: 1.5rem;\r\n  height: 48px;\r\n  float: right;\r\n}\r\n.user__contact__photo {\r\n  float: left;\r\n  margin-top: 2px;\r\n  padding-bottom: 1px;\r\n  height: 42px;\r\n  border-radius: 50%;\r\n  margin-right: 10px\r\n}\r\n.user__contact__generated__image {\r\n  float: left;\r\n  margin-top: 2px;\r\n  font-size: 2.2em;\r\n  color: #fff;\r\n  padding-right: 12px;\r\n  padding-left: 12px;\r\n  padding-bottom: 1px;\r\n  background: #3487f7;\r\n  height: 42px;\r\n  border-radius: 50%;\r\n  margin-right: 10px\r\n}\r\n.chat__name {\r\n  left: 1rem;\r\n  top: 1.2rem;\r\n  position: relative\r\n}\r\n.chat__contact__photo {\r\n  border-radius: 50%;\r\n  height: 42px;\r\n  float: right;\r\n}\r\n.channel__header__photo {\r\n  border-radius: 50%;\r\n  height: 48px;\r\n  float: right;\r\n  position: relative;\r\n  left: 5rem;\r\n  bottom: 0.5rem;\r\n}\r\n.contact__name {\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.contact__status {\r\n  position: absolute;\r\n  top: 2.1rem;\r\n  right: 1.5rem;\r\n  width: 8px;\r\n  height: 8px;\r\n  border: 2px solid #00B570;\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  -webkit-transition: opacity 0.3s;\r\n  transition: opacity 0.3s;\r\n}\r\n.contact__status.online {\r\n  opacity: 1;\r\n}\r\n.chat__back:hover:before {\r\n  -webkit-transform: translateX(-0.3rem) rotate(-45deg);\r\n          transform: translateX(-0.3rem) rotate(-45deg);\r\n}\r\n.chat__back:before {\r\n  content: \"\";\r\n  position: absolute;\r\n  display: block;\r\n  cursor: pointer;\r\n  top: 2.4rem;\r\n  left: 1.6rem;\r\n  width: 1.5rem;\r\n  height: 1.5rem;\r\n  border: 2px solid #ccc;\r\n  border-right: none;\r\n  border-bottom: none;\r\n  -webkit-transform: rotate(-45deg);\r\n          transform: rotate(-45deg);\r\n  -webkit-transition: -webkit-transform 0.3s;\r\n  transition: -webkit-transform 0.3s;\r\n  transition: transform 0.3s;\r\n  transition: transform 0.3s, -webkit-transform 0.3s;\r\n}\r\n.chat__status {\r\n  position: relative;\r\n  left: 4.6rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n  text-transform: uppercase;\r\n  color: #fff;\r\n}\r\n.chat__person {\r\n  display: inline-block;\r\n  position: relative;\r\n  top: 2rem;\r\n  right: 1.5rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n  color: #fff;\r\n}\r\n.chat__online {\r\n  position: absolute;\r\n  left: 45px;\r\n  top: 5px;\r\n  width: 8px;\r\n  height: 8px;\r\n  border: 2px solid #43dea3;\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  -webkit-transition: opacity 0.3s;\r\n  transition: opacity 0.3s;\r\n}\r\n.chat__online.active {\r\n  opacity: 1;\r\n}\r\n.chat__messages {\r\n  position: relative;\r\n  bottom: 16rem;\r\n  width: 95%;\r\n  padding-right: 0.5rem;\r\n  padding-left: 0.5rem;\r\n  max-height: 21.5rem;\r\n  overflow-y: auto;\r\n}\r\n.chat__msgRow {\r\n  margin-bottom: 0.5rem;\r\n}\r\n.chat__msgRow:after {\r\n  content: \"\";\r\n  display: table;\r\n  clear: both;\r\n}\r\n.chat__msgRow.mine {\r\n  text-align: left;\r\n}\r\n.chat__msgRow.notMine {\r\n  text-align: right;\r\n}\r\n.chat__message {\r\n  display: inline-block;\r\n  max-width: 60%;\r\n  word-wrap: break-word;\r\n  margin-right: 10px;\r\n  padding: 0.8rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.chat__msgRow.notMine .chat__message.mentioned {\r\n  background: #43b2f3 url(data:image/png;base64,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) no-repeat -2px -2px !important;\r\n  color: #fff !important;\r\n}\r\n.mine .chat__message {\r\n  color: #2B2342;\r\n  border: 1px solid #DFDFDF;\r\n  position: relative;\r\n}\r\n.notMine .chat__message {\r\n  color: #23244E;\r\n  background: #E9EAF3;\r\n}\r\n.chat__input {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 73%;\r\n  height: 1.5rem;\r\n  padding: 1rem 1rem 1rem 4rem;\r\n  background-image: url(\"https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/elastic-search.png\");\r\n  background-repeat: no-repeat;\r\n  background-position: 1rem 1rem;\r\n  background-color: #E9EAF3;\r\n  color: #2B2342;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.card .sub-text {\r\n  visibility: hidden;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 0;\r\n}\r\n.card.active .sub-text {\r\n  visibility: visible;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 1;\r\n}\r\n.card.active h2 small { color: #fff }\r\n.card.active p { margin-top: 300px }\r\n.help-header {\r\n  background: #3487f7;\r\n  position: relative;\r\n  padding-top: 20px;\r\n  padding-bottom: 20px;\r\n}\r\n.chat-header {\r\n  position: absolute;\r\n  top: 0px;\r\n  z-index: 9999;\r\n  left: 0rem;\r\n  width: 100%;\r\n  height: 6rem;\r\n  background: #3487f7;\r\n}\r\n.card h2 {\r\n  color: #ffffff;\r\n  font-family: 'Raleway', sans-serif;\r\n  font-size: 24px;\r\n  font-weight: 200;\r\n  margin-top: 0px;\r\n  text-align: center;\r\n  width: 100%;\r\n  z-index: 9999;\r\n}\r\np {\r\n  color: rgba(0,0,0,.6);\r\n  font-family: 'Raleway', sans-serif;\r\n  font-size: 100%;\r\n  font-weight: normal;\r\n  margin-top: 200px;\r\n  position: absolute;\r\n  text-align: center;\r\n  z-index: 9999;\r\n}\r\n.gh-emoji {\r\n  height: 24px;\r\n}\r\n/* End Slack chat box */\r\n", ""]);
 
 	// exports
 

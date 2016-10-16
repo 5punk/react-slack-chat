@@ -71,8 +71,8 @@ export class ReactSlackChat extends Component {
   }
 
   debugLog(...args) {
-    if (process.env.NODE_ENV !== 'PRODUCTION') {
-      return console.log(...args);
+    if (process.env.NODE_ENV !== 'production' || this.props.debugMode) {
+      return console.log('[ReactSlackChat]', ...args);
     }
   }
 
@@ -404,5 +404,6 @@ ReactSlackChat.propTypes = {
   channelId: PropTypes.array.isRequired,
   botName: PropTypes.string,
   helpText: PropTypes.string,
-  userImage: PropTypes.string
+  userImage: PropTypes.string,
+  debugMode: PropTypes.bool
 };

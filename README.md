@@ -35,6 +35,7 @@ class App extends Component {
           channelId={['C1CSMYV9']}
           helpText='Optional Help Text'
           userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
+          debugMode={true}
         />
       )
   }
@@ -50,6 +51,7 @@ Below are a list of props the `<ReactSlackChat />` component accepts
   * `channelId`: [REQUIRED] At least one slack channel id needs to be passed for the first channel view.
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
   * `userImage`: [OPTIONAL] A image URL for the user (Does not need to be unique).
+  * `debugMode`: [OPTIONAL] Pass a boolean (`true`/`false`) flag to start debug logs.
 
 ## Screenshots
 
