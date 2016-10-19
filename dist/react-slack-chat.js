@@ -115,6 +115,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      channels: [],
 	      messages: [],
 	      postMyMessage: '',
+	      postMyFile: '',
 	      chatbox: {
 	        active: false,
 	        channelActiveView: false,
@@ -126,13 +127,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _this.activeChannel = [];
 	    _this.activeChannelInterval = null;
 	    _this.messageFormatter = {
-	      emoji: false //default
+	      emoji: false // default
 	    };
+	    _this.fileUploadTitle = 'Posted by ' + _this.props.botName;
 	    // Bind Slack Message functions
 	    _this.loadMessages = _this.loadMessages.bind(_this);
 	    _this.getUserImg = _this.getUserImg.bind(_this);
 	    _this.handleChange = _this.handleChange.bind(_this);
+	    _this.handleFileChange = _this.handleFileChange.bind(_this);
 	    _this.postMessage = _this.postMessage.bind(_this);
+	    _this.postFile = _this.postFile.bind(_this);
+	    _this.isSystemMessage = _this.isSystemMessage.bind(_this);
 	    // Bind UI Animation functions
 	    _this.openChatBox = _this.openChatBox.bind(_this);
 	    _this.closeChatBox = _this.closeChatBox.bind(_this);
@@ -168,7 +173,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(ReactSlackChat, [{
 	    key: 'debugLog',
 	    value: function debugLog() {
-	      console.log(("production"));
 	      if (("production") !== 'production' || this.props.debugMode) {
 	        var _console;
 
@@ -185,33 +189,115 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return JSON.stringify(a) === JSON.stringify(b);
 	    }
 	  }, {
+	    key: 'isSystemMessage',
+	    value: function isSystemMessage(message) {
+	      var systemMessageRegex = /<@.[^|]*[|].*>/;
+	      return systemMessageRegex.test(message.text) && message.text.indexOf(message.user) > -1;
+	    }
+	  }, {
+	    key: 'hasEmoji',
+	    value: function hasEmoji(text) {
+	      var chatHasEmoji = /(:[:a-zA-Z\/_]*:)/;
+	      return chatHasEmoji.test(text);
+	    }
+	  }, {
+	    key: 'hasAttachment',
+	    value: function hasAttachment(text) {
+	      // Get image url REGEX: uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*))
+	      // 1st match will give us full match
+	      // 2nd match will give us complete attachment URL
+	      var systemAttachmentAttached = /uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*))/;
+	      return text.match(systemAttachmentAttached);
+	    }
+	  }, {
 	    key: 'displayFormattedMessage',
 	    value: function displayFormattedMessage(message) {
 	      // messages text
 	      var messageText = message.text;
 	      // who's message is this?
 	      var myMessage = message.username === this.props.botName;
-	      // check if emoji library is enabled
-	      if (this.messageFormatter.emoji) {
-	        // parse plain text to emoji
-	        messageText = (0, _ghEmoji.parse)(messageText);
+	      // Check to see if this is a Slack System message?
+	      if (this.isSystemMessage(message)) {
+	        // message.text is a system message
+	        // try to see if it has an attachment in it
+	        var hasAttachment = this.hasAttachment(message.text);
+	        if (hasAttachment && hasAttachment[0]) {
+	          // An attachment is found
+	          // Point to file available for download
+	          if (hasAttachment[1]) {
+	            // image file found
+	            var didIPostIt = message.text.indexOf(this.fileUploadTitle) > -1;
+	            var fileNameFromUrl = hasAttachment[1].split('/');
+	            return _react2.default.createElement(
+	              'div',
+	              { className: (0, _classnames2.default)('chat__msgRow', didIPostIt ? 'mine' : 'notMine'), key: message.ts },
+	              didIPostIt
+	              // show customer image
+	              ? _react2.default.createElement('img', { src: this.props.userImage, className: 'user__contact__photo', alt: 'userIcon' }) : null,
+	              _react2.default.createElement(
+	                'div',
+	                { className: (0, _classnames2.default)('chat__message', didIPostIt ? 'mine' : 'notMine') },
+	                _react2.default.createElement(
+	                  'strong',
+	                  null,
+	                  'Sent an Attachment: '
+	                ),
+	                _react2.default.createElement(
+	                  'span',
+	                  null,
+	                  fileNameFromUrl[fileNameFromUrl.length - 1]
+	                ),
+	                _react2.default.createElement('hr', null),
+	                _react2.default.createElement(
+	                  'a',
+	                  { href: hasAttachment[1], target: '_blank' },
+	                  _react2.default.createElement(
+	                    'span',
+	                    null,
+	                    'Click to Download'
+	                  )
+	                )
+	              ),
+
+	              // Show remote users image only if message isn't customers
+	              !didIPostIt ? this.getUserImg(message.user || message.username) : null
+	            );
+	          }
+	        }
+	        // else we display a system message that doesn't belong to
+	        // anyone
+	        return _react2.default.createElement(
+	          'div',
+	          { className: (0, _classnames2.default)('chat__msgRow'), key: message.ts },
+	          _react2.default.createElement('div', { className: (0, _classnames2.default)('chat__message', 'system__message'), dangerouslySetInnerHTML: { __html: messageText } })
+	        );
 	      }
 	      // check if user was mentioned by anyone else remotely
 	      var wasIMentioned = !myMessage && message.text.indexOf('@' + this.props.botName) > -1;
+	      var textHasEmoji = this.hasEmoji(messageText);
+	      // check if emoji library is enabled
+	      if (this.messageFormatter.emoji && textHasEmoji) {
+	        // parse plain text to emoji
+	        messageText = (0, _ghEmoji.parse)(messageText);
+	      }
 	      return _react2.default.createElement(
 	        'div',
 	        { className: (0, _classnames2.default)('chat__msgRow', myMessage ? 'mine' : 'notMine'), key: message.ts },
 	        myMessage
 	        // show customer image
-	        ? this.props.userImage ? _react2.default.createElement('img', { src: this.props.userImage, className: 'user__contact__photo' }) : _react2.default.createElement(
+	        ? _react2.default.createElement('img', { src: this.props.userImage, className: 'user__contact__photo', alt: 'userIcon' }) : null,
+	        textHasEmoji
+	        // dangerouslySetInnerHTML only if text has Emoji
+	        ? _react2.default.createElement('div', { className: (0, _classnames2.default)('chat__message', wasIMentioned ? 'mentioned' : ''), dangerouslySetInnerHTML: { __html: messageText } })
+	        // else display it normally
+	        : _react2.default.createElement(
 	          'div',
-	          { className: 'user__contact__generated__image' },
-	          this.props.botName.charAt(0)
-	        ) : null,
-	        _react2.default.createElement('div', { className: (0, _classnames2.default)('chat__message', wasIMentioned ? 'mentioned' : ''), dangerouslySetInnerHTML: { __html: messageText } }),
+	          { className: (0, _classnames2.default)('chat__message', wasIMentioned ? 'mentioned' : '') },
+	          messageText
+	        ),
 
 	        // Show remote users image only if message isn't customers
-	        !myMessage ? _react2.default.createElement('img', { src: this.getUserImg(message.user), alt: '', className: 'chat__contact__photo' }) : null
+	        !myMessage ? this.getUserImg(message.user || message.username) : null
 	      );
 	    }
 	  }, {
@@ -220,10 +306,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // return true if
 	      // user should be active / online
 	      // user.presence === 'active' &&
-	      return !user.is_bot &&
+	      return !user.is_bot;
 	      // And is NOT a bot
 	      // slackbot hack, it thinks its not a bot :/
-	      user.name.indexOf('slackbot') === -1;
+	      // && user.name.indexOf('slackbot') === -1;
 	    }
 	  }, {
 	    key: 'connectBot',
@@ -287,7 +373,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }, function () {
 	              // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
 	              var chatMessages = _this3.refs.reactSlakChatMessages;
-	              chatMessages.scrollHeight < chatMessages.scrollTop + 550 || messagesLength === 0 ? chatMessages.scrollTop = chatMessages.scrollHeight : null;
+	              chatMessages.scrollTop = chatMessages.scrollHeight < chatMessages.scrollTop + 550 || messagesLength === 0 ? chatMessages.scrollHeight : chatMessages.scrollTop;
 	            });
 	          }
 	          return;
@@ -308,7 +394,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          image = user.image;
 	        }
 	      });
-	      return image;
+	      var imageToReturn = image ? _react2.default.createElement('img', { src: image, className: 'chat__contact__photo', alt: 'mentionedUserImg' }) : _react2.default.createElement(
+	        'div',
+	        { className: 'user__contact__generated__image' },
+	        userId.charAt(0)
+	      );
+	      return imageToReturn;
 	    }
 	  }, {
 	    key: 'handleChange',
@@ -316,39 +407,91 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.setState({
 	        postMyMessage: e.target.value
 	      });
-	      if (e.key === 'Enter') {
-	        this.debugLog('do postMessage');
-	        this.postMessage(this.state.postMyMessage);
-	      }
 	      return;
+	    }
+	  }, {
+	    key: 'handleFileChange',
+	    value: function handleFileChange(e) {
+	      var _this4 = this;
+
+	      this.debugLog('Going to upload', e.target.value, e.target);
+	      var fileToUpload = this.refs.chat__upload.files[0];
+	      return this.setState({
+	        postMyFile: e.target.value,
+	        // show the loader
+	        fileUploadLoader: true
+	        // Upload file in callback of this setstate
+	      }, function () {
+	        return _this4.postFile(fileToUpload, function () {
+	          return _this4.setState({
+	            // Upload is done, once this callback is hit
+	            // We can take off the value and hide the loader
+	            postMyFile: '',
+	            fileUploadLoader: false
+	          });
+	        });
+	      });
+	    }
+	  }, {
+	    key: 'postFile',
+	    value: function postFile(fileToUpload, cb) {
+	      var _this5 = this;
+
+	      this.debugLog('UPLOADING', fileToUpload);
+	      var options = {
+	        token: this.props.apiToken,
+	        title: this.fileUploadTitle, // change the regex in this.hasAttachment if you change this
+	        filename: fileToUpload.name,
+	        filetype: 'auto',
+	        channels: this.activeChannel.id
+	      };
+	      var form = new FormData();
+	      form.append('token', options.token);
+	      form.append('filename', options.filename);
+	      form.append('title', options.title);
+	      form.append('filetype', options.filetype);
+	      form.append('channels', options.channels);
+	      form.append('file', new Blob([fileToUpload]));
+	      var request = new XMLHttpRequest();
+	      request.open('POST', 'https://slack.com/api/files.upload');
+	      request.send(form);
+	      request.onload = function () {
+	        if (request.status !== 200) {
+	          _this5.debugLog('There was an error uploading the file. Response:', request.status, request.responseText);
+	        }
+	        return cb();
+	      };
 	    }
 	  }, {
 	    key: 'postMessage',
 	    value: function postMessage(text) {
-	      var _this4 = this;
+	      var _this6 = this;
 
-	      this.debugLog('Posting message');
-	      _slack.chat.postMessage({
-	        token: this.props.apiToken,
-	        channel: this.activeChannel.id,
-	        text: text,
-	        username: this.props.botName
-	      }, function (err, data) {
-	        if (err) {
-	          _this4.debugLog('failed to post', data, 'err:', err);
-	          return;
-	        }
-	        _this4.debugLog('Successfully posted message', text, 'response:', data);
-	        // Adjust scroll height
-	        setTimeout(function () {
-	          var chatMessages = _this4.refs.reactSlakChatMessages;
-	          chatMessages.scrollTop = chatMessages.scrollHeight;
-	        }, _this4.refreshTime);
-	        _this4.setState({
-	          postMyMessage: ''
+	      if (text !== '') {
+	        return _slack.chat.postMessage({
+	          token: this.props.apiToken,
+	          channel: this.activeChannel.id,
+	          text: text,
+	          username: this.props.botName
+	        }, function (err, data) {
+	          if (err) {
+	            _this6.debugLog('failed to post', data, 'err:', err);
+	            return;
+	          }
+	          _this6.debugLog('Successfully posted message', text, 'response:', data);
+	          _this6.setState({
+	            postMyMessage: '',
+	            sendingLoader: false
+	          }, function () {
+	            // Adjust scroll height
+	            setTimeout(function () {
+	              var chatMessages = _this6.refs.reactSlakChatMessages;
+	              chatMessages.scrollTop = chatMessages.scrollHeight;
+	            }, _this6.refreshTime);
+	          });
+	          return _this6.forceUpdate();
 	        });
-	        _this4.forceUpdate();
-	      });
+	      }
 	    }
 	  }, {
 	    key: 'goToChannelView',
@@ -377,7 +520,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'goToChatView',
 	    value: function goToChatView(e, channel) {
-	      var _this5 = this;
+	      var _this7 = this;
 
 	      // stop propagation so we can prevent any other click events from firing
 	      e.stopPropagation();
@@ -391,7 +534,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            chatActiveView: true
 	          }
 	        }, function () {
-	          return _this5.loadMessages(channel);
+	          return _this7.loadMessages(channel);
 	        });
 	        // Set this channel as active channel
 	      }
@@ -400,7 +543,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'openChatBox',
 	    value: function openChatBox(e) {
-	      var _this6 = this;
+	      var _this8 = this;
 
 	      // stop propagation so we can prevent any other click events from firing
 	      e.stopPropagation();
@@ -416,9 +559,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }, function () {
 	          // Look to see if an active channel was already chosen...
-	          if (Object.keys(_this6.activeChannel).length > 0) {
+	          if (Object.keys(_this8.activeChannel).length > 0) {
 	            // If yes, load that chat view instead
-	            _this6.goToChatView(e, _this6.activeChannel);
+	            _this8.goToChatView(e, _this8.activeChannel);
 	          }
 	        });
 	      }
@@ -427,7 +570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'closeChatBox',
 	    value: function closeChatBox(e) {
-	      var _this7 = this;
+	      var _this9 = this;
 
 	      // stop propagation so we can prevent any other click events from firing
 	      e.stopPropagation();
@@ -441,8 +584,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }, function () {
 	          // Clear load messages time interval
-	          if (_this7.activeChannelInterval) {
-	            clearInterval(_this7.activeChannelInterval);
+	          if (_this9.activeChannelInterval) {
+	            clearInterval(_this9.activeChannelInterval);
 	          }
 	        });
 	      }
@@ -451,18 +594,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      var _this8 = this;
+	      var _this10 = this;
 
 	      // Attach click listener to dom to close chatbox if clicked outside
 	      addEventListener('click', function (e) {
 	        // Check if chatbox is active
-	        return _this8.state.chatbox.active ? _this8.closeChatBox(e) : null;
+	        return _this10.state.chatbox.active ? _this10.closeChatBox(e) : null;
 	      });
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this9 = this;
+	      var _this11 = this;
 
 	      // If Slack communications have failed or errored out
 	      // do not render anything
@@ -498,9 +641,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	              return _react2.default.createElement(
 	                'div',
 	                { className: 'contact', key: channel.id, onClick: function onClick(e) {
-	                    return _this9.goToChatView(e, channel);
+	                    return _this11.goToChatView(e, channel);
 	                  } },
-	                _react2.default.createElement('img', { src: 'http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png', alt: '', className: 'contact__photo' }),
+	                _react2.default.createElement('img', { src: 'http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png', alt: 'contactIcon', className: 'contact__photo' }),
 	                _react2.default.createElement(
 	                  'span',
 	                  { className: 'contact__name' },
@@ -531,44 +674,61 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  { className: 'chat__name' },
 	                  this.activeChannel.name
 	                ),
-	                _react2.default.createElement('img', { src: 'http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png', alt: '', className: 'channel__header__photo' })
+	                _react2.default.createElement('img', { src: 'http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png', alt: 'channelIcon', className: 'channel__header__photo' })
 	              )
 	            ),
 	            _react2.default.createElement(
 	              'div',
 	              { className: 'chat__messages', ref: 'reactSlakChatMessages' },
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'chat__msgRow mine' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'chat__message' },
-	                  'Such SVG, much Javascript, very CSS!'
-	                )
-	              ),
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'chat__msgRow notMine' },
-	                _react2.default.createElement(
-	                  'div',
-	                  { className: 'chat__message' },
-	                  'Wow!'
-	                )
-	              ),
 	              this.state.messages.map(function (message) {
-	                return _this9.displayFormattedMessage(message);
+	                return _this11.displayFormattedMessage(message);
 	              })
 	            ),
-	            _react2.default.createElement('input', { type: 'text', className: 'chat__input',
-	              value: this.state.postMyMessage,
-	              placeholder: 'Enter your message...',
-	              onKeyPress: function onKeyPress(e) {
-	                return e.key === 'Enter' ? _this9.postMessage(_this9.state.postMyMessage) : null;
-	              },
-	              onChange: function onChange(e) {
-	                return _this9.handleChange(e);
-	              }
-	            })
+	            _react2.default.createElement(
+	              'div',
+	              null,
+	              this.state.fileUploadLoader ? _react2.default.createElement(
+	                'div',
+	                { className: 'chat__file__uploading' },
+	                _react2.default.createElement(
+	                  'span',
+	                  { className: 'loading' },
+	                  'Uploading'
+	                )
+	              ) : null,
+	              !this.state.fileUploadLoader ? _react2.default.createElement(
+	                'div',
+	                null,
+	                _react2.default.createElement(
+	                  'div',
+	                  { className: 'attachment' },
+	                  _react2.default.createElement(
+	                    'label',
+	                    { htmlFor: 'chat__upload', className: 'attachmentIcon' },
+	                    _react2.default.createElement('input', {
+	                      type: 'file',
+	                      id: 'chat__upload',
+	                      className: 'chat__upload',
+	                      ref: 'chat__upload',
+	                      value: this.state.postMyFile,
+	                      onChange: function onChange(e) {
+	                        return _this11.handleFileChange(e);
+	                      }
+	                    })
+	                  )
+	                ),
+	                _react2.default.createElement('input', { type: 'text', className: 'chat__input',
+	                  value: this.state.postMyMessage,
+	                  placeholder: 'Enter your message...',
+	                  onKeyPress: function onKeyPress(e) {
+	                    return e.key === 'Enter' ? _this11.postMessage(_this11.state.postMyMessage) : null;
+	                  },
+	                  onChange: function onChange(e) {
+	                    return _this11.handleChange(e);
+	                  }
+	                })
+	              ) : null
+	            )
 	          )
 	        )
 	      );
@@ -8759,7 +8919,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.push([module.id, "@import url(http://fonts.googleapis.com/css?family=Raleway:400,200);", ""]);
 
 	// module
-	exports.push([module.id, "/* Slack Chat box */\r\n\r\n/* Element Visibility */\r\n.transition { transition: .8s cubic-bezier(.3, 0, 0, 1.3) }\r\n.card {\r\n    background-color: #fff;\r\n    box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n  -webkit-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n  -moz-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\r\n    height: 60px;\r\n    overflow: hidden;\r\n    position: fixed;\r\n    right: 40px;\r\n    bottom: 0;\r\n    width: 300px;\r\n    cursor: pointer;\r\n}\r\n.card.active {\r\n    cursor: default;\r\n    height: 500px;\r\n    width: 300px;\r\n    z-index: 99999;\r\n}\r\n.card.active .card_circle {\r\n    background-size: cover;\r\n    border-radius: 0;\r\n}\r\n.card.active h2 {\r\n    background: #3487f7;\r\n    color: #fff;\r\n    padding: 5px;\r\n}\r\n.card .channels {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active .channel-active.channels {\r\n  overflow-y: auto;\r\n  visibility: visible;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 1;\r\n  overflow-x: hidden\r\n}\r\n.card.active.channel-active .help-header {\r\n  visibility: visible;\r\n  opacity: 1;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .help-header {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .channels {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card .chat {\r\n  visibility: hidden;\r\n  opacity: 0;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n.card.active.chat-active .chat {\r\n  visibility: visible;\r\n  opacity: 1;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n}\r\n/* Chat styles */\r\n.contact {\r\n  position: relative;\r\n  width: 95%;\r\n  height: 5rem;\r\n  padding-left: 1rem;\r\n  display: -webkit-box;\r\n  display: -webkit-flex;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  -webkit-box-align: center;\r\n  -webkit-align-items: center;\r\n      -ms-flex-align: center;\r\n          align-items: center;\r\n  cursor: pointer;\r\n  overflow: hidden;\r\n}\r\n.contact__photo {\r\n  border-radius: 50%;\r\n  margin-right: 1.5rem;\r\n  height: 48px;\r\n  float: right;\r\n}\r\n.user__contact__photo {\r\n  float: left;\r\n  margin-top: 2px;\r\n  padding-bottom: 1px;\r\n  height: 42px;\r\n  border-radius: 50%;\r\n  margin-right: 10px\r\n}\r\n.user__contact__generated__image {\r\n  float: left;\r\n  margin-top: 2px;\r\n  font-size: 2.2em;\r\n  color: #fff;\r\n  padding-right: 12px;\r\n  padding-left: 12px;\r\n  padding-bottom: 1px;\r\n  background: #3487f7;\r\n  height: 42px;\r\n  border-radius: 50%;\r\n  margin-right: 10px\r\n}\r\n.chat__name {\r\n  left: 1rem;\r\n  top: 1.2rem;\r\n  position: relative\r\n}\r\n.chat__contact__photo {\r\n  border-radius: 50%;\r\n  height: 42px;\r\n  float: right;\r\n}\r\n.channel__header__photo {\r\n  border-radius: 50%;\r\n  height: 48px;\r\n  float: right;\r\n  position: relative;\r\n  left: 5rem;\r\n  bottom: 0.5rem;\r\n}\r\n.contact__name {\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.contact__status {\r\n  position: absolute;\r\n  top: 2.1rem;\r\n  right: 1.5rem;\r\n  width: 8px;\r\n  height: 8px;\r\n  border: 2px solid #00B570;\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  -webkit-transition: opacity 0.3s;\r\n  transition: opacity 0.3s;\r\n}\r\n.contact__status.online {\r\n  opacity: 1;\r\n}\r\n.chat__back:hover:before {\r\n  -webkit-transform: translateX(-0.3rem) rotate(-45deg);\r\n          transform: translateX(-0.3rem) rotate(-45deg);\r\n}\r\n.chat__back:before {\r\n  content: \"\";\r\n  position: absolute;\r\n  display: block;\r\n  cursor: pointer;\r\n  top: 2.4rem;\r\n  left: 1.6rem;\r\n  width: 1.5rem;\r\n  height: 1.5rem;\r\n  border: 2px solid #ccc;\r\n  border-right: none;\r\n  border-bottom: none;\r\n  -webkit-transform: rotate(-45deg);\r\n          transform: rotate(-45deg);\r\n  -webkit-transition: -webkit-transform 0.3s;\r\n  transition: -webkit-transform 0.3s;\r\n  transition: transform 0.3s;\r\n  transition: transform 0.3s, -webkit-transform 0.3s;\r\n}\r\n.chat__status {\r\n  position: relative;\r\n  left: 4.6rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n  text-transform: uppercase;\r\n  color: #fff;\r\n}\r\n.chat__person {\r\n  display: inline-block;\r\n  position: relative;\r\n  top: 2rem;\r\n  right: 1.5rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n  color: #fff;\r\n}\r\n.chat__online {\r\n  position: absolute;\r\n  left: 45px;\r\n  top: 5px;\r\n  width: 8px;\r\n  height: 8px;\r\n  border: 2px solid #43dea3;\r\n  border-radius: 50%;\r\n  opacity: 0;\r\n  -webkit-transition: opacity 0.3s;\r\n  transition: opacity 0.3s;\r\n}\r\n.chat__online.active {\r\n  opacity: 1;\r\n}\r\n.chat__messages {\r\n  position: relative;\r\n  bottom: 16rem;\r\n  width: 95%;\r\n  padding-right: 0.5rem;\r\n  padding-left: 0.5rem;\r\n  max-height: 21.5rem;\r\n  overflow-y: auto;\r\n}\r\n.chat__msgRow {\r\n  margin-bottom: 0.5rem;\r\n}\r\n.chat__msgRow:after {\r\n  content: \"\";\r\n  display: table;\r\n  clear: both;\r\n}\r\n.chat__msgRow.mine {\r\n  text-align: left;\r\n}\r\n.chat__msgRow.notMine {\r\n  text-align: right;\r\n}\r\n.chat__message {\r\n  display: inline-block;\r\n  max-width: 60%;\r\n  word-wrap: break-word;\r\n  margin-right: 10px;\r\n  padding: 0.8rem;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.chat__msgRow.notMine .chat__message.mentioned {\r\n  background: #43b2f3 url(data:image/png;base64,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) no-repeat -2px -2px !important;\r\n  color: #fff !important;\r\n}\r\n.mine .chat__message {\r\n  color: #2B2342;\r\n  border: 1px solid #DFDFDF;\r\n  position: relative;\r\n}\r\n.notMine .chat__message {\r\n  color: #23244E;\r\n  background: #E9EAF3;\r\n}\r\n.chat__input {\r\n  position: absolute;\r\n  bottom: 0;\r\n  left: 0;\r\n  width: 73%;\r\n  height: 1.5rem;\r\n  padding: 1rem 1rem 1rem 4rem;\r\n  background-image: url(\"https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/elastic-search.png\");\r\n  background-repeat: no-repeat;\r\n  background-position: 1rem 1rem;\r\n  background-color: #E9EAF3;\r\n  color: #2B2342;\r\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\r\n}\r\n.card .sub-text {\r\n  visibility: hidden;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 0;\r\n}\r\n.card.active .sub-text {\r\n  visibility: visible;\r\n  transition: visibility 0s, opacity 0.5s linear;\r\n  opacity: 1;\r\n}\r\n.card.active h2 small { color: #fff }\r\n.card.active p { margin-top: 300px }\r\n.help-header {\r\n  background: #3487f7;\r\n  position: relative;\r\n  padding-top: 20px;\r\n  padding-bottom: 20px;\r\n}\r\n.chat-header {\r\n  position: absolute;\r\n  top: 0px;\r\n  z-index: 9999;\r\n  left: 0rem;\r\n  width: 100%;\r\n  height: 6rem;\r\n  background: #3487f7;\r\n}\r\n.card h2 {\r\n  color: #ffffff;\r\n  font-family: 'Raleway', sans-serif;\r\n  font-size: 24px;\r\n  font-weight: 200;\r\n  margin-top: 0px;\r\n  text-align: center;\r\n  width: 100%;\r\n  z-index: 9999;\r\n}\r\np {\r\n  color: rgba(0,0,0,.6);\r\n  font-family: 'Raleway', sans-serif;\r\n  font-size: 100%;\r\n  font-weight: normal;\r\n  margin-top: 200px;\r\n  position: absolute;\r\n  text-align: center;\r\n  z-index: 9999;\r\n}\r\n.gh-emoji {\r\n  height: 24px;\r\n}\r\n/* End Slack chat box */\r\n", ""]);
+	exports.push([module.id, "/* Slack Chat box */\n\n/* Element Visibility */\n.transition { transition: .8s cubic-bezier(.3, 0, 0, 1.3) }\n.card {\n    background-color: #fff;\n    box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\n  -webkit-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\n  -moz-box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.3);\n    height: 60px;\n    overflow: hidden;\n    position: fixed;\n    right: 40px;\n    bottom: 0;\n    width: 300px;\n    cursor: pointer;\n}\n.card.active {\n    cursor: default;\n    height: 500px;\n    width: 300px;\n    z-index: 99999;\n}\n.card.active .card_circle {\n    background-size: cover;\n    border-radius: 0;\n}\n.card.active h2 {\n    background: #3487f7;\n    color: #fff;\n    padding: 5px;\n}\n.card .channels {\n  visibility: hidden;\n  opacity: 0;\n  transition: visibility 0s, opacity 0.5s linear;\n}\n.card.active .channel-active.channels {\n  overflow-y: auto;\n  visibility: visible;\n  transition: visibility 0s, opacity 0.5s linear;\n  opacity: 1;\n  overflow-x: hidden\n}\n.card.active.channel-active .help-header {\n  visibility: visible;\n  opacity: 1;\n  transition: visibility 0s, opacity 0.5s linear;\n}\n.card.active.chat-active .help-header {\n  visibility: hidden;\n  opacity: 0;\n  transition: visibility 0s, opacity 0.5s linear;\n}\n.card.active.chat-active .channels {\n  visibility: hidden;\n  opacity: 0;\n  transition: visibility 0s, opacity 0.5s linear;\n}\n.card .chat {\n  visibility: hidden;\n  opacity: 0;\n  transition: visibility 0s, opacity 0.5s linear;\n}\n.card.active.chat-active .chat {\n  visibility: visible;\n  opacity: 1;\n  transition: visibility 0s, opacity 0.5s linear;\n}\n/* Chat styles */\n.contact {\n  position: relative;\n  width: 95%;\n  height: 5rem;\n  padding-left: 1rem;\n  display: -webkit-box;\n  display: -webkit-flex;\n  display: -ms-flexbox;\n  display: flex;\n  -webkit-box-align: center;\n  -webkit-align-items: center;\n      -ms-flex-align: center;\n          align-items: center;\n  cursor: pointer;\n  overflow: hidden;\n}\n.contact__photo {\n  border-radius: 50%;\n  margin-right: 1.5rem;\n  height: 48px;\n  float: right;\n}\n.user__contact__photo {\n  float: left;\n  margin-top: 2px;\n  padding-bottom: 1px;\n  height: 42px;\n  border-radius: 50%;\n  margin-right: 10px\n}\n.user__contact__generated__image {\n  float: right;\n  margin-top: 2px;\n  font-size: 2.2em;\n  color: #fff;\n  padding-right: 12px;\n  padding-left: 12px;\n  padding-bottom: 1px;\n  background: #3487f7;\n  height: 42px;\n  border-radius: 50%;\n}\n.chat__name {\n  left: 1rem;\n  top: 1.2rem;\n  position: relative\n}\n.chat__contact__photo {\n  border-radius: 50%;\n  height: 42px;\n  float: right;\n}\n.channel__header__photo {\n  border-radius: 50%;\n  height: 48px;\n  float: right;\n  position: relative;\n  left: 5rem;\n  bottom: 0.5rem;\n}\n.contact__name {\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\n}\n.contact__status {\n  position: absolute;\n  top: 2.1rem;\n  right: 1.5rem;\n  width: 8px;\n  height: 8px;\n  border: 2px solid #00B570;\n  border-radius: 50%;\n  opacity: 0;\n  -webkit-transition: opacity 0.3s;\n  transition: opacity 0.3s;\n}\n.contact__status.online {\n  opacity: 1;\n}\n.chat__back:hover:before {\n  -webkit-transform: translateX(-0.3rem) rotate(-45deg);\n          transform: translateX(-0.3rem) rotate(-45deg);\n}\n.chat__back:before {\n  content: \"\";\n  position: absolute;\n  display: block;\n  cursor: pointer;\n  top: 2.4rem;\n  left: 1.6rem;\n  width: 1.5rem;\n  height: 1.5rem;\n  border: 2px solid #ccc;\n  border-right: none;\n  border-bottom: none;\n  -webkit-transform: rotate(-45deg);\n          transform: rotate(-45deg);\n  -webkit-transition: -webkit-transform 0.3s;\n  transition: -webkit-transform 0.3s;\n  transition: transform 0.3s;\n  transition: transform 0.3s, -webkit-transform 0.3s;\n}\n.chat__status {\n  position: relative;\n  left: 4.6rem;\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\n  text-transform: uppercase;\n  color: #fff;\n}\n.chat__person {\n  display: inline-block;\n  position: relative;\n  top: 2rem;\n  right: 1.5rem;\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\n  color: #fff;\n}\n.chat__online {\n  position: absolute;\n  left: 45px;\n  top: 5px;\n  width: 8px;\n  height: 8px;\n  border: 2px solid #43dea3;\n  border-radius: 50%;\n  opacity: 0;\n  -webkit-transition: opacity 0.3s;\n  transition: opacity 0.3s;\n}\n.chat__online.active {\n  opacity: 1;\n}\n.chat__messages {\n  position: relative;\n  bottom: 16rem;\n  width: 95%;\n  padding-right: 0.5rem;\n  padding-left: 0.5rem;\n  max-height: 21.5rem;\n  overflow-y: auto;\n}\n.chat__msgRow {\n  margin-bottom: 0.5rem;\n}\n.chat__msgRow:after {\n  content: \"\";\n  display: table;\n  clear: both;\n}\n.chat__msgRow.mine {\n  text-align: left;\n}\n.chat__msgRow.notMine {\n  text-align: right;\n}\n.chat__message {\n  display: inline-block;\n  max-width: 60%;\n  word-wrap: break-word;\n  margin-right: 10px;\n  padding: 0.8rem;\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\n}\n.system__message {\n  max-width: 100%;\n  color: #3487f7;\n}\n.chat__msgRow.notMine .chat__message.mentioned {\n  background: #43b2f3 url(data:image/png;base64,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) no-repeat -2px -2px !important;\n  color: #fff !important;\n}\n.mine .chat__message {\n  color: #2B2342;\n  border: 1px solid #DFDFDF;\n  position: relative;\n}\n.notMine .chat__message {\n  color: #23244E;\n  background: #E9EAF3;\n}\n.attachmentIcon {\n  position: absolute;\n  bottom: 15px;\n  left: 20px;\n  width: 25px;\n  height: 25px;\n  z-index: 9999;\n  cursor: pointer;\n  background: url('data:image/png;base64,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LmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIgogICAgICAgICAgICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgICAgICAgICAgIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOmV4aWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vZXhpZi8xLjAvIj4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNCAoTWFjaW50b3NoKTwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8eG1wOkNyZWF0ZURhdGU+MjAxNi0xMC0xN1QxMzoyOTowMy0wNzowMDwveG1wOkNyZWF0ZURhdGU+CiAgICAgICAgIDx4bXA6TWV0YWRhdGFEYXRlPjIwMTYtMTAtMTdUMTM6Mjk6MDMtMDc6MDA8L3htcDpNZXRhZGF0YURhdGU+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE2LTEwLTE3VDEzOjI5OjAzLTA3OjAwPC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcE1NOkluc3RhbmNlSUQ+eG1wLmlpZDoyZTQ1OTY4YS0xMDQwLTRlN2ItYTIzMS01YTE1YzRmMjQwMTg8L3htcE1NOkluc3RhbmNlSUQ+CiAgICAgICAgIDx4bXBNTTpEb2N1bWVudElEPmFkb2JlOmRvY2lkOnBob3Rvc2hvcDpiOGE0NTcwNy1jY2JkLTExNzktOWY3Ny04MTA4MjJiYzhkODg8L3htcE1NOkRvY3VtZW50SUQ+CiAgICAgICAgIDx4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ+eG1wLmRpZDpkMzBlMzEzOS1iZTU4LTQwNzAtOWEzOC1lZTkxMWIzZTBmZjk8L3htcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD4KICAgICAgICAgPHhtcE1NOkhpc3Rvcnk+CiAgICAgICAgICAgIDxyZGY6U2VxPgogICAgICAgICAgICAgICA8cmRmOmxpIHJkZjpwYXJzZVR5cGU9IlJlc291cmNlIj4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmFjdGlvbj5jcmVhdGVkPC9zdEV2dDphY3Rpb24+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDppbnN0YW5jZUlEPnhtcC5paWQ6ZDMwZTMxMzktYmU1OC00MDcwLTlhMzgtZWU5MTFiM2UwZmY5PC9zdEV2dDppbnN0YW5jZUlEPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6d2hlbj4yMDE2LTEwLTE3VDEzOjI5OjAzLTA3OjAwPC9zdEV2dDp3aGVuPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6c29mdHdhcmVBZ2VudD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNCAoTWFjaW50b3NoKTwvc3RFdnQ6c29mdHdhcmVBZ2VudD4KICAgICAgICAgICAgICAgPC9yZGY6bGk+CiAgICAgICAgICAgICAgIDxyZGY6bGkgcmRmOnBhcnNlVHlwZT0iUmVzb3VyY2UiPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6YWN0aW9uPnNhdmVkPC9zdEV2dDphY3Rpb24+CiAgICAgICAgICAgICAgICAgIDxzdEV2dDppbnN0YW5jZUlEPnhtcC5paWQ6MmU0NTk2OGEtMTA0MC00ZTdiLWEyMzEtNWExNWM0ZjI0MDE4PC9zdEV2dDppbnN0YW5jZUlEPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6d2hlbj4yMDE2LTEwLTE3VDEzOjI5OjAzLTA3OjAwPC9zdEV2dDp3aGVuPgogICAgICAgICAgICAgICAgICA8c3RFdnQ6c29mdHdhcmVBZ2VudD5BZG9iZSBQaG90b3Nob3AgQ0MgMjAxNCAoTWFjaW50b3NoKTwvc3RFdnQ6c29mdHdhcmVBZ2VudD4KICAgICAgICAgICAgICAgICAgPHN0RXZ0OmNoYW5nZWQ+Lzwvc3RFdnQ6Y2hhbmdlZD4KICAgICAgICAgICAgICAgPC9yZGY6bGk+CiAgICAgICAgICAgIDwvcmRmOlNlcT4KICAgICAgICAgPC94bXBNTTpIaXN0b3J5PgogICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3BuZzwvZGM6Zm9ybWF0PgogICAgICAgICA8cGhvdG9zaG9wOkNvbG9yTW9kZT4zPC9waG90b3Nob3A6Q29sb3JNb2RlPgogICAgICAgICA8cGhvdG9zaG9wOklDQ1Byb2ZpbGU+RGlzcGxheTwvcGhvdG9zaG9wOklDQ1Byb2ZpbGU+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgICAgIDx0aWZmOlhSZXNvbHV0aW9uPjcyMDAwMC8xMDAwMDwvdGlmZjpYUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6WVJlc29sdXRpb24+NzIwMDAwLzEwMDAwPC90aWZmOllSZXNvbHV0aW9uPgogICAgICAgICA8dGlmZjpSZXNvbHV0aW9uVW5pdD4yPC90aWZmOlJlc29sdXRpb25Vbml0PgogICAgICAgICA8ZXhpZjpDb2xvclNwYWNlPjY1NTM1PC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj4zMjwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4zMjwvZXhpZjpQaXhlbFlEaW1lbnNpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo8P3hwYWNrZXQgZW5kPSJ3Ij8+9mylZAAAACBjSFJNAABuJwAAc68AAPwDAACEPgAAbxoAAORyAAAw3QAAGDHVrX3tAAAK7UlEQVR42mL8//8/AzJgYWBgYLj98CHD5n37/1vo6zMyMTAwMGzdt/+/irx8lQA/XzDj////Ge4+fMTw+9/f8A8fP64EAAAA//9ixDDj9dv3DB+/fmY4d+WqyLNXr18zMTIyMly5dbv+6YsXr11srKRZVmzd8t/WxITx/79/+hysrM8AAAAA//9i/P//P8Prt+8ZPnz5xPD//38GNlZWhg179v430dZmP3358k+4gk/fvjBs3rPvv7yMdMPff//+PXn+vMnfxRnizsWbNv5/8eo1Aycnx+/7jx83KEpJXVGUlVnz9+9fBsb///8zfPj8WXr5ps13mVlZvgnw8R+REhHxY2FhZhARFGQAAAAA///C8Ac6YGFgYGC49eABA8P//wyMjEwMdx8/nvXz589XP37+dA339jJnQVZ95+HD2Rzs7Jf4eXgmf/vx4w8DAwMDE0zy7qNHc1lYWI5euH590v///7N//folC1dw99HjeSJCQgev3Lo1X0tZOe/7z59KV27fToK74c/f37wv37zRVJKVrfv775/ujVu3Ug01NRnhCuQlpVvZ2NkuPHn2nPvKrVtfNFRVGGGeY2FgYGDYc/z4eUF+/stfPn/WVVVSgnidEaIAIHg4vH77nuH9548MjIyMDP///WNgYGRkYGRgZGBhYWZgZGRiuHH37uRbDx7kMDMzM/z9+5fB39XFVl5S8ggTvkBkYmRkuH733uQNu3f/5+fluaelosKoq6bG6GZtzbhl3/7DKMGEopGJieHuo0dzNu7d+5+Hi+u8qoJCzYFTp/v4uLkE/vz9W7Dz6NH/agryszAMYGRkZLj78NHcTfv2/+fi5DwkIynRePbKlbnfvn//Z6illXP0/IX3375/U/Kys+UREhRMR42ox4/qth04+J+Dnf2Io6WFx9nLVxaysrD+MtPXzXn84kUbCzOzmrOlRfDtBw9zz1+7Pp+fmxsRygwMDAznrl5ttDc1FRHg43srxM/PfZiZmeHh06etHOxsLb4OjsFbDx5YKyEmKmNlZMj46fNX1MTGwMDA8PffP4az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') no-repeat;\n  background-size: 22px;\n}\n.chat__upload {\n  display: none;\n}\n.chat__file__uploading {\n  position: absolute;\n  color: #fff;\n  background: #22a2e4;\n  bottom: 0;\n  left: 0;\n  width: 84%;\n  height: 1.5rem;\n  padding: 1rem 1rem 1rem 2rem;\n}\n/* loading dots */\n\n.loading:after {\n  content: ' .';\n  animation: dots 1s steps(5, end) infinite;\n}\n\n@keyframes dots {\n  0%,\n  20% {\n    color: rgba(0, 0, 0, 0);\n    text-shadow: .25em 0 0 rgba(0, 0, 0, 0), .5em 0 0 rgba(0, 0, 0, 0);\n  }\n  40% {\n    color: white;\n    text-shadow: .25em 0 0 rgba(0, 0, 0, 0), .5em 0 0 rgba(0, 0, 0, 0);\n  }\n  60% {\n    text-shadow: .25em 0 0 white, .5em 0 0 rgba(0, 0, 0, 0);\n  }\n  80%,\n  100% {\n    text-shadow: .25em 0 0 white, .5em 0 0 white;\n  }\n}\n.chat__input {\n  position: absolute;\n  bottom: 0;\n  left: 0;\n  width: 72%;\n  height: 2rem;\n  padding: 0.5rem 1rem 0.5rem 4rem;\n  background-repeat: no-repeat;\n  background-position: 1rem 1rem;\n  background-color: #E9EAF3;\n  font-size: 1em;\n  color: #2B2342;\n  font-family: \"Raleway\", Helvetica, Arial, sans-serif;\n}\n.card .sub-text {\n  visibility: hidden;\n  transition: visibility 0s, opacity 0.5s linear;\n  opacity: 0;\n}\n.card.active .sub-text {\n  visibility: visible;\n  transition: visibility 0s, opacity 0.5s linear;\n  opacity: 1;\n}\n.card.active h2 small { color: #fff }\n.card.active p { margin-top: 300px }\n.help-header {\n  background: #3487f7;\n  position: relative;\n  padding-top: 20px;\n  padding-bottom: 20px;\n}\n.chat-header {\n  position: absolute;\n  top: 0px;\n  z-index: 9999;\n  left: 0rem;\n  width: 100%;\n  height: 6rem;\n  background: #3487f7;\n}\n.card h2 {\n  color: #ffffff;\n  font-family: 'Raleway', sans-serif;\n  font-size: 24px;\n  font-weight: 200;\n  margin-top: 0px;\n  text-align: center;\n  width: 100%;\n  z-index: 9999;\n}\np {\n  color: rgba(0,0,0,.6);\n  font-family: 'Raleway', sans-serif;\n  font-size: 100%;\n  font-weight: normal;\n  margin-top: 200px;\n  position: absolute;\n  text-align: center;\n  z-index: 9999;\n}\n.gh-emoji {\n  height: 24px;\n}\n/* End Slack chat box */\n", ""]);
 
 	// exports
 
