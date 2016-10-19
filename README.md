@@ -49,8 +49,8 @@ Below are a list of props the `<ReactSlackChat />` component accepts
   * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot. Can be Visitor ID / IP address etc.
   * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://api.slack.com/bot-users).
   * `channelId`: [REQUIRED] At least one slack channel id needs to be passed for the first channel view.
+  * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
-  * `userImage`: [OPTIONAL] A image URL for the user (Does not need to be unique).
   * `debugMode`: [OPTIONAL] Pass a boolean (`true`/`false`) flag to start debug logs.
 
 ## Screenshots
@@ -60,6 +60,8 @@ Below are a list of props the `<ReactSlackChat />` component accepts
 #### Features
 
 * Multiple channel support
+* Attachments
+* No Server needed!
 * Responsive Mobile support
 * Special message UI if user is mentioned
 * Auto generated user icons if `userImage` is not supplied
