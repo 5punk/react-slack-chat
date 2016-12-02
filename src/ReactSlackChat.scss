@@ -162,10 +162,11 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	padding-right: 12px;
 	padding-left: 12px;
 	padding-bottom: 1px;
-  min-width: 20px;
+	padding-top: 10px;
   text-align: center;
 	background: $color_dodger_blue_approx;
 	height: 42px;
+	min-width: 2.6rem;
 	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
 	border-radius: 50%;
 }
@@ -249,9 +250,9 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 }
 .chat__person {
 	display: inline-block;
-	position: relative;
+	position: absolute;
 	top: 2rem;
-	right: 1.5rem;
+	left: 2rem;
 	font-family: $font_0, $font_1, $font_2, $font_3;
 	color: $white;
 }
@@ -272,13 +273,12 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	}
 }
 .chat__messages {
-	position: relative;
-	bottom: 16rem;
-	width: 95%;
-  padding-top: 1.4rem;
-	padding-right: 0.5rem;
-	padding-left: 0.5rem;
-	max-height: 21.5rem;
+	position: absolute;
+  bottom: 4rem;
+  width: 95%;
+  padding-right: 0.5rem;
+  padding-left: 0.5rem;
+  max-height: 21rem;
 	overflow-y: auto;
 }
 .chat__msgRow {
@@ -313,7 +313,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 }
 .attachmentIcon {
 	position: absolute;
-	bottom: 15px;
+	bottom: 5px;
 	left: 20px;
 	width: 25px;
 	height: 25px;
@@ -321,9 +321,9 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	cursor: pointer;
 	background: $attachmentIcon no-repeat;
 	background-size: 22px;
-}
-.chat__upload {
-	display: none;
+	.chat__upload {
+		display: none !important;
+	}
 }
 .chat__file__uploading {
 	position: absolute;
@@ -368,8 +368,8 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	width: 72%;
-	height: 2rem;
+	width: 100%;
+	height: 3rem;
 	padding: 0.5rem 1rem 0.5rem 4rem;
 	background-repeat: no-repeat;
 	background-position: 1rem 1rem;

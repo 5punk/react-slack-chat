@@ -39,8 +39,7 @@
   },
   "scripts": {
     "start": "cross-env NODE_ENV=dev node server.js",
-    "build": "cross-env NODE_ENV=production webpack",
-    "eject": "react-scripts eject"
+    "build": "cross-env NODE_ENV=production webpack"
   },
   "author": "Avanish Pathak",
   "license": "ISC",

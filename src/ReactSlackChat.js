@@ -43,6 +43,7 @@ export class ReactSlackChat extends Component {
     this.handleFileChange = this.handleFileChange.bind(this);
     this.postMessage = this.postMessage.bind(this);
     this.postFile = this.postFile.bind(this);
+    this.wasIMentioned = this.wasIMentioned.bind(this);
     this.isSystemMessage = this.isSystemMessage.bind(this);
     // Bind UI Animation functions
     this.openChatBox = this.openChatBox.bind(this);
@@ -87,10 +88,60 @@ export class ReactSlackChat extends Component {
     return JSON.stringify(a) === JSON.stringify(b);
   }
 
+  getNewMessages(old, total) {
+    const oldText = JSON.stringify(old);
+    // Message Order has to be consistent
+    const differenceInMessages = total.filter(i => {
+      if (oldText.indexOf(JSON.stringify(i)) === -1) {
+        return i;
+      }
+    });
+    return differenceInMessages;
+  }
+
   isSystemMessage(message) {
     const systemMessageRegex = /<@.[^|]*[|].*>/;
     return systemMessageRegex.test(message.text) &&
       message.text.indexOf(message.user) > -1;
+  }
+
+  execHooksIfFound(message) {
+    const messageText = this.decodeHtml(message.text);
+    // Check to see if Action Hook is triggered
+    const isHookMessage = this.isHookMessage(messageText);
+    // Check to see if this is a hook message
+    // And the user bot is mentioned
+    if (isHookMessage && this.wasIMentioned(message)) {
+      if (isHookMessage[2]) {
+        // Format of isHookMessage is
+        // $=>hookTrigger
+        // [0] = $=>@5punk:hookTrigger
+        // [1] = @5punk
+        // [2] = hookTrigger
+        // if found execute action
+        this.props.hooks.map(async hook => {
+          if (hook.id === isHookMessage[2]) {
+            this.debugLog('Hook trigger found', isHookMessage[2]);
+            const hookActionResponse = await hook.action();
+            this.debugLog('Action executed. Posting response.');
+            return this.postMessage(hookActionResponse);
+          }
+        });
+      }
+    }
+  }
+
+  isHookMessage(text) {
+    // Full match 0-20 `$=>@avanish:hookText`
+    // Group 1. 3-12 `@avanish`
+    // Group 2. 12-20 `hookText`
+    const hookMessageRegex = /\$=>(@.*.):(.*)/;
+    return hookMessageRegex.exec(text);
+  }
+
+  wasIMentioned(message) {
+    const myMessage = message.username === this.props.botName;
+    return !myMessage && message.text.indexOf(`@${this.props.botName}`) > -1;
   }
 
   hasEmoji(text) {
@@ -106,9 +157,15 @@ export class ReactSlackChat extends Component {
     return text.match(systemAttachmentAttached);
   }
 
+  decodeHtml(html) {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+  }
+
   displayFormattedMessage(message) {
-    // messages text
-    let messageText = message.text;
+    // decode formatting from messages text to html text
+    let messageText = this.decodeHtml(message.text);
     // who's message is this?
     const myMessage = message.username === this.props.botName;
     // Check to see if this is a Slack System message?
@@ -154,8 +211,13 @@ export class ReactSlackChat extends Component {
         </div>
       </div>;
     }
+    // Check to see if this is a hookMessage
+    // If yes, we do not display it
+    if (this.isHookMessage(messageText)) {
+      return null;
+    }
     // check if user was mentioned by anyone else remotely
-    const wasIMentioned = !myMessage && message.text.indexOf(`@${this.props.botName}`) > -1;
+    const wasIMentioned = this.wasIMentioned(message);
     const textHasEmoji = this.hasEmoji(messageText);
     // check if emoji library is enabled
     if (this.messageFormatter.emoji && textHasEmoji) {
@@ -248,11 +310,16 @@ export class ReactSlackChat extends Component {
         // reverse() mutates the array
         if (!this.arraysIdentical(this.state.messages, data.messages.reverse())) {
           // Got new messages
+          // Grab new messages
+          const newMessages = this.getNewMessages(this.state.messages, data.messages);
+          // Iterate over the new messages and exec any action hooks if found
+          newMessages ? newMessages.map(message => this.execHooksIfFound(message)) : null;
+          // set the state with new messages
           return this.setState({
             messages: data.messages
           }, () => {
             // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
-            const chatMessages = this.refs.reactSlakChatMessages;
+            const chatMessages = document.getElementById('widget-reactSlakChatMessages');
             chatMessages.scrollTop = (chatMessages.scrollHeight < chatMessages.scrollTop + 550 ||
               messagesLength === 0)
               ? chatMessages.scrollHeight
@@ -291,7 +358,7 @@ export class ReactSlackChat extends Component {
 
   handleFileChange(e) {
     this.debugLog('Going to upload', e.target.value, e.target);
-    const fileToUpload = this.refs.chat__upload.files[0];
+    const fileToUpload = document.getElementById('chat__upload').files[0];
     return this.setState({
       postMyFile: e.target.value,
       // show the loader
@@ -351,7 +418,7 @@ export class ReactSlackChat extends Component {
         }, () => {
           // Adjust scroll height
           setTimeout(() => {
-            const chatMessages = this.refs.reactSlakChatMessages;
+            const chatMessages = document.getElementById('widget-reactSlakChatMessages');
             chatMessages.scrollTop = chatMessages.scrollHeight;
           }, this.refreshTime);
         });
@@ -489,7 +556,7 @@ export class ReactSlackChat extends Component {
               <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='channelIcon' className={styles.channel__header__photo} />
             </div>
           </div>
-          <div className={styles.chat__messages} ref='reactSlakChatMessages'>
+          <div className={styles.chat__messages} id='widget-reactSlakChatMessages'>
             {
               this.state.messages.map((message) => this.displayFormattedMessage(message))
             }
@@ -511,7 +578,6 @@ export class ReactSlackChat extends Component {
                         type='file'
                         id='chat__upload'
                         className={styles.chat__upload}
-                        ref='chat__upload'
                         value={this.state.postMyFile}
                         onChange={(e) => this.handleFileChange(e)}
                       />
@@ -546,5 +612,6 @@ ReactSlackChat.propTypes = {
   botName: PropTypes.string,
   helpText: PropTypes.string,
   userImage: PropTypes.string,
+  hooks: PropTypes.array,
   debugMode: PropTypes.bool
 };

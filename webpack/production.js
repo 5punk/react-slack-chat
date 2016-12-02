@@ -10,7 +10,7 @@ const defaultSettings = require('./defaults');
 const BowerWebpackPlugin = require('bower-webpack-plugin');
 
 const config = Object.assign({}, baseConfig, {
-  entry: ['babel-polyfill', path.join(__dirname, '../src/ReactSlackChat')],
+  entry: [path.join(__dirname, '../src/ReactSlackChat')],
   cache: false,
   devtool: 'sourcemap',
   plugins: [

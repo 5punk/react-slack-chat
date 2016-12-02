@@ -15,11 +15,25 @@ ReactDOM.render(
     </p>
     <ReactSlackChat
       botName='avanish'
-      apiToken='your-api-token-here'
+      apiToken='xoxp-63486550359-63478026502-88369567777-119aab37a7c7e018d79b316e0296c3da'
       channelId={['C1VELS4AW', 'C1VCPMYV9']}
       helpText='Need Help?'
       debugMode={true}
       userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
+      hooks={[
+        {
+          id: 'getSystemInfo',
+          action: () => 'MY SYSTEM INFO!'
+        },
+        {
+          id: 'getCurrentPath',
+          action: () => window.location.href
+        },
+        {
+          id: 'getPlatform',
+          action: () => window.navigator.platform
+        }
+      ]}
     />
   </div>,
   document.getElementById('root')
