@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
+
 import { rtm, channels, chat } from 'slack';
 import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
+
 import User from './User';
-import './ReactSlackChat.css';
+import styles from './ReactSlackChat.scss';
 
 export class ReactSlackChat extends Component {
   constructor(args) {
@@ -121,14 +123,14 @@ export class ReactSlackChat extends Component {
           // image file found
           const didIPostIt = message.text.indexOf(this.fileUploadTitle) > -1;
           const fileNameFromUrl = hasAttachment[1].split('/');
-          return <div className={classNames('chat__msgRow', didIPostIt ? 'mine' : 'notMine')} key={message.ts}>
+          return <div className={classNames(styles.chat__msgRow, didIPostIt ? styles.mine : styles.notMine)} key={message.ts}>
             {
               didIPostIt
                 // show customer image
-                ? <img src={this.props.userImage} className='user__contact__photo' alt='userIcon' />
+                ? <img src={this.props.userImage} className={styles.user__contact__photo} alt='userIcon' />
                 : null
             }
-            <div className={classNames('chat__message', didIPostIt ? 'mine' : 'notMine')}>
+            <div className={classNames(styles.chat__message, didIPostIt ? styles.mine : styles.notMine)}>
               <strong>Sent an Attachment: </strong>
               <span>{fileNameFromUrl[fileNameFromUrl.length - 1]}</span>
               <hr/>
@@ -147,8 +149,8 @@ export class ReactSlackChat extends Component {
       }
       // else we display a system message that doesn't belong to
       // anyone
-      return <div className={classNames('chat__msgRow')} key={message.ts}>
-        <div className={classNames('chat__message', 'system__message')} dangerouslySetInnerHTML={{__html: messageText}}>
+      return <div className={classNames(styles.chat__msgRow)} key={message.ts}>
+        <div className={classNames(styles.chat__message, styles.system__message)} dangerouslySetInnerHTML={{__html: messageText}}>
         </div>
       </div>;
     }
@@ -160,19 +162,19 @@ export class ReactSlackChat extends Component {
       // parse plain text to emoji
       messageText = emojiParser(messageText);
     }
-    return <div className={classNames('chat__msgRow', myMessage ? 'mine' : 'notMine')} key={message.ts}>
+    return <div className={classNames(styles.chat__msgRow, myMessage ? styles.mine : styles.notMine)} key={message.ts}>
       {
         myMessage
           // show customer image
-          ? <img src={this.props.userImage} className='user__contact__photo' alt='userIcon' />
+          ? <img src={this.props.userImage} className={styles.user__contact__photo} alt='userIcon' />
           : null
       }
       {
         textHasEmoji
         // dangerouslySetInnerHTML only if text has Emoji
-        ? <div className={classNames('chat__message', wasIMentioned ? 'mentioned' : '')} dangerouslySetInnerHTML={{__html: messageText}}></div>
+        ? <div className={classNames(styles.chat__message, wasIMentioned ? styles.mentioned : '')} dangerouslySetInnerHTML={{__html: messageText}}></div>
         // else display it normally
-        : <div className={classNames('chat__message', wasIMentioned ? 'mentioned' : '')}>
+        : <div className={classNames(styles.chat__message, wasIMentioned ? styles.mentioned : '')}>
             {messageText}
           </div>
       }
@@ -275,8 +277,8 @@ export class ReactSlackChat extends Component {
       }
     });
     const imageToReturn = image
-      ? <img src={image} className='chat__contact__photo' alt='mentionedUserImg' />
-      : <div className='user__contact__generated__image'>{userId.charAt(0)}</div>;
+      ? <img src={image} className={styles.chat__contact__photo} alt='mentionedUserImg' />
+      : <div className={styles.user__contact__generated__image}>{userId.charAt(0)}</div>;
     return imageToReturn;
   }
 
@@ -460,34 +462,34 @@ export class ReactSlackChat extends Component {
     }
     // Looks like nothing failed, let's start to render our chatbox
     const chatbox = <div>
-      <div className={classNames('card transition', this.state.chatbox.active ? 'active' : '', this.state.chatbox.chatActiveView ? 'chat-active' : '')} onClick={this.openChatBox}>
-        <div className='help-header'>
-          <h2 className='transition'>{this.props.helpText || 'Help?'}</h2>
-          <h2 className='sub-text'>Click on a channel to interact.</h2>
+      <div className={classNames(styles.card, styles.transition, this.state.chatbox.active ? styles.active : '', this.state.chatbox.chatActiveView ? styles.chatActive : '')} onClick={this.openChatBox}>
+        <div className={styles.helpHeader}>
+          <h2 className={styles.transition}>{this.props.helpText || 'Help?'}</h2>
+          <h2 className={styles.subText}>Click on a channel to interact.</h2>
         </div>
-        <div className='card_circle transition'></div>
-        <div className={classNames('channels transition', this.state.chatbox.channelActiveView ? 'channel-active' : '')}>
+        <div className={classNames(styles.card_circle, styles.transition)}></div>
+        <div className={classNames(styles.channels, styles.transition, this.state.chatbox.channelActiveView ? styles.channelActive : '')}>
           {
             this.state.channels.map((channel) =>
-            <div className='contact' key={channel.id} onClick={ (e) => this.goToChatView(e, channel) }>
-              <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='contactIcon' className='contact__photo' />
-              <span className='contact__name'>{channel.name}</span>
-              <span className='contact__status online'></span>
+            <div className={styles.contact} key={channel.id} onClick={ (e) => this.goToChatView(e, channel) }>
+              <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='contactIcon' className={styles.contact__photo} />
+              <span className={styles.contact__name}>{channel.name}</span>
+              <span className={classNames(styles.contact__status, styles.online)}></span>
             </div>
             )
           }
         </div>
-        <div className={classNames('chat')}>
-          <div className='chat-header'>
-            <span className='chat__back' onClick={this.goToChannelView}></span>
-            <div className='chat__person'>
-              <span className='chat__status'>status</span>
-              <span className='chat__online active'></span>
-              <span className='chat__name'>{this.activeChannel.name}</span>
-              <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='channelIcon' className='channel__header__photo' />
+        <div className={classNames(styles.chat)}>
+          <div className={styles.chatHeader}>
+            <span className={styles.chat__back} onClick={this.goToChannelView}></span>
+            <div className={styles.chat__person}>
+              <span className={styles.chat__status}>status</span>
+              <span className={classNames(styles.chat__online, styles.active)}></span>
+              <span className={styles.chat__name}>{this.activeChannel.name}</span>
+              <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='channelIcon' className={styles.channel__header__photo} />
             </div>
           </div>
-          <div className='chat__messages' ref='reactSlakChatMessages'>
+          <div className={styles.chat__messages} ref='reactSlakChatMessages'>
             {
               this.state.messages.map((message) => this.displayFormattedMessage(message))
             }
@@ -495,27 +497,27 @@ export class ReactSlackChat extends Component {
           <div>
             {
               this.state.fileUploadLoader
-              ? <div className='chat__file__uploading'>
-                <span className='loading'>Uploading</span>
+              ? <div className={styles.chat__file__uploading}>
+                <span className={styles.loading}>Uploading</span>
               </div>
               : null
             }
             {
               !this.state.fileUploadLoader
               ? <div>
-                  <div className='attachment'>
-                    <label htmlFor='chat__upload' className='attachmentIcon'>
+                  <div className={styles.attachment}>
+                    <label htmlFor='chat__upload' className={styles.attachmentIcon}>
                       <input
                         type='file'
                         id='chat__upload'
-                        className='chat__upload'
+                        className={styles.chat__upload}
                         ref='chat__upload'
                         value={this.state.postMyFile}
                         onChange={(e) => this.handleFileChange(e)}
                       />
                     </label>
                   </div>
-                  <input type='text' className='chat__input'
+                  <input type='text' className={styles.chat__input}
                     value={this.state.postMyMessage}
                     placeholder='Enter your message...'
                     onKeyPress={(e) => e.key === 'Enter' ? this.postMessage(this.state.postMyMessage) : null}

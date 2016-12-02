@@ -1,46 +1,29 @@
-var webpack = require('webpack');
+'use strict';
 
-module.exports = {
-  entry: [
-    './src/ReactSlackChat.js',
-  ],
-  plugins:[
-    new webpack.DefinePlugin({
-      'process.env':{
-        'NODE_ENV': JSON.stringify('production')
-      }
-    })
-  ],
-  module: {
-    preLoaders: [
-      {
-        test: /\.json$/,
-        loader: 'json' // 'json-loader' is also a valid name to reference
-      }
-    ],
-    loaders: [
-    {
-      test: /\.js$/,
-      exclude: /(node_modules|bower_components)/,
-      loader: 'babel', // 'babel-loader' is also a valid name to reference
-      query: {
-        presets: ['es2015']
-      }
-    },
-    {
-      test: /\.css$/,
-      loader: 'style-loader!css-loader'
-    }
-  ]
-  },
-  output: {
-    library: 'ReactSlackChat',
-    libraryTarget: 'umd',
-    filename: 'react-slack-chat.js',
-    path: __dirname + '/dist'
-  },
-  externals: {
-    'react': 'react',
-    'react-dom': 'react-dom'
-  }
+const path = require('path');
+
+// List of allowed environments
+const allowedEnvs = ['dev', 'production', 'test'];
+
+// Set the correct environment
+if (allowedEnvs.indexOf(process.env.NODE_ENV) === -1) {
+  return console.log('Environment is not allowed. Cannot find a build webpack for', process.env.NODE_ENV);
 }
+
+const env = process.env.NODE_ENV;
+process.env.REACT_WEBPACK_ENV = env;
+
+/**
+ * Build the webpack configuration
+ * @param  {String} wantedEnv The wanted environment
+ * @return {Object} Webpack config
+ */
+function buildConfig(wantedEnv) {
+  let isValid = wantedEnv && wantedEnv.length > 0 && allowedEnvs.indexOf(wantedEnv) !== -1;
+  let validEnv = isValid ? wantedEnv : 'dev';
+
+  let config = require(path.join(__dirname, 'webpack/' + validEnv));
+  return config;
+}
+
+module.exports = buildConfig(env);
