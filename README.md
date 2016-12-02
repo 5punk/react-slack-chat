@@ -70,10 +70,13 @@ Below are a list of props the `<ReactSlackChat />` component accepts
 
 ## Screenshots
 
+### Custom Action Hooks
 ![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/customHooks.png?raw=true)
 
+### Mobile View
 ![Image of Mobile View](https://github.com/5punk/react-slack-chat/blob/master/docs/mobileView.png?raw=true)
 
+### Tag a Customer
 ![Image of Special Mentions](https://github.com/5punk/react-slack-chat/blob/master/docs/specialMentions.png?raw=true)
 
 #### Features
