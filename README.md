@@ -36,6 +36,20 @@ class App extends Component {
           helpText='Optional Help Text'
           userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
           debugMode={true}
+          hooks={[
+            {
+              id: 'getSystemInfo',
+              action: () => 'MY SYSTEM INFO!'
+            },
+            {
+              id: 'getCurrentPath',
+              action: () => window.location.href
+            },
+            {
+              id: 'getPlatform',
+              action: () => window.navigator.platform
+            }
+          ]}
         />
       )
   }
@@ -51,11 +65,16 @@ Below are a list of props the `<ReactSlackChat />` component accepts
   * `channelId`: [REQUIRED] At least one slack channel id needs to be passed for the first channel view.
   * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
+  * `hooks`: [OPTIONAL] Custom Action Hooks, let's administrators execute commands. In the format `$=>@USER:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
   * `debugMode`: [OPTIONAL] Pass a boolean (`true`/`false`) flag to start debug logs.
 
 ## Screenshots
 
-![Image of Mobile View](https://github.com/5punk/react-slack-chat/blob/master/docs/mobileView.png?raw=true) ![Image of Special Mentions](https://github.com/5punk/react-slack-chat/blob/master/docs/specialMentions.png?raw=true)
+![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/customHooks.png?raw=true)
+
+![Image of Mobile View](https://github.com/5punk/react-slack-chat/blob/master/docs/mobileView.png?raw=true)
+
+![Image of Special Mentions](https://github.com/5punk/react-slack-chat/blob/master/docs/specialMentions.png?raw=true)
 
 #### Features
 
