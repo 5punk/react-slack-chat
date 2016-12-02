@@ -166,7 +166,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
   text-align: center;
 	background: $color_dodger_blue_approx;
 	height: 42px;
-	min-width: 2.6rem;
+	min-width: 30px;
 	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
 	border-radius: 50%;
 }

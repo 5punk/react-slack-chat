@@ -111,7 +111,8 @@ export class ReactSlackChat extends Component {
     const isHookMessage = this.isHookMessage(messageText);
     // Check to see if this is a hook message
     // And the user bot is mentioned
-    if (isHookMessage && this.wasIMentioned(message)) {
+    // And is from a legitimate admin
+    if (isHookMessage && this.wasIMentioned(message) && this.isAdmin(message)) {
       if (isHookMessage[2]) {
         // Format of isHookMessage is
         // $=>hookTrigger
@@ -124,7 +125,7 @@ export class ReactSlackChat extends Component {
             this.debugLog('Hook trigger found', isHookMessage[2]);
             const hookActionResponse = await hook.action();
             this.debugLog('Action executed. Posting response.');
-            return this.postMessage(hookActionResponse);
+            return this.postMessage(`$=>@[${hook.id}]:${hookActionResponse}`);
           }
         });
       }
@@ -137,6 +138,11 @@ export class ReactSlackChat extends Component {
     // Group 2. 12-20 `hookText`
     const hookMessageRegex = /\$=>(@.*.):(.*)/;
     return hookMessageRegex.exec(text);
+  }
+
+  isAdmin(message) {
+    // Any post that has the `user` field is from the backend
+    return typeof message.user !== 'undefined';
   }
 
   wasIMentioned(message) {

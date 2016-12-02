@@ -9,7 +9,7 @@ const path = require('path');
 const values = require('postcss-modules-values');
 
 const srcPath = path.join(__dirname, '/../src');
-const dfltPort = 3000;
+const dfltPort = 3003;
 
 /**
  * Get the default modules object for webpack
