@@ -45,6 +45,7 @@ export class ReactSlackChat extends Component {
     this.postFile = this.postFile.bind(this);
     this.wasIMentioned = this.wasIMentioned.bind(this);
     this.isSystemMessage = this.isSystemMessage.bind(this);
+    this.hasHookResponse = this.hasHookResponse.bind(this);
     // Bind UI Animation functions
     this.openChatBox = this.openChatBox.bind(this);
     this.closeChatBox = this.closeChatBox.bind(this);
@@ -105,31 +106,33 @@ export class ReactSlackChat extends Component {
       message.text.indexOf(message.user) > -1;
   }
 
-  execHooksIfFound(message) {
-    const messageText = this.decodeHtml(message.text);
-    // Check to see if Action Hook is triggered
-    const isHookMessage = this.isHookMessage(messageText);
-    // Check to see if this is a hook message
-    // And the user bot is mentioned
-    // And is from a legitimate admin
-    if (isHookMessage && this.wasIMentioned(message) && this.isAdmin(message)) {
-      if (isHookMessage[2]) {
-        // Format of isHookMessage is
-        // $=>hookTrigger
-        // [0] = $=>@5punk:hookTrigger
-        // [1] = @5punk
-        // [2] = hookTrigger
-        // if found execute action
-        this.props.hooks.map(async hook => {
-          if (hook.id === isHookMessage[2]) {
-            this.debugLog('Hook trigger found', isHookMessage[2]);
-            const hookActionResponse = await hook.action();
-            this.debugLog('Action executed. Posting response.');
-            return this.postMessage(`$=>@[${hook.id}]:${hookActionResponse}`);
-          }
-        });
+  execHooksIfFound(messages) {
+    messages.forEach((message, index) => {
+      const messageText = this.decodeHtml(message.text);
+      // Check to see if Action Hook is triggered
+      const isHookMessage = this.isHookMessage(messageText);
+      // Check to see if this is a hook message
+      // And the user bot is mentioned
+      // And is from a legitimate admin
+      if (isHookMessage && this.wasIMentioned(message) && this.isAdmin(message)) {
+        if (isHookMessage[2] && !this.hasHookResponse(messages, index)) {
+          // Format of isHookMessage is
+          // $=>hookTrigger
+          // [0] = $=>@5punk:hookTrigger
+          // [1] = @5punk
+          // [2] = hookTrigger
+          // if found execute action
+          this.props.hooks.map(async hook => {
+            if (hook.id === isHookMessage[2]) {
+              this.debugLog('Hook trigger found', isHookMessage[2]);
+              const hookActionResponse = await hook.action();
+              this.debugLog('Action executed. Posting response.');
+              return this.postMessage(`$=>@[${hook.id}]:${hookActionResponse}`);
+            }
+          });
+        }
       }
-    }
+    });
   }
 
   isHookMessage(text) {
@@ -138,6 +141,28 @@ export class ReactSlackChat extends Component {
     // Group 2. 12-20 `hookText`
     const hookMessageRegex = /\$=>(@.*.):(.*)/;
     return hookMessageRegex.exec(text);
+  }
+
+  hasHookResponse(messages, index) {
+    const currentHook = this.isHookMessage(this.decodeHtml(messages[index].text));
+    // Iterate over all messages after hook
+    for (let i = index + 1; i < messages.length; i++) {
+      const iterHook = this.isHookMessage(this.decodeHtml(messages[i].text));
+      // Format of isHookMessage for hook responses are
+      // $=>hookTrigger
+      // [0] = $=>@[hookID]:response
+      // [1] = @[hookID]
+      // [2] = response
+      // Substring to only parse the hookID from @[hookID]
+      // If it exists and if the triggers are the same
+      if (iterHook && iterHook[1].substring(2, iterHook[1].length - 1) === currentHook[2]) {
+        // Ensure that the hook is for the correct user
+        if (currentHook[1].substring(1) === messages[i].username) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   isAdmin(message) {
@@ -151,7 +176,7 @@ export class ReactSlackChat extends Component {
   }
 
   hasEmoji(text) {
-    const chatHasEmoji = /(:[:a-zA-Z\/_]*:)/;
+    const chatHasEmoji = /(:[:a-zA-Z/_]*:)/;
     return chatHasEmoji.test(text);
   }
 
@@ -159,7 +184,7 @@ export class ReactSlackChat extends Component {
     // Get image url REGEX: uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*))
     // 1st match will give us full match
     // 2nd match will give us complete attachment URL
-    const systemAttachmentAttached = /uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*))/;
+    const systemAttachmentAttached = /uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*))/;
     return text.match(systemAttachmentAttached);
   }
 
@@ -319,7 +344,7 @@ export class ReactSlackChat extends Component {
           // Grab new messages
           const newMessages = this.getNewMessages(this.state.messages, data.messages);
           // Iterate over the new messages and exec any action hooks if found
-          newMessages ? newMessages.map(message => this.execHooksIfFound(message)) : null;
+          this.execHooksIfFound(newMessages);
           // set the state with new messages
           return this.setState({
             messages: data.messages
