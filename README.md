@@ -42,16 +42,9 @@ class App extends Component {
           debugMode={true}
           hooks={[
             {
+              /* My Custom Hook */
               id: 'getSystemInfo',
               action: () => 'MY SYSTEM INFO!'
-            },
-            {
-              id: 'getCurrentPath',
-              action: () => window.location.href
-            },
-            {
-              id: 'getPlatform',
-              action: () => window.navigator.platform
             }
           ]}
         />
@@ -74,8 +67,13 @@ Below are a list of props the `<ReactSlackChat />` component accepts
 
 ## Default System Hooks
 
+> All hooks can **ONLY be executed by Administrators**. Admins are usually the **team members** that belong to the Slack Team (Backend).
+
+> All responses of hooks, are **only visible** to the backend Administrators (Visible to the members in the Slack App).
+
+
 ReactSlackChat gives you a few hooks ready to use out of the box.
-Call any hook with the following command via the Slack Backend
+An Admin can call any hook with the following command via the Slack App Backend
 
 `$=>@botName:HOOK_ID`
 
@@ -87,12 +85,17 @@ They're documented below:
 
 Feel free to add your own custom hooks. It'll allow you to get any information from the Client or perform any action / function on the Client App.
 
+Submit your ideas for innovative hooks or feature requests.
+
 ## Screenshots
 
 ### Screenshot Hook (System Default)
-![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/screenshotHooks.png?raw=true)
+![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/screenshotHook.png?raw=true)
 
-### Custom Defined Action Hooks
+### Custom Hooks
+
+Run the same hook against multiple botUsers (Clients). Hook responses are not visible to non admins / Clients.
+
 ![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/customHooks.png?raw=true)
 
 ### Mobile View
