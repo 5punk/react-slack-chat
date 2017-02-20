@@ -18,7 +18,8 @@
     "no-unsafe-finally": 0,
     "no-useless-computed-key": 0,
     "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error"
+    "react/jsx-uses-vars": "error",
+    "no-debugger": 0
   },
   "parserOptions": {
     "ecmaVersion": 6,

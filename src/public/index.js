@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ReactSlackChat } from './ReactSlackChat';
+import { ReactSlackChat } from '../ReactSlackChat';
 import logo from './logo.svg';
 import './index.css';
 
@@ -15,23 +15,16 @@ ReactDOM.render(
     </p>
     <ReactSlackChat
       botName='avanish'
-      apiToken='xoxp-63486550359-63478026502-88369567777-119aab37a7c7e018d79b316e0296c3da'
-      channelId={['C1VELS4AW', 'C1VCPMYV9']}
+      apiToken='xoxb-111120916065-zTXl00gMhasdas232'
+      channelId={['C47NDGFEW', 'C47QZRTJR']}
       helpText='Need Help?'
       debugMode={true}
       userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
       hooks={[
         {
+          /* My Custom Hook */
           id: 'getSystemInfo',
           action: () => 'MY SYSTEM INFO!'
-        },
-        {
-          id: 'getCurrentPath',
-          action: () => window.location.href
-        },
-        {
-          id: 'getPlatform',
-          action: () => window.navigator.platform
         }
       ]}
     />
