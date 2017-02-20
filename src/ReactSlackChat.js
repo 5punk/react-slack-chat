@@ -7,6 +7,8 @@ import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
 import User from './User';
 import styles from './ReactSlackChat.scss';
 
+import channelIcon from './assets/team.svg';
+
 // Chat Functions
 import {
   wasIMentioned,
@@ -464,7 +466,7 @@ export class ReactSlackChat extends Component {
           {
             this.state.channels.map((channel) =>
             <div className={styles.contact} key={channel.id} onClick={ (e) => this.goToChatView(e, channel) }>
-              <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='contactIcon' className={styles.contact__photo} />
+              <div dangerouslySetInnerHTML={{__html: channelIcon}} className={styles.contact__photo} />
               <span className={styles.contact__name}>{channel.name}</span>
               <span className={classNames(styles.contact__status, styles.online)}></span>
             </div>
@@ -478,8 +480,8 @@ export class ReactSlackChat extends Component {
               <span className={styles.chat__status}>status</span>
               <span className={classNames(styles.chat__online, styles.active)}></span>
               <span className={styles.chat__name}>{this.activeChannel.name}</span>
-              <img src='http://discoverycrc.com/wp-content/uploads/2014/09/Community-Icon.png' alt='channelIcon' className={styles.channel__header__photo} />
             </div>
+            <div dangerouslySetInnerHTML={{__html: channelIcon}} className={styles.channel__header__photo} />
           </div>
           <div className={styles.chat__messages} id='widget-reactSlakChatMessages'>
             {
