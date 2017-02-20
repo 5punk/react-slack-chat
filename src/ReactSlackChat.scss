@@ -1,7 +1,7 @@
 //colors
 $white: white;
 $black_30: rgba(0,0,0,0.3);
-$color_dodger_blue_approx: #3487f7;
+$theme_color: #2e7eea;
 $color_jade_approx: #00b570;
 $color_celeste_approx: #ccc;
 $color_shamrock_approx: #43dea3;
@@ -49,7 +49,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 			border-radius: 0;
 		}
 		h2 {
-			background: $color_dodger_blue_approx;
+			background: $theme_color;
 			color: $white;
 			small {
 				color: $white;
@@ -144,6 +144,10 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	margin-right: 1.5rem;
 	height: 48px;
 	float: right;
+
+  svg {
+    height: 42px;
+  }
 }
 .user__contact__photo {
 	float: left;
@@ -164,14 +168,14 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	padding-bottom: 1px;
 	padding-top: 10px;
   text-align: center;
-	background: $color_dodger_blue_approx;
+	background: $theme_color;
 	height: 42px;
 	min-width: 30px;
 	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
 	border-radius: 50%;
 }
 .chat__name {
-	left: 1rem;
+	right: 1.2rem;
 	top: 1.2rem;
 	position: relative;
 }
@@ -186,9 +190,13 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	border-radius: 50%;
 	height: 48px;
 	float: right;
-	position: relative;
-	left: 5rem;
-	bottom: 0.5rem;
+  position: relative;
+  right: 1.5rem;
+  top: 1.5rem;
+
+  svg {
+    height: 48px;
+  }
 }
 .contact__name {
 	font-family: $font_0, $font_1, $font_2, $font_3;
@@ -216,7 +224,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
   left: 0rem;
   width: 100%;
   height: 6rem;
-  background: #3487f7;
+  background: $theme_color;
 }
 .chat__back {
 	&:before {
@@ -243,7 +251,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 }
 .chat__status {
 	position: relative;
-	left: 4.6rem;
+	left: 2.5rem;
 	font-family: $font_0, $font_1, $font_2, $font_3;
 	text-transform: uppercase;
 	color: $white;
@@ -252,13 +260,13 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	display: inline-block;
 	position: absolute;
 	top: 2rem;
-	left: 2rem;
+	left: 3rem;
 	font-family: $font_0, $font_1, $font_2, $font_3;
 	color: $white;
 }
 .chat__online {
 	position: absolute;
-	left: 45px;
+	left: 20px;
 	top: 5px;
 	width: 8px;
 	height: 8px;
@@ -309,7 +317,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 }
 .system__message {
 	max-width: 100%;
-	color: $color_dodger_blue_approx;
+	color: $theme_color;
 }
 .attachmentIcon {
 	position: absolute;
@@ -379,7 +387,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	font-family: $font_0, $font_1, $font_2, $font_3;
 }
 .helpHeader {
-	background: $color_dodger_blue_approx;
+	background: $theme_color;
 	position: relative;
 	padding: 20px;
 }
@@ -390,7 +398,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	left: 0;
 	width: 100%;
 	height: 6rem;
-	background: $color_dodger_blue_approx;
+	background: $theme_color;
 }
 .gh-emoji {
 	height: 24px;
