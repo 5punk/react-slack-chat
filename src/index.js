@@ -16,7 +16,7 @@ ReactDOM.render(
     <ReactSlackChat
       botName='avanish'
       apiToken='xoxb-111120916065-zTXluEKLwyMijBwHH5B00gMh'
-      channelId={['C1VELS4AW', 'C1VCPMYV9']}
+      channelId={['C47NDGFEW', 'C47QZRTJR']}
       helpText='Need Help?'
       debugMode={true}
       userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
