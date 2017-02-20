@@ -42,16 +42,9 @@ class App extends Component {
           debugMode={true}
           hooks={[
             {
+              /* My Custom Hook */
               id: 'getSystemInfo',
               action: () => 'MY SYSTEM INFO!'
-            },
-            {
-              id: 'getCurrentPath',
-              action: () => window.location.href
-            },
-            {
-              id: 'getPlatform',
-              action: () => window.navigator.platform
             }
           ]}
         />
@@ -92,7 +85,7 @@ Feel free to add your own custom hooks. It'll allow you to get any information f
 ### Screenshot Hook (System Default)
 ![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/screenshotHook.png?raw=true)
 
-### Custom Defined Action Hooks
+### Custom Hooks
 ![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/customHooks.png?raw=true)
 
 ### Mobile View
