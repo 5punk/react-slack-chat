@@ -15,7 +15,7 @@ ReactDOM.render(
     </p>
     <ReactSlackChat
       botName='avanish'
-      apiToken='xoxb-111120916065-zTXluEKLwyMijBwHH5B00gMh'
+      apiToken='xoxb-111120916065-zTXl00gMhasdas232'
       channelId={['C47NDGFEW', 'C47QZRTJR']}
       helpText='Need Help?'
       debugMode={true}
