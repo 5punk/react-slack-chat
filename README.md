@@ -90,7 +90,7 @@ Feel free to add your own custom hooks. It'll allow you to get any information f
 ## Screenshots
 
 ### Screenshot Hook (System Default)
-![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/screenshotHooks.png?raw=true)
+![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/screenshotHook.png?raw=true)
 
 ### Custom Defined Action Hooks
 ![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/customHooks.png?raw=true)
