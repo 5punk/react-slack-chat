@@ -68,12 +68,30 @@ Below are a list of props the `<ReactSlackChat />` component accepts
   * `channelId`: [REQUIRED] At least one slack channel id needs to be passed for the first channel view.
   * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
-  * `hooks`: [OPTIONAL] Custom Action Hooks, let's administrators execute commands. In the format `$=>@USER:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
+  * `hooks`: [OPTIONAL] Custom Action Hooks, let's administrators execute commands. In the format `$=>@botName:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
   * `debugMode`: [OPTIONAL] Pass a boolean (`true`/`false`) flag to start debug logs.
+
+## Default System Hooks
+
+ReactSlackChat gives you a few hooks ready to use out of the box.
+Call any hook with the following command via the Slack Backend
+
+`$=>@botName:HOOK_ID`
+
+They're documented below:
+
+  * `getCurrentPath`: Returns location of the window of the Client.
+  * `getPlatform`: Returns the OS of the Client.
+  * `getScreenshot`: Returns the current screenshot of the Client's window / app view.
+
+Feel free to add your own custom hooks. It'll allow you to get any information from the Client or perform any action / function on the Client App.
 
 ## Screenshots
 
-### Custom Action Hooks
+### Screenshot Hook (System Default)
+![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/screenshotHooks.png?raw=true)
+
+### Custom Defined Action Hooks
 ![Image of Custom Hooks](https://github.com/5punk/react-slack-chat/blob/master/docs/customHooks.png?raw=true)
 
 ### Mobile View
@@ -87,6 +105,7 @@ Below are a list of props the `<ReactSlackChat />` component accepts
 * Multiple channel support
 * Attachments
 * No Server needed!
+* Custom Hooks
 * Responsive Mobile support
 * Special message UI if user is mentioned
 * Auto generated user icons if `userImage` is not supplied
