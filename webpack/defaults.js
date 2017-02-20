@@ -48,9 +48,10 @@ function getDefaultModules () {
       },
       { test: /\.json$/, loader: 'json' },
       {
-        test: /\.(mp4|ogg|svg)$/,
+        test: /\.(mp4|ogg)$/,
         loader: 'file-loader'
       },
+      { test: /\.svg$/, loader: 'svg-inline' },
       { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file' },
       { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream' }
     ],
