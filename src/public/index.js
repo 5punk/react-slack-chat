@@ -7,7 +7,7 @@ import './index.css';
 ReactDOM.render(
   <div className='App'>
     <div className='App-header'>
-      <img src={logo} className='App-logo' alt='logo' />
+      <div dangerouslySetInnerHTML={{__html: logo}} className='App-logo' alt='logo' />
       <h2>Welcome to React</h2>
     </div>
     <p className='App-intro'>
@@ -15,7 +15,7 @@ ReactDOM.render(
     </p>
     <ReactSlackChat
       botName='avanish'
-      apiToken='xoxb-111120916065-zTXl00gMhasdas232'
+      apiToken='xoxb-111120916065-4dTkOGDJJC50loSPSaeVxoaf'
       channelId={['C47NDGFEW', 'C47QZRTJR']}
       helpText='Need Help?'
       debugMode={true}
