@@ -211,7 +211,7 @@ export class ReactSlackChat extends Component {
           payload.channels.map((channel) => {
             this.props.channels.forEach((channelObject) => {
               // If this channel is exactly as requested
-              if (channelObject.id === channel.name) {
+              if (channelObject.name === channel.name || channelObject.id === channel.id) {
                 channel.icon = channelObject.icon; // Add on the icon property to the channel list
                 channels.push(channel);
               }

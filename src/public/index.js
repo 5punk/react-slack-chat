@@ -18,14 +18,16 @@ ReactDOM.render(
       apiToken='xoxb-111120916065-BLAH'
       channels={[
         {
-          id: 'random'
+          name: 'random'
         },
         {
-          id: 'test',
+          name: 'test',
+          id: '',
           icon: ''
         },
         {
-          id: 'test22',
+          name: 'test22',
+          id: '',
           icon: './logo.svg'
         }]}
       helpText='Need Help?'
