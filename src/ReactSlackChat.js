@@ -7,7 +7,7 @@ import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
 import User from './User';
 import styles from './ReactSlackChat.scss';
 
-import channelIcon from './assets/team.svg';
+import defaultChannelIcon from './assets/team.svg';
 
 // Chat Functions
 import {
@@ -209,8 +209,13 @@ export class ReactSlackChat extends Component {
           // get the channels we need
           const channels = [];
           payload.channels.map((channel) => {
-            // If this channel is exactly as requested
-            (this.props.channelNames.includes(channel.name)) ? channels.push(channel) : null;
+            this.props.channels.forEach((channelObject) => {
+              // If this channel is exactly as requested
+              if (channelObject.name === channel.name) {
+                channel.icon = channelObject.icon; // Add on the icon property to the channel list
+                channels.push(channel);
+              }
+            });
           });
           return resolve({ channels, onlineUsers });
         });
@@ -466,7 +471,9 @@ export class ReactSlackChat extends Component {
           {
             this.state.channels.map((channel) =>
             <div className={styles.contact} key={channel.id} onClick={ (e) => this.goToChatView(e, channel) }>
-              <div dangerouslySetInnerHTML={{__html: channelIcon}} className={styles.contact__photo} />
+              {channel.icon
+                ? <img src={channel.icon} className={styles.contact__photo} />
+                : <div dangerouslySetInnerHTML={{__html: defaultChannelIcon}} className={styles.contact__photo} />}
               <span className={styles.contact__name}>{channel.name}</span>
               <span className={classNames(styles.contact__status, styles.online)}></span>
             </div>
@@ -481,7 +488,9 @@ export class ReactSlackChat extends Component {
               <span className={classNames(styles.chat__online, styles.active)}></span>
               <span className={styles.chat__name}>{this.activeChannel.name}</span>
             </div>
-            <div dangerouslySetInnerHTML={{__html: channelIcon}} className={styles.channel__header__photo} />
+            {this.activeChannel.icon
+              ? <img src={this.activeChannel.icon} className={styles.contact__photo} />
+              : <div dangerouslySetInnerHTML={{__html: defaultChannelIcon}} className={styles.contact__photo} />}
           </div>
           <div className={styles.chat__messages} id='widget-reactSlakChatMessages'>
             {
@@ -535,7 +544,7 @@ export class ReactSlackChat extends Component {
 // PropTypes validation
 ReactSlackChat.propTypes = {
   apiToken: PropTypes.string.isRequired,
-  channelNames: PropTypes.array.isRequired,
+  channels: PropTypes.array.isRequired,
   botName: PropTypes.string,
   helpText: PropTypes.string,
   userImage: PropTypes.string,

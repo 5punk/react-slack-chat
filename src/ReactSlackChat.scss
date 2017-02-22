@@ -143,7 +143,8 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
 	border-radius: 50%;
 	margin-right: 1.5rem;
-	height: 48px;
+	height: 50px;
+	width: 50px;
 	float: right;
 
   svg {
@@ -284,8 +285,9 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 .chat__messages {
   position: absolute;
   top: 60px;
-  height: 400px;
+  height: 68%;
   width: 96%;
+	padding-top: 35px;
   padding-right: 10px;
   padding-left: 10px;
   overflow-y: auto;
