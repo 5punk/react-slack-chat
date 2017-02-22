@@ -129,14 +129,15 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	}
 }
 .contact {
-	position: relative;
-	width: 95%;
-	height: 5rem;
-	padding-left: 1rem;
-	display: flex;
-	align-items: center;
-	cursor: pointer;
-	overflow: hidden;
+  position: relative;
+  width: 95%;
+  height: 50px;
+  margin-top: 10px;
+  padding-left: 1rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
 }
 .contact__photo {
 	//Instead of the line below you could use @include border-radius($radius, $vertical-radius)
@@ -175,8 +176,8 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	border-radius: 50%;
 }
 .chat__name {
-	right: 1.2rem;
-	top: 1.2rem;
+  top: 15px;
+  right: 12px;
 	position: relative;
 }
 .chat__contact__photo {
@@ -251,7 +252,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 }
 .chat__status {
 	position: relative;
-	left: 2.5rem;
+	left: 40px;
 	font-family: $font_0, $font_1, $font_2, $font_3;
 	text-transform: uppercase;
 	color: $white;
@@ -281,13 +282,12 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	}
 }
 .chat__messages {
-	position: absolute;
-  bottom: 4rem;
-  width: 95%;
-  padding-right: 0.5rem;
-  padding-left: 0.5rem;
-  max-height: 21rem;
-	overflow-y: auto;
+  position: absolute;
+  top: 60px;
+  height: 400px;
+  padding-right: 10px;
+  padding-left: 10px;
+  overflow-y: auto;
 }
 .chat__msgRow {
 	margin-bottom: 0.5rem;
@@ -321,8 +321,8 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 }
 .attachmentIcon {
 	position: absolute;
-	bottom: 5px;
-	left: 20px;
+	bottom: 4px;
+	left: 15px;
 	width: 25px;
 	height: 25px;
 	z-index: 9999;
@@ -377,7 +377,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	bottom: 0;
 	left: 0;
 	width: 100%;
-	height: 3rem;
+	height: 45px;
 	padding: 0.5rem 1rem 0.5rem 4rem;
 	background-repeat: no-repeat;
 	background-position: 1rem 1rem;
