@@ -209,8 +209,8 @@ export class ReactSlackChat extends Component {
           // get the channels we need
           const channels = [];
           payload.channels.map((channel) => {
-            // This channel is requested
-            this.props.channelId.indexOf(channel.id) > -1 ? channels.push(channel) : null;
+            // If this channel is exactly as requested
+            (this.props.channelNames.includes(channel.name)) ? channels.push(channel) : null;
           });
           return resolve({ channels, onlineUsers });
         });
@@ -535,7 +535,7 @@ export class ReactSlackChat extends Component {
 // PropTypes validation
 ReactSlackChat.propTypes = {
   apiToken: PropTypes.string.isRequired,
-  channelId: PropTypes.array.isRequired,
+  channelNames: PropTypes.array.isRequired,
   botName: PropTypes.string,
   helpText: PropTypes.string,
   userImage: PropTypes.string,
