@@ -58,7 +58,7 @@ class App extends Component {
 Below are a list of props the `<ReactSlackChat />` component accepts
 
   * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot. Can be Visitor ID / IP address etc.
-  * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://api.slack.com/bot-users).
+  * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://slack.com/apps/A0F7YS25R-bots).
   * `channelNames`: [REQUIRED] At least one slack channel name needs to be passed for the first channel view.
   * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
