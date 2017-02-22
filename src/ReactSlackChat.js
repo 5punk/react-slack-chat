@@ -489,8 +489,8 @@ export class ReactSlackChat extends Component {
               <span className={styles.chat__name}>{this.activeChannel.name}</span>
             </div>
             {this.activeChannel.icon
-              ? <img src={this.activeChannel.icon} className={styles.contact__photo} />
-              : <div dangerouslySetInnerHTML={{__html: defaultChannelIcon}} className={styles.contact__photo} />}
+              ? <img src={this.activeChannel.icon} className={styles.channel__header__photo} />
+              : <div dangerouslySetInnerHTML={{__html: defaultChannelIcon}} className={styles.channel__header__photo} />}
           </div>
           <div className={styles.chat__messages} id='widget-reactSlakChatMessages'>
             {
