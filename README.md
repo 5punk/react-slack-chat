@@ -36,7 +36,20 @@ class App extends Component {
         <ReactSlackChat
           botName='5punk-bot'
           apiToken='xoxp-63486550359-63sfes26502-88fewfw67777-119aab37r32r32r316e0296c3da'
-          channelNames={['general', 'fashion', 'technology']}
+          channels={[
+          {
+            name: 'random'
+          },
+          {
+            name: 'test',
+            id: 'C48SAX4',
+            icon: ''
+          },
+          {
+            name: 'test22',
+            id: '',
+            icon: './logo.svg'
+          }]}
           helpText='Optional Help Text'
           userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
           debugMode={true}
@@ -59,7 +72,7 @@ Below are a list of props the `<ReactSlackChat />` component accepts
 
   * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot. Can be Visitor ID / IP address etc.
   * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://slack.com/apps/A0F7YS25R-bots).
-  * `channelNames`: [REQUIRED] At least one slack channel name needs to be passed for the first channel view.
+  * `channels`: [REQUIRED] At least one slack channel object needs to be passed for the first channel view. Refer example above.
   * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
   * `hooks`: [OPTIONAL] Custom Action Hooks, let's administrators execute commands. In the format `$=>@botName:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
