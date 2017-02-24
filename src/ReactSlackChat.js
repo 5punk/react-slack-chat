@@ -27,6 +27,9 @@ import { debugLog, arraysIdentical } from './lib/utils';
 // Hooks
 import { isHookMessage, execHooksIfFound } from './lib/hooks';
 
+// Themes
+import { changeColorRecursive } from './lib/themes';
+
 export class ReactSlackChat extends Component {
   constructor(args) {
     super(args);
@@ -56,6 +59,10 @@ export class ReactSlackChat extends Component {
       emoji: false // default
     };
     this.fileUploadTitle = `Posted by ${this.props.botName}`;
+
+    // Theme variables
+    this.themeDefaultColor = '#2e7eea'; // Defined as $theme_color sass variable in .scss
+
     // Bind Slack Message functions
     this.loadMessages = this.loadMessages.bind(this);
     this.postMyMessage = this.postMyMessage.bind(this);
@@ -446,6 +453,12 @@ export class ReactSlackChat extends Component {
   }
 
   componentDidMount() {
+    // Look if custom color / theme is needed
+    // If yes, change backgrounds
+    if (this.props.themeColor) {
+      changeColorRecursive(document.body, this.themeDefaultColor, this.props.themeColor);
+    }
+
     // Attach click listener to dom to close chatbox if clicked outside
     addEventListener('click', (e) => {
       // Check if chatbox is active
@@ -547,6 +560,7 @@ ReactSlackChat.propTypes = {
   channels: PropTypes.array.isRequired,
   botName: PropTypes.string,
   helpText: PropTypes.string,
+  themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,
   debugMode: PropTypes.bool

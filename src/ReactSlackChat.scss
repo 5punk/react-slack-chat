@@ -1,7 +1,7 @@
 //colors
 $white: white;
 $black_30: rgba(0,0,0,0.3);
-$theme_color: #2e7eea;
+$theme_color: #2e7eea; // IF YOU CHANGE THIS, UPDATE THE VAR IN CONSTRUCTOR IN ReactSlackChat
 $color_jade_approx: #00b570;
 $color_celeste_approx: #ccc;
 $color_shamrock_approx: #43dea3;
@@ -49,7 +49,6 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 			border-radius: 0;
 		}
 		h2 {
-			background: $theme_color;
 			color: $white;
 			small {
 				color: $white;
