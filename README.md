@@ -51,6 +51,7 @@ class App extends Component {
             icon: './logo.svg'
           }]}
           helpText='Optional Help Text'
+          themeColor='#856090'
           userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
           debugMode={true}
           hooks={[
@@ -75,6 +76,7 @@ Below are a list of props the `<ReactSlackChat />` component accepts
   * `channels`: [REQUIRED] At least one slack channel object needs to be passed for the first channel view. Refer example above.
   * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
+  * `themeColor`: [OPTIONAL] A Hex Color value accent you want the widget to be themed with, stylish stuff.
   * `hooks`: [OPTIONAL] Custom Action Hooks, let's administrators execute commands. In the format `$=>@botName:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
   * `debugMode`: [OPTIONAL] Pass a boolean (`true`/`false`) flag to start debug logs.
 
