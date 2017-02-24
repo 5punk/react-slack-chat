@@ -15,7 +15,6 @@ ReactDOM.render(
     </p>
     <ReactSlackChat
       botName='avanish'
-      apiToken='xoxb-111120916065-BLAH'
       channels={[
         {
           name: 'random'
@@ -30,7 +29,9 @@ ReactDOM.render(
           id: '',
           icon: './logo.svg'
         }]}
+      apiToken='xoxb-111120916065-BLAH'
       helpText='Need Help?'
+      themeColor='#856090'
       debugMode={true}
       userImage='http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg'
       hooks={[
