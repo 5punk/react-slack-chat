@@ -14,7 +14,7 @@ Throw your website visitors into a Slack Channel Community, where they can searc
 
 ## Pre Requisites
 
-1. Setup a [Slack Bot](https://api.slack.com/bot-users) for your team.
+1. Setup a [Slack Bot](https://my.slack.com/services/new/bot) for your team.
 2. Encode / Obfuscate the apiToken if you need to publish it to a public Github Repository.
 
 Note: Do not post / publish your Secret API Token as Plain Text to a public Github Repository.
@@ -72,7 +72,7 @@ class App extends Component {
 Below are a list of props the `<ReactSlackChat />` component accepts
 
   * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot. Can be Visitor ID / IP address etc.
-  * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://slack.com/apps/A0F7YS25R-bots).
+  * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://my.slack.com/services/new/bot).
   * `channels`: [REQUIRED] At least one slack channel object needs to be passed for the first channel view. Refer example above.
   * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
