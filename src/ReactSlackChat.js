@@ -39,6 +39,7 @@ export class ReactSlackChat extends Component {
     this.state = {
       // failed flag
       failed: false,
+      helpText: this.props.helpText,
       // List of Online users
       onlineUsers: [],
       channels: [],
@@ -227,7 +228,14 @@ export class ReactSlackChat extends Component {
           return resolve({ channels, onlineUsers });
         });
         // tell the bot to listen
-        this.bot.listen({ token: this.props.apiToken });
+        this.bot.listen({ token: this.props.apiToken }, err => {
+          if (err) {
+            debugLog`Could not connect to Slack Server. Reason: ${JSON.stringify(err)}`;
+            this.setState({
+              helpText: 'Slack Connection Error!'
+            });
+          }
+        });
       } catch (err) {
         return reject(err);
       }
@@ -476,7 +484,7 @@ export class ReactSlackChat extends Component {
     const chatbox = <div>
       <div className={classNames(styles.card, styles.transition, this.state.chatbox.active ? styles.active : '', this.state.chatbox.chatActiveView ? styles.chatActive : '')} onClick={this.openChatBox}>
         <div className={styles.helpHeader}>
-          <h2 className={styles.transition}>{this.props.helpText || 'Help?'}</h2>
+          <h2 className={styles.transition}>{this.state.helpText || 'Help?'}</h2>
           <h2 className={styles.subText}>Click on a channel to interact.</h2>
         </div>
         <div className={classNames(styles.card_circle, styles.transition)}></div>
