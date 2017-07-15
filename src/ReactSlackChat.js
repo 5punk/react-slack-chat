@@ -18,7 +18,8 @@ import {
   getNewMessages,
   hasEmoji,
   hasAttachment,
-  isSystemMessage
+  isSystemMessage,
+  isAdmin
 } from './lib/chat-functions';
 
 // Utils
@@ -139,7 +140,7 @@ export class ReactSlackChat extends Component {
             {
               // Show remote users image only if message isn't customers
               !didIPostIt
-                ? this.getUserImg(message.user || message.username)
+                ? this.getUserImg(message)
                 : null
             }
           </div>;
@@ -184,7 +185,7 @@ export class ReactSlackChat extends Component {
       {
         // Show remote users image only if message isn't customers
         !myMessage
-          ? this.getUserImg(message.user || message.username)
+          ? this.getUserImg(message)
           : null
       }
     </div>;
@@ -329,7 +330,8 @@ export class ReactSlackChat extends Component {
     this.activeChannelInterval = setInterval(getMessagesFromSlack, this.refreshTime);
   }
 
-  getUserImg(userId) {
+  getUserImg(message) {
+    let userId = message.user || message.username;
     let image;
     this.state.onlineUsers.map((user) => {
       if (user.id === userId) {
@@ -337,8 +339,20 @@ export class ReactSlackChat extends Component {
       }
     });
     const imageToReturn = image
-      ? <img src={image} className={styles.chat__contact__photo} alt='mentionedUserImg' />
-      : <div className={styles.user__contact__generated__image}>{userId.charAt(0)}</div>;
+      ? // Found backend user
+      <img src={image} className={styles.chat__contact__photo} alt='mentionedUserImg' />
+      : (
+        // Check admin or client user?
+        isAdmin(message) ?
+          <img src={`https://robohash.org/${userId}?set=set2`} className={styles.chat__contact__photo} alt={userId} />
+          : (
+            // Check system message or client user?
+            isSystemMessage(message) ?
+              <img src={`https://robohash.org/${userId}?set=set3`} className={styles.chat__contact__photo} alt={userId} />
+              : // Regular browser client user
+              <img src={`https://robohash.org/${userId}`} className={styles.chat__contact__photo} alt={userId} />
+          )
+      );
     return imageToReturn;
   }
 

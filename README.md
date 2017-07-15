@@ -34,7 +34,7 @@ class App extends Component {
   render() {
     return (
         <ReactSlackChat
-          botName='5punk-bot'
+          botName='5punk-bot' // VisitorID, CorpID, Email, IP address etc.
           apiToken='xoxp-63486550359-63sfes26502-88fewfw67777-119aab37r32r32r316e0296c3da'
           channels={[
           {
@@ -71,7 +71,7 @@ class App extends Component {
 
 Below are a list of props the `<ReactSlackChat />` component accepts
 
-  * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot. Can be Visitor ID / IP address etc.
+  * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot. Can be Visitor ID / Email ID / CorpID / IP address etc.
   * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://my.slack.com/services/new/bot).
   * `channels`: [REQUIRED] At least one slack channel object needs to be passed for the first channel view. Refer example above.
   * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).

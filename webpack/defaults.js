@@ -18,13 +18,6 @@ const dfltPort = 3003;
 function getDefaultModules () {
   return {
     noParse: /node_modules\/html2canvas\/dist\/html2canvas.js/,
-    preLoaders: [
-      {
-        test: /\.(js|jsx)$/,
-        include: srcPath,
-        loader: 'eslint-loader'
-      }
-    ],
     loaders: [
       {
         test: /\.css$/,
