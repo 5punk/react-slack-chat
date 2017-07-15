@@ -1,10 +1,10 @@
 # React Slack Chat
 
-DEMO: http://avanishpathak.com/react-slack-chat/
-
 ![Build Status](https://travis-ci.org/5punk/react-slack-chat.svg?branch=master)
 ![Node Version](https://img.shields.io/badge/node-v6-blue.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/5punk/react-slack-chat/badge.svg)](https://snyk.io/test/github/5punk/react-slack-chat)
+
+[DEMO](http://avanishpathak.com/react-slack-chat/)
 
 A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget. This widget can be integrated as a Live Chat / Help Desk / Discussions for Special Interest Sites.
 
