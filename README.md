@@ -1,5 +1,7 @@
 # React Slack Chat
 
+DEMO: http://avanishpathak.com/react-slack-chat/
+
 ![Build Status](https://travis-ci.org/5punk/react-slack-chat.svg?branch=master)
 ![Node Version](https://img.shields.io/badge/node-v6-blue.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/5punk/react-slack-chat/badge.svg)](https://snyk.io/test/github/5punk/react-slack-chat)
