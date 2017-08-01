@@ -18,7 +18,8 @@ import {
   getNewMessages,
   hasEmoji,
   hasAttachment,
-  isSystemMessage
+  isSystemMessage,
+  isAdmin
 } from './lib/chat-functions';
 
 // Utils
@@ -53,6 +54,8 @@ export class ReactSlackChat extends Component {
       }
     };
     // Set class variables
+    // Base64 decode the API Token
+    this.apiToken = atob(this.props.apiToken);
     this.refreshTime = 2000;
     this.activeChannel = [];
     this.activeChannelInterval = null;
@@ -139,7 +142,7 @@ export class ReactSlackChat extends Component {
             {
               // Show remote users image only if message isn't customers
               !didIPostIt
-                ? this.getUserImg(message.user || message.username)
+                ? this.getUserImg(message)
                 : null
             }
           </div>;
@@ -184,7 +187,7 @@ export class ReactSlackChat extends Component {
       {
         // Show remote users image only if message isn't customers
         !myMessage
-          ? this.getUserImg(message.user || message.username)
+          ? this.getUserImg(message)
           : null
       }
     </div>;
@@ -228,7 +231,7 @@ export class ReactSlackChat extends Component {
           return resolve({ channels, onlineUsers });
         });
         // tell the bot to listen
-        this.bot.listen({ token: this.props.apiToken }, err => {
+        this.bot.listen({ token: this.apiToken }, err => {
           if (err) {
             debugLog`Could not connect to Slack Server. Reason: ${JSON.stringify(err)}`;
             this.setState({
@@ -245,7 +248,7 @@ export class ReactSlackChat extends Component {
   postMyMessage () {
     return postMessage({
       text: this.state.postMyMessage,
-      apiToken: this.props.apiToken,
+      apiToken: this.apiToken,
       channel: this.activeChannel.id,
       username: this.props.botName
     })
@@ -276,7 +279,7 @@ export class ReactSlackChat extends Component {
     const getMessagesFromSlack = () => {
       const messagesLength = that.state.messages.length;
       channels.history({
-        token: this.props.apiToken,
+        token: this.apiToken,
         channel: channel.id
       }, (err, data) => {
         if (err) {
@@ -303,7 +306,7 @@ export class ReactSlackChat extends Component {
               message,
               username: this.props.botName,
               customHooks: this.props.hooks,
-              apiToken: this.props.apiToken,
+              apiToken: this.apiToken,
               channel: this.activeChannel.id
             })) : null;
           }
@@ -329,7 +332,8 @@ export class ReactSlackChat extends Component {
     this.activeChannelInterval = setInterval(getMessagesFromSlack, this.refreshTime);
   }
 
-  getUserImg(userId) {
+  getUserImg(message) {
+    const userId = message.user || message.username;
     let image;
     this.state.onlineUsers.map((user) => {
       if (user.id === userId) {
@@ -337,8 +341,20 @@ export class ReactSlackChat extends Component {
       }
     });
     const imageToReturn = image
-      ? <img src={image} className={styles.chat__contact__photo} alt='mentionedUserImg' />
-      : <div className={styles.user__contact__generated__image}>{userId.charAt(0)}</div>;
+      ? // Found backend user
+      <img src={image} className={styles.chat__contact__photo} alt='mentionedUserImg' />
+      : (
+        // Check admin or client user?
+        isAdmin(message)
+          ? <img src={`https://robohash.org/${userId}?set=set2`} className={styles.chat__contact__photo} alt={userId} />
+          : (
+            // Check system message or client user?
+            isSystemMessage(message)
+              ? <img src={`https://robohash.org/${userId}?set=set3`} className={styles.chat__contact__photo} alt={userId} />
+              : // Regular browser client user
+              <img src={`https://robohash.org/${userId}`} className={styles.chat__contact__photo} alt={userId} />
+          )
+      );
     return imageToReturn;
   }
 
@@ -360,7 +376,7 @@ export class ReactSlackChat extends Component {
     }, () => postFile({
       file: fileToUpload,
       title: this.fileUploadTitle,
-      apiToken: this.props.apiToken,
+      apiToken: this.apiToken,
       channel: this.activeChannel.id
     })
       .then(() => this.setState({

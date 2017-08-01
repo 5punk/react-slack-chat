@@ -4,6 +4,8 @@
 ![Node Version](https://img.shields.io/badge/node-v6-blue.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/5punk/react-slack-chat/badge.svg)](https://snyk.io/test/github/5punk/react-slack-chat)
 
+[DEMO](http://avanishpathak.com/react-slack-chat/)
+
 A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget. This widget can be integrated as a Live Chat / Help Desk / Discussions for Special Interest Sites.
 
 Give your users the Perfect Support / Engagement experience, with the comfort of Slack.
@@ -14,10 +16,9 @@ Throw your website visitors into a Slack Channel Community, where they can searc
 
 ## Pre Requisites
 
-1. Setup a [Slack Bot](https://my.slack.com/services/new/bot) for your team.
-2. Encode / Obfuscate the apiToken if you need to publish it to a public Github Repository.
-
-Note: Do not post / publish your Secret API Token as Plain Text to a public Github Repository.
+1. [Pollyfill babel](https://babeljs.io/docs/usage/polyfill/). Your app has to do it to avoid multiple instancing errors from `babel-polyfill`.
+2. Setup a [Slack Bot](https://my.slack.com/services/new/bot) for your team. Note your API token.
+3. [Base64 encode](https://www.base64encode.org/) your newly created API token and fasten your seat-belts.
 
 ## Installation
 
@@ -34,8 +35,8 @@ class App extends Component {
   render() {
     return (
         <ReactSlackChat
-          botName='5punk-bot'
-          apiToken='xoxp-63486550359-63sfes26502-88fewfw67777-119aab37r32r32r316e0296c3da'
+          botName='5punk-unique-id' // VisitorID, CorpID, Email, IP address etc.
+          apiToken='base64-encoded-api-token-119aab37r32r32r316e0296c3da'
           channels={[
           {
             name: 'random'
@@ -71,8 +72,8 @@ class App extends Component {
 
 Below are a list of props the `<ReactSlackChat />` component accepts
 
-  * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot. Can be Visitor ID / IP address etc.
-  * `apiToken`: [REQUIRED] The API Token for the bot you created for your team. You can create one [here](https://my.slack.com/services/new/bot).
+  * `botname`: [UNIQUE] [REQUIRED] The name of the user / bot. Can be Visitor ID / Email ID / CorpID / IP address etc.
+  * `apiToken`: [REQUIRED] The [BASE64 ENCODED](https://www.base64encode.org/) API Token for the bot you created for your team. You can create one [here](https://my.slack.com/services/new/bot).
   * `channels`: [REQUIRED] At least one slack channel object needs to be passed for the first channel view. Refer example above.
   * `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
   * `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
