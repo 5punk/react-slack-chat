@@ -58,6 +58,7 @@ export class ReactSlackChat extends Component {
     // Base64 decode the API Token
     this.apiToken = atob(this.props.apiToken);
     this.refreshTime = 2000;
+    this.chatInitiatedTs = '';
     this.activeChannel = [];
     this.activeChannelInterval = null;
     this.messageFormatter = {
@@ -293,6 +294,9 @@ export class ReactSlackChat extends Component {
 
   loadMessages(channel) {
     const that = this;
+    if (!this.chatInitiatedTs) {
+      this.chatInitiatedTs = Date.now() / 1000;
+    }
     // define loadMessages function
     const getMessagesFromSlack = () => {
       const messagesLength = that.state.messages.length;
@@ -329,10 +333,15 @@ export class ReactSlackChat extends Component {
             })) : null;
           }
           // set the state with new messages
+          // TODO: apply message filters
           const userMessages = data.messages.filter((message) => message.username === this.props.botName);
           const lastThreadTs = userMessages.slice(-1)[0].thread_ts;
+          const messages = data.messages.filter((message) => message.username === this.props.botName || message.thread_ts === lastThreadTs);
+          if (this.props.defaultMessage) {
+            messages.unshift({text: this.props.defaultMessage, ts: this.chatInitiatedTs});
+          }
           return this.setState({
-            messages: data.messages.filter((message) => message.username === this.props.botName || message.thread_ts === lastThreadTs),
+            messages: messages,
             lastThreadTs: lastThreadTs
           }, () => {
             // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
