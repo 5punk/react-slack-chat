@@ -3,6 +3,7 @@ import { debugLog } from './utils';
 
 export const postMessage = ({
   text,
+  lastThreadTs,
   apiToken,
   channel,
   username
@@ -11,6 +12,7 @@ export const postMessage = ({
     if (text !== '') {
       return chat.postMessage({
         token: apiToken,
+        thread_ts: lastThreadTs,
         channel,
         text,
         username
