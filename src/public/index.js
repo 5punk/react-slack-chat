@@ -53,7 +53,7 @@ class App extends Component {
     ]}
     defaultChannel='cloudrunner-support'
     defaultMessage='Hi, how can I help you?'
-    filterMessagesBy={{username: getClientID, thread_ts: ''}}
+    filterByLastUserThread={true}
     apiToken='***REMOVED***'
     helpText='Need Help?'
     themeColor='#856090'

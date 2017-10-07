@@ -333,16 +333,18 @@ export class ReactSlackChat extends Component {
             })) : null;
           }
           // set the state with new messages
-          // TODO: apply message filters
-          const userMessages = data.messages.filter((message) => message.username === this.props.botName);
-          const lastThreadTs = userMessages.slice(-1)[0].thread_ts;
-          const messages = data.messages.filter((message) => message.username === this.props.botName || message.thread_ts === lastThreadTs);
+          that.messages = data.messages;
+          if (this.props.filterByLastUserThread) {
+            const userMessages = that.messages.filter((message) => message.username === this.props.botName);
+            that.lastThreadTs = userMessages.slice(-1)[0].thread_ts;
+            that.messages = that.messages.filter((message) => message.username === this.props.botName || message.thread_ts === that.lastThreadTs);
+          }
           if (this.props.defaultMessage) {
-            messages.unshift({text: this.props.defaultMessage, ts: this.chatInitiatedTs});
+            that.messages.unshift({text: this.props.defaultMessage, ts: this.chatInitiatedTs});
           }
           return this.setState({
-            messages: messages,
-            lastThreadTs: lastThreadTs
+            messages: that.messages,
+            lastThreadTs: that.lastThreadTs
           }, () => {
             // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
             const chatMessages = document.getElementById('widget-reactSlakChatMessages');
@@ -616,7 +618,7 @@ ReactSlackChat.propTypes = {
   helpText: PropTypes.string,
   defaultChannel: PropTypes.string,
   defaultMessage: PropTypes.string,
-  filterMessagesBy: PropTypes.object,
+  filterByLastUserThread: PropTypes.bool,
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,
