@@ -98,21 +98,11 @@ export class ReactSlackChat extends Component {
         debugLog('got data', data);
         if (this.props.defaultChannel) {
           this.activeChannel = data.channels.filter((channel) => channel.name === this.props.defaultChannel)[0];
-          this.setState({
-            onlineUsers: data.onlineUsers,
-            channels: data.channels,
-            chatbox: {
-              active: true,
-              channelActiveView: false,
-              chatActiveView: true
-            }
-          }, () => this.loadMessages(this.activeChannel));
-        } else {
-          this.setState({
-            onlineUsers: data.onlineUsers,
-            channels: data.channels
-          });
         }
+        this.setState({
+          onlineUsers: data.onlineUsers,
+          channels: data.channels
+        });
       })
       .catch((err) => {
         debugLog('could not intialize slack bot', err);
