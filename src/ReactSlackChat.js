@@ -560,6 +560,10 @@ export class ReactSlackChat extends Component {
             {this.activeChannel.icon
               ? <img src={this.activeChannel.icon} className={styles.channel__header__photo} />
               : <div dangerouslySetInnerHTML={{__html: defaultChannelIcon}} className={styles.channel__header__photo} />}
+            {this.props.closeChatButton
+              ? <button className={styles.channel__close__button} onClick={this.closeChatBox}>×</button>
+              : null
+            }
           </div>
           <div className={styles.chat__messages} id='widget-reactSlakChatMessages'>
             {
@@ -619,6 +623,7 @@ ReactSlackChat.propTypes = {
   defaultChannel: PropTypes.string,
   defaultMessage: PropTypes.string,
   filterByLastUserThread: PropTypes.bool,
+  closeChatButton: PropTypes.bool,
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,

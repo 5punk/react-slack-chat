@@ -199,6 +199,17 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
     height: 48px;
   }
 }
+.channel__close__button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: $color_celeste_approx;
+  background: none;
+  font-weight: bold;
+  font-size: 1.4em;
+  border: none;
+  cursor: pointer;
+}
 .contact__name {
 	font-family: $font_0, $font_1, $font_2, $font_3;
 }
