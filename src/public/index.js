@@ -48,13 +48,24 @@ class App extends Component {
     botName={getClientID}
     channels={[
       {
-        name: 'cloudrunner-support'
+        name: 'mac',
+        icon: 'https://image.flaticon.com/icons/svg/141/141021.svg'
+      },
+      {
+        name: 'pc',
+        icon: 'https://image.flaticon.com/icons/svg/224/224597.svg'
+      },
+      {
+        name: 'linux',
+        icon: 'https://image.flaticon.com/icons/svg/226/226772.svg'
+      },
+      {
+        name: 'test',
+        id: '',
+        icon: ''
       }
     ]}
-    defaultChannel='cloudrunner-support'
-    defaultMessage='Hi, how can I help you?'
-    filterByLastUserThread={true}
-    apiToken='***REMOVED***'
+    apiToken='eG94Yi0xMTExMjA5MTYwNjUtQVROd20zVTF0WGxURDdLUHdQMmkyQjNI'
     helpText='Need Help?'
     themeColor='#856090'
     debugMode={true}
