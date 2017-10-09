@@ -45,6 +45,8 @@ export class ReactSlackChat extends Component {
       onlineUsers: [],
       channels: [],
       messages: [],
+      // keep track of the last conversation thread if a conversation has been
+      // threaded on the Slack side
       lastThreadTs: '',
       postMyMessage: '',
       postMyFile: '',
@@ -324,12 +326,23 @@ export class ReactSlackChat extends Component {
           }
           // set the state with new messages
           that.messages = data.messages;
-          if (this.props.filterByLastUserThread) {
+          if (this.props.singleUserMode) {
             const userMessages = that.messages.filter((message) => message.username === this.props.botName);
-            that.lastThreadTs = userMessages.slice(-1)[0].thread_ts;
-            that.messages = that.messages.filter((message) => message.username === this.props.botName || message.thread_ts === that.lastThreadTs);
+            if (userMessages.length > 0) {
+              const lastUserMessage = userMessages.pop(-1);
+              that.lastThreadTs = lastUserMessage.thread_ts;
+              // get all messages sent by the user or replies from the user's last thread -
+              // otherwise the user will see replies meant for other users
+              that.messages = that.messages.filter(
+                (message) =>
+                  message.username === this.props.botName || message.thread_ts === that.lastThreadTs
+              );
+            } else {
+              that.messages = [];
+            }
           }
           if (this.props.defaultMessage) {
+            // add timestamp so list item will have unique key
             that.messages.unshift({text: this.props.defaultMessage, ts: this.chatInitiatedTs});
           }
           return this.setState({
@@ -610,9 +623,15 @@ ReactSlackChat.propTypes = {
   channels: PropTypes.array.isRequired,
   botName: PropTypes.string,
   helpText: PropTypes.string,
+  // bypass the channel list and go directly to a specific channel
   defaultChannel: PropTypes.string,
+  // prepend a default message to the beginning of the message list, such as an
+  // automatic greeting when a user first joins the channel
   defaultMessage: PropTypes.string,
-  filterByLastUserThread: PropTypes.bool,
+  // filter messages so the user only sees his/her messages and replies
+  // directed at the user in threads on the Slack side
+  singleUserMode: PropTypes.bool,
+  // add an "x" close button in the corner of the chat window
   closeChatButton: PropTypes.bool,
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
