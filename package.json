@@ -51,9 +51,6 @@
   "bugs": {
     "url": "https://github.com/apathak1/react-slack-plugin/issues"
   },
-  "engines": {
-    "node": "6.6"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/5punk/react-slack-chat.git"
