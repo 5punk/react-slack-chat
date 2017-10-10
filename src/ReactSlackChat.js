@@ -335,7 +335,15 @@ export class ReactSlackChat extends Component {
               // otherwise the user will see replies meant for other users
               that.messages = that.messages.filter(
                 (message) =>
-                  message.username === this.props.botName || message.thread_ts === that.lastThreadTs
+                {
+                  if (message.username === this.props.botName) {
+                    return true;
+                  }
+                  if (that.lastThreadTs && message.thread_ts === that.lastThreadTs) {
+                    return true;
+                  }
+                  return false;
+                }
               );
             } else {
               that.messages = [];
