@@ -45,6 +45,9 @@ export class ReactSlackChat extends Component {
       onlineUsers: [],
       channels: [],
       messages: [],
+      // keep track of the last conversation thread if a conversation has been
+      // threaded on the Slack side
+      lastThreadTs: '',
       postMyMessage: '',
       postMyFile: '',
       chatbox: {
@@ -57,6 +60,7 @@ export class ReactSlackChat extends Component {
     // Base64 decode the API Token
     this.apiToken = atob(this.props.apiToken);
     this.refreshTime = 2000;
+    this.chatInitiatedTs = '';
     this.activeChannel = [];
     this.activeChannelInterval = null;
     this.messageFormatter = {
@@ -94,6 +98,9 @@ export class ReactSlackChat extends Component {
     this.connectBot(this)
       .then((data) => {
         debugLog('got data', data);
+        if (this.props.defaultChannel) {
+          this.activeChannel = data.channels.filter((channel) => channel.name === this.props.defaultChannel)[0];
+        }
         this.setState({
           onlineUsers: data.onlineUsers,
           channels: data.channels
@@ -223,6 +230,9 @@ export class ReactSlackChat extends Component {
             this.props.channels.forEach((channelObject) => {
               // If this channel is exactly as requested
               if (channelObject.name === channel.name || channelObject.id === channel.id) {
+                if (this.props.defaultChannel === channel.name) {
+                  this.activeChannel = channelObject;
+                }
                 channel.icon = channelObject.icon; // Add on the icon property to the channel list
                 channels.push(channel);
               }
@@ -248,6 +258,7 @@ export class ReactSlackChat extends Component {
   postMyMessage () {
     return postMessage({
       text: this.state.postMyMessage,
+      lastThreadTs: this.state.lastThreadTs,
       apiToken: this.apiToken,
       channel: this.activeChannel.id,
       username: this.props.botName
@@ -275,6 +286,9 @@ export class ReactSlackChat extends Component {
 
   loadMessages(channel) {
     const that = this;
+    if (!this.chatInitiatedTs) {
+      this.chatInitiatedTs = Date.now() / 1000;
+    }
     // define loadMessages function
     const getMessagesFromSlack = () => {
       const messagesLength = that.state.messages.length;
@@ -311,8 +325,37 @@ export class ReactSlackChat extends Component {
             })) : null;
           }
           // set the state with new messages
+          that.messages = data.messages;
+          if (this.props.singleUserMode) {
+            const userMessages = that.messages.filter((message) => message.username === this.props.botName);
+            if (userMessages.length > 0) {
+              const lastUserMessage = userMessages.pop(-1);
+              that.lastThreadTs = lastUserMessage.thread_ts;
+              // get all messages sent by the user or replies from the user's last thread -
+              // otherwise the user will see replies meant for other users
+              that.messages = that.messages.filter(
+                (message) =>
+                {
+                  if (message.username === this.props.botName) {
+                    return true;
+                  }
+                  if (that.lastThreadTs && message.thread_ts === that.lastThreadTs) {
+                    return true;
+                  }
+                  return false;
+                }
+              );
+            } else {
+              that.messages = [];
+            }
+          }
+          if (this.props.defaultMessage) {
+            // add timestamp so list item will have unique key
+            that.messages.unshift({text: this.props.defaultMessage, ts: this.chatInitiatedTs});
+          }
           return this.setState({
-            messages: data.messages
+            messages: that.messages,
+            lastThreadTs: that.lastThreadTs
           }, () => {
             // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
             const chatMessages = document.getElementById('widget-reactSlakChatMessages');
@@ -528,6 +571,10 @@ export class ReactSlackChat extends Component {
             {this.activeChannel.icon
               ? <img src={this.activeChannel.icon} className={styles.channel__header__photo} />
               : <div dangerouslySetInnerHTML={{__html: defaultChannelIcon}} className={styles.channel__header__photo} />}
+            {this.props.closeChatButton
+              ? <button className={styles.channel__close__button} onClick={this.closeChatBox}>×</button>
+              : null
+            }
           </div>
           <div className={styles.chat__messages} id='widget-reactSlakChatMessages'>
             {
@@ -584,6 +631,16 @@ ReactSlackChat.propTypes = {
   channels: PropTypes.array.isRequired,
   botName: PropTypes.string,
   helpText: PropTypes.string,
+  // bypass the channel list and go directly to a specific channel
+  defaultChannel: PropTypes.string,
+  // prepend a default message to the beginning of the message list, such as an
+  // automatic greeting when a user first joins the channel
+  defaultMessage: PropTypes.string,
+  // filter messages so the user only sees his/her messages and replies
+  // directed at the user in threads on the Slack side
+  singleUserMode: PropTypes.bool,
+  // add an "x" close button in the corner of the chat window
+  closeChatButton: PropTypes.bool,
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,
