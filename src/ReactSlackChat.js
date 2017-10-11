@@ -45,9 +45,8 @@ export class ReactSlackChat extends Component {
       onlineUsers: [],
       channels: [],
       messages: [],
-      // keep track of the last conversation thread if a conversation has been
-      // threaded on the Slack side
-      lastThreadTs: '',
+      // keep track of user threads for messaging in singleUserMode
+      userThreadTss: [],
       postMyMessage: '',
       postMyFile: '',
       chatbox: {
@@ -258,7 +257,7 @@ export class ReactSlackChat extends Component {
   postMyMessage () {
     return postMessage({
       text: this.state.postMyMessage,
-      lastThreadTs: this.state.lastThreadTs,
+      lastThreadTs: this.state.userThreadTss[this.state.userThreadTss.length - 1],
       apiToken: this.apiToken,
       channel: this.activeChannel.id,
       username: this.props.botName
@@ -327,19 +326,17 @@ export class ReactSlackChat extends Component {
           // set the state with new messages
           that.messages = data.messages;
           if (this.props.singleUserMode) {
-            const userMessages = that.messages.filter((message) => message.username === this.props.botName);
-            if (userMessages.length > 0) {
-              const lastUserMessage = userMessages.pop(-1);
-              that.lastThreadTs = lastUserMessage.thread_ts;
-              // get all messages sent by the user or replies from the user's last thread -
-              // otherwise the user will see replies meant for other users
+            if (that.messages.length > 0) {
               that.messages = that.messages.filter(
                 (message) =>
                 {
-                  if (message.username === this.props.botName) {
+                  if (message.username === that.props.botName) {
+                    if (message.thread_ts) {
+                      this.state.userThreadTss.indexOf(message.thread_ts) === -1 ? this.state.userThreadTss.push(message.thread_ts) : null;
+                    }
                     return true;
                   }
-                  if (that.lastThreadTs && message.thread_ts === that.lastThreadTs) {
+                  if (this.state.userThreadTss.indexOf(message.thread_ts) !== -1) {
                     return true;
                   }
                   return false;
@@ -354,8 +351,7 @@ export class ReactSlackChat extends Component {
             that.messages.unshift({text: this.props.defaultMessage, ts: this.chatInitiatedTs});
           }
           return this.setState({
-            messages: that.messages,
-            lastThreadTs: that.lastThreadTs
+            messages: that.messages
           }, () => {
             // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
             const chatMessages = document.getElementById('widget-reactSlakChatMessages');
