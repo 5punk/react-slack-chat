@@ -6,7 +6,7 @@
 
 [DEMO](http://avanishpathak.com/react-slack-chat/)
 
-A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget. This widget can be integrated as a Live Chat / Help Desk / Discussions for Special Interest Sites.
+A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget. This widget can be integrated as a Live Chat / Help Desk / Discussions for Special Interest Sites in **Solo Single Customer Mode (1:1)** or **Community Chat (Shoutbox) Mode**.
 
 Give your users the Perfect Support / Engagement experience, with the comfort of Slack.
 
