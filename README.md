@@ -80,6 +80,11 @@ Below are a list of props the `<ReactSlackChat />` component accepts
   * `themeColor`: [OPTIONAL] A Hex Color value accent you want the widget to be themed with, stylish stuff.
   * `hooks`: [OPTIONAL] Custom Action Hooks, let's administrators execute commands. In the format `$=>@botName:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
   * `debugMode`: [OPTIONAL] Pass a boolean (`true`/`false`) flag to start debug logs.
+  * `defaultChannel`: [OPTIONAL] Channel name to bypass the channel list and go directly to a specific channel.
+  * `defaultMessage`: [OPTIONAL] Prepend a default message to the beginning of the message list, such as an automatic greeting when a user first joins the channel.
+  * `singleUserMode`: [OPTIONAL] Pass a boolean to filter messages so the user only sees his/her messages and replies directed at the user in threads on the Slack side.
+  * `closeChatButton`: [OPTIONAL] Pass a boolean to add an "x" close button in the corner of the chat window instead of going back to channel list and minimizing.
+
 
 ## Default System Hooks
 
