@@ -38,6 +38,7 @@
     "classnames": "^2.2.5",
     "gh-emoji": "^0.2.5",
     "html2canvas": "^0.5.0-beta4",
+    "public-ip": "^2.4.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "slack": "^7.7.3"

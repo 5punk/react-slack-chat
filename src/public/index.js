@@ -1,9 +1,19 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import publicIp from 'public-ip';
+
 import { ReactSlackChat } from '../ReactSlackChat';
 import './App.css';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.getIP = this.getIP.bind(this);
+
+    this.state = {
+      ip: undefined
+    };
+  }
   syntaxHighlight(json) {
     if (typeof json !== 'string') {
       json = JSON.stringify(json, undefined, 4);
@@ -32,54 +42,60 @@ class App extends Component {
   }
 
   getIP() {
-    // https://api.ipify.org?format=json
-    const ipAPI = 'https://api.ipify.org?format=json';
-    const xmlHttp = new XMLHttpRequest();
-    xmlHttp.open('GET', ipAPI, false); // false for synchronous request
-    xmlHttp.send(null);
-    return xmlHttp.responseText;
+    return this.state.ip || publicIp.v4()
+      .then(ip => this.setState({ ip }))
+      .catch(console.log);
   }
 
   render() {
-    const getClientID = JSON.parse(this.getIP()).ip;
+    const getClientID = this.state.ip || this.getIP();
     const getClientAvatar = `https://robohash.org/${getClientID}`;
 
-    const chat = <ReactSlackChat
-    botName={getClientID}
-    channels={[
-      {
-        name: 'mac',
-        icon: 'https://image.flaticon.com/icons/svg/141/141021.svg'
-      },
-      {
-        name: 'pc',
-        icon: 'https://image.flaticon.com/icons/svg/224/224597.svg'
-      },
-      {
-        name: 'linux',
-        icon: 'https://image.flaticon.com/icons/svg/226/226772.svg'
-      },
-      {
-        name: 'test',
-        id: '',
-        icon: ''
-      }
-    ]}
-    apiToken='eG94Yi0xMTExMjA5MTYwNjUtQVROd20zVTF0WGxURDdLUHdQMmkyQjNI'
-    helpText='Need Help?'
-    themeColor='#856090'
-    debugMode={true}
-    userImage={getClientAvatar}
-    hooks={[
-      {
-        /* My Custom Hook */
-        id: 'getSystemInfo',
-        action: () => 'MY SYSTEM INFO!'
-      }
-    ]}
-    />;
+    const slackChatProps = {
+      botName: getClientID,
+      channels: [
+        {
+          name: 'mac',
+          icon: 'https://image.flaticon.com/icons/svg/141/141021.svg'
+        },
+        {
+          name: 'pc',
+          icon: 'https://image.flaticon.com/icons/svg/224/224597.svg'
+        },
+        {
+          name: 'linux',
+          icon: 'https://image.flaticon.com/icons/svg/226/226772.svg'
+        },
+        {
+          name: 'test',
+          id: '',
+          icon: ''
+        }
+      ],
+      apiToken: 'eG94Yi0xMTExMjA5MTYwNjUtQVROd20zVTF0WGxURDdLUHdQMmkyQjNI',
+      helpText: 'Need Help?',
+      themeColor: '#856090',
+      debugMode: true,
+      userImage: getClientAvatar,
+      hooks: [
+        {
+          /* My Custom Hook */
+          id: 'getSystemInfo',
+          action: () => 'MY SYSTEM INFO!'
+        }
+      ]
+    };
 
-    const codeHighlight = this.createMarkup(this.syntaxHighlight(chat.props));
+    const chat = !this.state.ip
+      ? <div className='loading'>
+          <h2>Now Loading...</h2>
+        </div>
+      : <ReactSlackChat
+          {...slackChatProps}
+        />
+      ;
+
+    const codeHighlight = this.createMarkup(this.syntaxHighlight(slackChatProps));
 
     return (
       <div className="App">
