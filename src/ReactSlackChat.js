@@ -58,7 +58,7 @@ export class ReactSlackChat extends Component {
     // Set class variables
     // Base64 decode the API Token
     this.apiToken = atob(this.props.apiToken);
-    this.refreshTime = 2000;
+    this.refreshTime = 5000;
     this.chatInitiatedTs = '';
     this.activeChannel = [];
     this.activeChannelInterval = null;
@@ -73,6 +73,7 @@ export class ReactSlackChat extends Component {
     // Bind Slack Message functions
     this.loadMessages = this.loadMessages.bind(this);
     this.postMyMessage = this.postMyMessage.bind(this);
+    this.gotNewMessages = this.gotNewMessages.bind(this);
     this.getUserImg = this.getUserImg.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
@@ -96,7 +97,7 @@ export class ReactSlackChat extends Component {
     // Connect bot
     this.connectBot(this)
       .then((data) => {
-        debugLog('got data', data);
+        debugLog('CONNECTED!', 'got data', data);
         if (this.props.defaultChannel) {
           this.activeChannel = data.channels.filter((channel) => channel.name === this.props.defaultChannel)[0];
         }
@@ -111,6 +112,11 @@ export class ReactSlackChat extends Component {
           failed: true
         });
       });
+  }
+
+  gotNewMessages(newMessages) {
+    const newCount = this.state.newMessageNotification + newMessages.length;
+    this.setState({ newMessageNotification: newCount });
   }
 
   displayFormattedMessage(message) {
@@ -168,6 +174,7 @@ export class ReactSlackChat extends Component {
     }
     // check if user was mentioned by anyone else remotely
     const mentioned = wasIMentioned(message, this.props.botName);
+
     const textHasEmoji = hasEmoji(messageText);
     // check if emoji library is enabled
     if (this.messageFormatter.emoji && textHasEmoji) {
@@ -313,7 +320,9 @@ export class ReactSlackChat extends Component {
             // We know they are really new messages by checking to see if we already have messages in the state
             // Only if we atleast have some messages in the state
             // Grab new messages
-            const newMessages = getNewMessages(this.state.messages, data.messages);
+            const newMessages = getNewMessages(this.state.messages, data.messages, this.props.botName);
+            this.gotNewMessages(newMessages);
+
             // Iterate over the new messages and exec any action hooks if found
             newMessages ? newMessages.map(message => execHooksIfFound({
               message,
@@ -482,7 +491,8 @@ export class ReactSlackChat extends Component {
           active: true,
           channelActiveView: true,
           chatActiveView: false
-        }
+        },
+        newMessageNotification: 0
       }, () => {
         // Look to see if an active channel was already chosen...
         if (Object.keys(this.activeChannel).length > 0) {
@@ -504,11 +514,6 @@ export class ReactSlackChat extends Component {
           active: false,
           channelActiveView: false,
           chatActiveView: false
-        }
-      }, () => {
-        // Clear load messages time interval
-        if (this.activeChannelInterval) {
-          clearInterval(this.activeChannelInterval);
         }
       });
     }
@@ -539,6 +544,10 @@ export class ReactSlackChat extends Component {
     const chatbox = <div>
       <div className={classNames(styles.card, styles.transition, this.state.chatbox.active ? styles.active : '', this.state.chatbox.chatActiveView ? styles.chatActive : '')} onClick={this.openChatBox}>
         <div className={styles.helpHeader}>
+        {
+          this.state.newMessageNotification > 0
+            && <span className={styles.unreadNotificationsBadge}>{this.state.newMessageNotification}</span>
+        }
           <h2 className={styles.transition}>{this.state.helpText || 'Help?'}</h2>
           <h2 className={styles.subText}>Click on a channel to interact.</h2>
         </div>
@@ -557,7 +566,7 @@ export class ReactSlackChat extends Component {
           }
         </div>
         <div className={classNames(styles.chat)}>
-          <div className={styles.chatHeader}>
+          <div className={classNames(styles.chatHeader)}>
             <span className={styles.chat__back} onClick={this.goToChannelView}></span>
             <div className={styles.chat__person}>
               <span className={styles.chat__status}>status</span>

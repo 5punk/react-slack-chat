@@ -32,7 +32,6 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	//Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
 	box-shadow: 0 0 10px 2px $black_30;
 	height: 60px;
-	overflow: hidden;
 	position: fixed;
 	right: 40px;
 	bottom: 0;
@@ -238,6 +237,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
   height: 6rem;
   background: $theme_color;
 }
+
 .chat__back {
 	&:before {
 		content: "";
@@ -334,7 +334,7 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 }
 .attachmentIcon {
 	position: absolute;
-	bottom: 4px;
+	bottom: 15px;
 	left: 15px;
 	width: 25px;
 	height: 25px;
@@ -420,6 +420,30 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 	color: $color_ebony_clay_approx;
 	border: 1px solid $color_bon_jour_approx;
 	position: relative;
+}
+.unreadNotificationsBadge {
+	padding: 25px;
+	background: white;
+	border-radius: 500px;
+	font-family: Raleway, sans-serif;
+	display: inline-block;
+	min-width: 10px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	color: #5c5c5c;
+	white-space: nowrap;
+	vertical-align: middle;
+	background-color: #fefefe;
+	position: absolute;
+	left: 300px;
+	bottom: 135px;
+	text-align: center;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.unreadNotificationsBadge:hover {
+	box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }
 .notMine .chat__message {
 	color: $color_port_gore_approx;
