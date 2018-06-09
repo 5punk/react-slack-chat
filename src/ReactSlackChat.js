@@ -473,7 +473,13 @@ export class ReactSlackChat extends Component {
           channelActiveView: false,
           chatActiveView: true
         }
-      }, () => this.loadMessages(channel));
+      }, () => {
+        if (this.activeChannelInterval) {
+          clearInterval(this.activeChannelInterval);
+        }
+        this.loadMessages(channel)
+        }
+      );
       // Set this channel as active channel
     }
     return false;
