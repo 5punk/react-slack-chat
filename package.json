@@ -40,7 +40,7 @@
     "gh-emoji": "^0.2.5",
     "html2canvas": "^0.5.0-beta4",
     "react": "^15.3.2",
-    "react-dom": "^15.3.2",
+    "react-dom": "^16.0.1",
     "slack": "^7.7.3"
   },
   "scripts": {
