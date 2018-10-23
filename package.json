@@ -9,7 +9,9 @@
     "build": "cross-env NODE_ENV=production webpack",
     "format": "prettier --write 'src/**/*.js'",
     "test": "jest --watchAll --coverage",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "deploy": "gh-pages -d dist",
+    "postpublish": "npm run deploy"
   },
   "lint-staged": {
     "*.{js,jsx,css,md}": [
@@ -91,6 +93,7 @@
     "eslint-plugin-react": "7.11.1",
     "eslint-watch": "4.0.2",
     "file-loader": "2.0.0",
+    "gh-pages": "^2.0.1",
     "html-webpack-plugin": "3.2.0",
     "husky": "1.1.1",
     "identity-obj-proxy": "3.0.0",
