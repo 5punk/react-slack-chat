@@ -1,16 +1,27 @@
 {
   "name": "react-slack-chat",
-  "version": "1.10.2",
   "description": "A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget.",
-  "private": false,
+  "version": "1.10.2",
   "main": "./dist/react-slack-chat.js",
+  "author": "Avanish Pathak",
+  "license": "ISC",
+  "private": false,
+  "bugs": {
+    "url": "https://github.com/5punk/react-slack-chat/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/5punk/react-slack-chat.git"
+  },
+  "homepage": "https://github.com/5punk/react-slack-chat#readme",
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack-dev-server --open",
     "build": "cross-env NODE_ENV=production webpack",
     "format": "prettier --write 'src/**/*.js'",
     "test": "jest --watchAll --coverage",
     "precommit": "lint-staged",
-    "deploy": "gh-pages -d dist",
+    "cleanup": "rm -rf node_modules/gh-pages/.cache",
+    "deploy": "npm run build && gh-pages -d dist",
     "postpublish": "npm run deploy"
   },
   "lint-staged": {
@@ -43,7 +54,6 @@
       "jsx"
     ]
   },
-  "repository": "https://github.com/5punk/react-slack-chat",
   "dependencies": {
     "classnames": "^2.2.5",
     "gh-emoji": "^0.2.5",
