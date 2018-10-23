@@ -1,23 +1,29 @@
 import html2canvas from 'html2canvas';
 
-import { postMessage, postFile, decodeHtml, isAdmin, wasIMentioned } from './chat-functions';
+import {
+  postMessage,
+  postFile,
+  decodeHtml,
+  isAdmin,
+  wasIMentioned,
+} from './chat-functions';
 import { debugLog } from './utils';
 
 // Define System hooks for everyone
 const systemHooks = [
   {
     id: 'getCurrentPath',
-    action: () => window.location.href
+    action: () => window.location.href,
   },
   {
     id: 'getPlatform',
-    action: () => window.navigator.platform
+    action: () => window.navigator.platform,
   },
   {
     id: 'getScreenshot',
     action: ({ apiToken, channel, username }) => {
       return html2canvas(document.body)
-        .then((canvas) => {
+        .then(canvas => {
           const dataURL = canvas.toDataURL();
           const blobBin = atob(dataURL.split(',')[1]);
           const array = [];
@@ -26,7 +32,7 @@ const systemHooks = [
           }
 
           // Create File
-          const file = new Blob([new Uint8Array(array)], {type: 'image/png'});
+          const file = new Blob([new Uint8Array(array)], { type: 'image/png' });
           // Give it a name
           file.name = `$=>@getScreenshot:Screenshot-by-${username}`;
 
@@ -34,19 +40,18 @@ const systemHooks = [
             file,
             title: `Posted by ${username}`,
             apiToken,
-            channel
-          })
-            .then(() => 'Screenshot sent.');
+            channel,
+          }).then(() => 'Screenshot sent.');
         })
-        .catch((err) => {
+        .catch(err => {
           debugLog(`Error capturing screenshot. Check browser support. ${err}`);
         });
-    }
-  }
+    },
+  },
 ];
 
 // Needs Chat Text
-export const isHookMessage = (text) => {
+export const isHookMessage = text => {
   // Full match 0-20 `$=>@avanish:hookText`
   // Group 1. 3-12 `@avanish`
   // Group 2. 12-20 `hookText`
@@ -60,7 +65,7 @@ export const execHooksIfFound = ({
   customHooks,
   apiToken,
   channel,
-  username
+  username,
 }) => {
   const messageText = decodeHtml(message.text);
   // Check to see if Action Hook is triggered
@@ -83,7 +88,7 @@ export const execHooksIfFound = ({
             hook,
             apiToken,
             channel,
-            username
+            username,
           });
         }
       });
@@ -95,7 +100,7 @@ export const execHooksIfFound = ({
             hook,
             apiToken,
             channel,
-            username
+            username,
           });
         }
       });
@@ -103,23 +108,18 @@ export const execHooksIfFound = ({
   }
 };
 
-const executeHook = async ({
-  hook,
-  apiToken,
-  channel,
-  username
-}) => {
+const executeHook = async ({ hook, apiToken, channel, username }) => {
   debugLog('Hook trigger found', hook.id);
   const hookActionResponse = await hook.action({
     apiToken,
     channel,
-    username
+    username,
   });
   debugLog('Action executed. Posting response.');
   return postMessage({
     text: `$=>@[${hook.id}]:${hookActionResponse}`,
     apiToken,
     channel,
-    username
+    username,
   });
 };

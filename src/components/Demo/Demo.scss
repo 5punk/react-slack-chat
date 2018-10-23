@@ -1,0 +1,70 @@
+.App {
+  text-align: center;
+  font-family: Raleway, sans-serif;
+}
+
+.welp {
+  padding: 80px;
+  font-size: 1.5rem;
+}
+
+.gitLink {
+  color: #9ea8c2;
+  text-decoration: none;
+}
+
+h1 {
+  color: #333;
+}
+
+.ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: 0;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 100px;
+  border-radius: 50px;
+}
+
+.App-header {
+  background-color: #222;
+  font-size: 1.4rem;
+  height: 150px;
+  padding: 40px;
+  color: white;
+}
+
+.App-intro {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.key {
+  color: #597843;
+}
+
+.string {
+  color: #95348f;
+}
+
+.codeBlock {
+  background: #ededed;
+  padding: 40px;
+  font-size: 1.4rem;
+  border-radius: 10px;
+  text-align: left;
+  width: 85%;
+  overflow-x: scroll;
+  margin-left: auto;
+  margin-right: auto;
+  float: none;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
