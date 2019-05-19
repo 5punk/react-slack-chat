@@ -3,8 +3,8 @@ import {
   decodeHtml,
   isAdmin,
   wasIMentioned
-} from "./chat-functions";
-import { debugLog } from "./utils";
+} from './chat-functions';
+import { debugLog } from './utils';
 
 // Needs Chat Text
 export const isHookMessage = text => {
@@ -42,7 +42,7 @@ export const execHooksIfFound = ({
       // Execute System hooks set by user in this.props.hooks
       // Conditionally import it for the build (lite vs -with-hooks)
       if (process.env.SYSTEM_HOOKS) {
-        const { systemHooks } = require("./system-default-hooks");
+        const { systemHooks } = require('./system-default-hooks');
         systemHooks.map(hook => {
           if (hook.id === hookFound[2]) {
             executeHook({
@@ -71,7 +71,7 @@ export const execHooksIfFound = ({
 };
 
 const executeHook = ({ hook, apiToken, channel, username }) => {
-  debugLog("Hook trigger found", hook.id);
+  debugLog('Hook trigger found', hook.id);
   return hook
     .action({
       apiToken,
@@ -79,7 +79,7 @@ const executeHook = ({ hook, apiToken, channel, username }) => {
       username
     })
     .then(hookActionResponse => {
-      debugLog("Action executed. Posting response.");
+      debugLog('Action executed. Posting response.');
       return postMessage({
         text: `$=>@[${hook.id}]:${hookActionResponse}`,
         apiToken,

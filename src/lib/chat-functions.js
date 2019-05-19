@@ -1,5 +1,5 @@
-import { chat } from "slack";
-import { debugLog } from "./utils";
+import { chat } from 'slack';
+import { debugLog } from './utils';
 
 export const postMessage = ({
   text,
@@ -9,7 +9,7 @@ export const postMessage = ({
   username
 }) => {
   return new Promise((resolve, reject) => {
-    if (text !== "") {
+    if (text !== '') {
       return chat.postMessage(
         {
           token: apiToken,
@@ -28,28 +28,28 @@ export const postMessage = ({
 
 export const postFile = ({ file, title, apiToken, channel }) => {
   return new Promise((resolve, reject) => {
-    debugLog("UPLOADING", file);
+    debugLog('UPLOADING', file);
     const options = {
       token: apiToken,
       title,
       filename: file.name,
-      filetype: "auto",
+      filetype: 'auto',
       channels: channel
     };
     const form = new FormData();
-    form.append("token", options.token);
-    form.append("filename", options.filename);
-    form.append("title", options.title);
-    form.append("filetype", options.filetype);
-    form.append("channels", options.channels);
-    form.append("file", new Blob([file]));
+    form.append('token', options.token);
+    form.append('filename', options.filename);
+    form.append('title', options.title);
+    form.append('filetype', options.filetype);
+    form.append('channels', options.channels);
+    form.append('file', new Blob([file]));
     const request = new XMLHttpRequest();
-    request.open("POST", "https://slack.com/api/files.upload");
+    request.open('POST', 'https://slack.com/api/files.upload');
     request.send(form);
     request.onload = () => {
       if (request.status !== 200) {
         const error = new Error(
-          "There was an error uploading the file. Response:",
+          'There was an error uploading the file. Response:',
           request.status,
           request.responseText
         );
@@ -81,7 +81,7 @@ export const isSystemMessage = message => {
 
 export const isAdmin = message => {
   // Any post that has the `user` field is from the backend
-  return typeof message.user !== "undefined";
+  return typeof message.user !== 'undefined';
 };
 
 export const wasIMentioned = (message, botName) => {
@@ -103,7 +103,7 @@ export const hasAttachment = text => {
 };
 
 export const decodeHtml = html => {
-  const txt = document.createElement("textarea");
+  const txt = document.createElement('textarea');
   txt.innerHTML = html;
   return txt.value;
 };
