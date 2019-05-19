@@ -1,50 +1,6 @@
 /******/ (function(modules) { // webpackBootstrap
-/******/ 	// install a JSONP callback for chunk loading
-/******/ 	function webpackJsonpCallback(data) {
-/******/ 		var chunkIds = data[0];
-/******/ 		var moreModules = data[1];
-/******/
-/******/
-/******/ 		// add "moreModules" to the modules object,
-/******/ 		// then flag all "chunkIds" as loaded and fire callback
-/******/ 		var moduleId, chunkId, i = 0, resolves = [];
-/******/ 		for(;i < chunkIds.length; i++) {
-/******/ 			chunkId = chunkIds[i];
-/******/ 			if(installedChunks[chunkId]) {
-/******/ 				resolves.push(installedChunks[chunkId][0]);
-/******/ 			}
-/******/ 			installedChunks[chunkId] = 0;
-/******/ 		}
-/******/ 		for(moduleId in moreModules) {
-/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
-/******/ 				modules[moduleId] = moreModules[moduleId];
-/******/ 			}
-/******/ 		}
-/******/ 		if(parentJsonpFunction) parentJsonpFunction(data);
-/******/
-/******/ 		while(resolves.length) {
-/******/ 			resolves.shift()();
-/******/ 		}
-/******/
-/******/ 	};
-/******/
-/******/
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
-/******/ 	// object to store loaded and loading chunks
-/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 	// Promise = chunk loading, 0 = chunk loaded
-/******/ 	var installedChunks = {
-/******/ 		"main": 0
-/******/ 	};
-/******/
-/******/
-/******/
-/******/ 	// script path function
-/******/ 	function jsonpScriptSrc(chunkId) {
-/******/ 		return __webpack_require__.p + "" + chunkId + ".bundle.js"
-/******/ 	}
 /******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
@@ -70,64 +26,6 @@
 /******/ 		return module.exports;
 /******/ 	}
 /******/
-/******/ 	// This file contains only the entry chunk.
-/******/ 	// The chunk loading function for additional chunks
-/******/ 	__webpack_require__.e = function requireEnsure(chunkId) {
-/******/ 		var promises = [];
-/******/
-/******/
-/******/ 		// JSONP chunk loading for javascript
-/******/
-/******/ 		var installedChunkData = installedChunks[chunkId];
-/******/ 		if(installedChunkData !== 0) { // 0 means "already installed".
-/******/
-/******/ 			// a Promise means "currently loading".
-/******/ 			if(installedChunkData) {
-/******/ 				promises.push(installedChunkData[2]);
-/******/ 			} else {
-/******/ 				// setup Promise in chunk cache
-/******/ 				var promise = new Promise(function(resolve, reject) {
-/******/ 					installedChunkData = installedChunks[chunkId] = [resolve, reject];
-/******/ 				});
-/******/ 				promises.push(installedChunkData[2] = promise);
-/******/
-/******/ 				// start chunk loading
-/******/ 				var script = document.createElement('script');
-/******/ 				var onScriptComplete;
-/******/
-/******/ 				script.charset = 'utf-8';
-/******/ 				script.timeout = 120;
-/******/ 				if (__webpack_require__.nc) {
-/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
-/******/ 				}
-/******/ 				script.src = jsonpScriptSrc(chunkId);
-/******/
-/******/ 				onScriptComplete = function (event) {
-/******/ 					// avoid mem leaks in IE.
-/******/ 					script.onerror = script.onload = null;
-/******/ 					clearTimeout(timeout);
-/******/ 					var chunk = installedChunks[chunkId];
-/******/ 					if(chunk !== 0) {
-/******/ 						if(chunk) {
-/******/ 							var errorType = event && (event.type === 'load' ? 'missing' : event.type);
-/******/ 							var realSrc = event && event.target && event.target.src;
-/******/ 							var error = new Error('Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')');
-/******/ 							error.type = errorType;
-/******/ 							error.request = realSrc;
-/******/ 							chunk[1](error);
-/******/ 						}
-/******/ 						installedChunks[chunkId] = undefined;
-/******/ 					}
-/******/ 				};
-/******/ 				var timeout = setTimeout(function(){
-/******/ 					onScriptComplete({ type: 'timeout', target: script });
-/******/ 				}, 120000);
-/******/ 				script.onerror = script.onload = onScriptComplete;
-/******/ 				document.head.appendChild(script);
-/******/ 			}
-/******/ 		}
-/******/ 		return Promise.all(promises);
-/******/ 	};
 /******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
@@ -180,16 +78,6 @@
 /******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "./";
-/******/
-/******/ 	// on error function for async loading
-/******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
-/******/
-/******/ 	var jsonpArray = window["webpackJsonp"] = window["webpackJsonp"] || [];
-/******/ 	var oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
-/******/ 	jsonpArray.push = webpackJsonpCallback;
-/******/ 	jsonpArray = jsonpArray.slice();
-/******/ 	for(var i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
-/******/ 	var parentJsonpFunction = oldJsonpFunction;
 /******/
 /******/
 /******/ 	// Load entry module and return exports
@@ -510,6 +398,17 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 
 /***/ }),
 
+/***/ "./node_modules/webpack/buildin/system.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/system.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("// Provide a \"System\" global.\nmodule.exports = {\n\t// Make sure import is only used as \"System.import\"\n\timport: function() {\n\t\tthrow new Error(\"System.import cannot be used indirectly\");\n\t}\n};\n\n\n//# sourceURL=webpack:///(webpack)/buildin/system.js?");
+
+/***/ }),
+
 /***/ "./src/components/App/App.js":
 /*!***********************************!*\
   !*** ./src/components/App/App.js ***!
@@ -518,7 +417,7 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ \"./node_modules/@babel/runtime/helpers/classCallCheck.js\");\n/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ \"./node_modules/@babel/runtime/helpers/createClass.js\");\n/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ \"./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js\");\n/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ \"./node_modules/@babel/runtime/helpers/getPrototypeOf.js\");\n/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ \"./node_modules/@babel/runtime/helpers/assertThisInitialized.js\");\n/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ \"./node_modules/@babel/runtime/helpers/inherits.js\");\n/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_6__);\n/* harmony import */ var public_ip__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! public-ip */ \"./node_modules/public-ip/browser.js\");\n/* harmony import */ var public_ip__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(public_ip__WEBPACK_IMPORTED_MODULE_7__);\n/* harmony import */ var _App_scss__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./App.scss */ \"./src/components/App/App.scss\");\n/* harmony import */ var _App_scss__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_App_scss__WEBPACK_IMPORTED_MODULE_8__);\n\n\n\n\n\n\n\n\n\ntrue; // local development mode\n// eat your own dog food!\n\nvar App =\n/*#__PURE__*/\nfunction (_Component) {\n  _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5___default()(App, _Component);\n\n  function App(props) {\n    var _this;\n\n    _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, App);\n\n    _this = _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(App).call(this, props));\n    _this.getIP = _this.getIP.bind(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4___default()(_this));\n    _this.state = {\n      ip: undefined\n    };\n    return _this;\n  }\n\n  _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default()(App, [{\n    key: \"syntaxHighlight\",\n    value: function syntaxHighlight(json) {\n      if (typeof json !== \"string\") {\n        json = JSON.stringify(json, undefined, 4);\n      }\n\n      json = json.replace(/&/g, \"&amp;\").replace(/</g, \"&lt;\").replace(/>/g, \"&gt;\"); // eslint-disable-next-line\n\n      return json.replace(/(\"(\\\\u[a-zA-Z0-9]{4}|\\\\[^u]|[^\\\\\"])*\"(\\s*:)?|\\b(true|false|null)\\b|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?)/g, function (match) {\n        var cls = \"number\";\n\n        if (/^\"/.test(match)) {\n          if (/:$/.test(match)) {\n            cls = \"key\";\n          } else {\n            cls = \"string\";\n          }\n        } else if (/true|false/.test(match)) {\n          cls = \"boolean\";\n        } else if (/null/.test(match)) {\n          cls = \"null\";\n        }\n\n        return '<span class=\"' + cls + '\">' + match + \"</span>\";\n      });\n    }\n  }, {\n    key: \"createMarkup\",\n    value: function createMarkup(dom) {\n      return {\n        __html: dom\n      };\n    }\n  }, {\n    key: \"getIP\",\n    value: function getIP() {\n      var _this2 = this;\n\n      return this.state.ip || public_ip__WEBPACK_IMPORTED_MODULE_7___default.a.v4().then(function (ip) {\n        return _this2.setState({\n          ip: ip\n        });\n      })[\"catch\"](console.log);\n    }\n  }, {\n    key: \"render\",\n    value: function render() {\n      var _this3 = this;\n\n      var getClientID = this.state.ip || this.getIP();\n      var getClientAvatar = \"https://robohash.org/\".concat(getClientID);\n      var slackChatProps = {\n        botName: getClientID,\n        channels: [{\n          name: \"mac\",\n          icon: \"https://image.flaticon.com/icons/svg/141/141021.svg\"\n        }, {\n          name: \"pc\",\n          icon: \"https://image.flaticon.com/icons/svg/224/224597.svg\"\n        }, {\n          name: \"linux\",\n          icon: \"https://image.flaticon.com/icons/svg/226/226772.svg\"\n        }, {\n          name: \"test\",\n          id: \"\",\n          icon: \"\"\n        }],\n        apiToken: \"eG94Yi0xMTExMjA5MTYwNjUtQVROd20zVTF0WGxURDdLUHdQMmkyQjNI\",\n        helpText: \"Need Help?\",\n        themeColor: \"#856090\",\n        debugMode: true,\n        userImage: getClientAvatar,\n        hooks: [{\n          /* My Custom Hook */\n          id: \"getSystemInfo\",\n          action: function action() {\n            return \"MY SYSTEM INFO!\";\n          }\n        }]\n      };\n\n      var Chat = function Chat(_ref) {\n        var ReactSlackChat = _ref.ReactSlackChat;\n        return !_this3.state.ip ? react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n          className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"loading\"]\n        }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"h2\", null, \"Now Loading...\")) : react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(ReactSlackChat, slackChatProps);\n      };\n\n      var codeHighlight = this.createMarkup(this.syntaxHighlight(slackChatProps));\n      var promisedReactSlackChat =  false ? // local development for library\n      undefined : // deploy mode will consume the generated node module\n      // gotta eat your own dog food\n      __webpack_require__.e(/*! import() | node-module-ReactSlackChat */ \"node-module-ReactSlackChat\").then(__webpack_require__.bind(null, /*! ../../../dist/react-slack-chat-with-default-hooks */ \"./dist/react-slack-chat-with-default-hooks.js\"));\n      !this.state.resolvedReactSlackChat && promisedReactSlackChat.then(function (ReactSlackChat) {\n        console.log(\"Got a promisifed React Slack Chat chunk\", ReactSlackChat);\n        return _this3.setState({\n          resolvedReactSlackChat: ReactSlackChat\n        });\n      });\n\n      var _ref2 = this.state.resolvedReactSlackChat || {},\n          ReactSlackChat = _ref2.ReactSlackChat;\n\n      return react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_6___default.a.Fragment, null, !ReactSlackChat ? react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"loading\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"h2\", null, \"Now Loading...\")) : react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"App\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"App-header\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"img\", {\n        src: \"https://robohash.org/\".concat(new Date()),\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"App-logo\"],\n        alt: \"logo\"\n      }), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"h2\", null, \"Welcome to\", \" \", react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"a\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"gitLink\"],\n        href: \"https://github.com/5punk/react-slack-chat\"\n      }, \"React Slack Chat\")), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"a\", {\n        href: \"https://github.com/5punk/react-slack-chat\"\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"img\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"ribbon\"],\n        src: \"https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67\",\n        alt: \"Fork me on GitHub\",\n        \"data-canonical-src\": \"https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png\"\n      }))), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"p\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"App-intro\"]\n      }, \"Here's an example configuration to load the widget.\"), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"pre\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"codeBlock\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"p\", null, \"<ReactSlackChat\"), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"pre\", {\n        dangerouslySetInnerHTML: codeHighlight\n      }), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"p\", null, \"/>\")), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"welp\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"hr\", null), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"h1\", null, \"Welp! How does all this magic work?\"), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"p\", null, \"Easy! Read the TLDR\", \" \", react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"a\", {\n        href: \"https://github.com/5punk/react-slack-chat#react-slack-chat\"\n      }, \"setup instructions\"), \".\")), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(Chat, {\n        ReactSlackChat: ReactSlackChat\n      })));\n    }\n  }]);\n\n  return App;\n}(react__WEBPACK_IMPORTED_MODULE_6__[\"Component\"]);\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (App);\n\n//# sourceURL=webpack:///./src/components/App/App.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* WEBPACK VAR INJECTION */(function(System) {/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ \"./node_modules/@babel/runtime/helpers/classCallCheck.js\");\n/* harmony import */ var _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/createClass */ \"./node_modules/@babel/runtime/helpers/createClass.js\");\n/* harmony import */ var _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1__);\n/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/possibleConstructorReturn */ \"./node_modules/@babel/runtime/helpers/possibleConstructorReturn.js\");\n/* harmony import */ var _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2__);\n/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @babel/runtime/helpers/getPrototypeOf */ \"./node_modules/@babel/runtime/helpers/getPrototypeOf.js\");\n/* harmony import */ var _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3__);\n/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @babel/runtime/helpers/assertThisInitialized */ \"./node_modules/@babel/runtime/helpers/assertThisInitialized.js\");\n/* harmony import */ var _babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4__);\n/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @babel/runtime/helpers/inherits */ \"./node_modules/@babel/runtime/helpers/inherits.js\");\n/* harmony import */ var _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_6__);\n/* harmony import */ var public_ip__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! public-ip */ \"./node_modules/public-ip/browser.js\");\n/* harmony import */ var public_ip__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(public_ip__WEBPACK_IMPORTED_MODULE_7__);\n/* harmony import */ var _App_scss__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./App.scss */ \"./src/components/App/App.scss\");\n/* harmony import */ var _App_scss__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_App_scss__WEBPACK_IMPORTED_MODULE_8__);\n\n\n\n\n\n\n\n\n\ntrue; // local development mode\n// eat your own dog food!\n\nvar App =\n/*#__PURE__*/\nfunction (_Component) {\n  _babel_runtime_helpers_inherits__WEBPACK_IMPORTED_MODULE_5___default()(App, _Component);\n\n  function App(props) {\n    var _this;\n\n    _babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_0___default()(this, App);\n\n    _this = _babel_runtime_helpers_possibleConstructorReturn__WEBPACK_IMPORTED_MODULE_2___default()(this, _babel_runtime_helpers_getPrototypeOf__WEBPACK_IMPORTED_MODULE_3___default()(App).call(this, props));\n    _this.getIP = _this.getIP.bind(_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_4___default()(_this));\n    _this.state = {\n      ip: undefined\n    };\n    return _this;\n  }\n\n  _babel_runtime_helpers_createClass__WEBPACK_IMPORTED_MODULE_1___default()(App, [{\n    key: \"syntaxHighlight\",\n    value: function syntaxHighlight(json) {\n      if (typeof json !== \"string\") {\n        json = JSON.stringify(json, undefined, 4);\n      }\n\n      json = json.replace(/&/g, \"&amp;\").replace(/</g, \"&lt;\").replace(/>/g, \"&gt;\"); // eslint-disable-next-line\n\n      return json.replace(/(\"(\\\\u[a-zA-Z0-9]{4}|\\\\[^u]|[^\\\\\"])*\"(\\s*:)?|\\b(true|false|null)\\b|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?)/g, function (match) {\n        var cls = \"number\";\n\n        if (/^\"/.test(match)) {\n          if (/:$/.test(match)) {\n            cls = \"key\";\n          } else {\n            cls = \"string\";\n          }\n        } else if (/true|false/.test(match)) {\n          cls = \"boolean\";\n        } else if (/null/.test(match)) {\n          cls = \"null\";\n        }\n\n        return '<span class=\"' + cls + '\">' + match + \"</span>\";\n      });\n    }\n  }, {\n    key: \"createMarkup\",\n    value: function createMarkup(dom) {\n      return {\n        __html: dom\n      };\n    }\n  }, {\n    key: \"getIP\",\n    value: function getIP() {\n      var _this2 = this;\n\n      return this.state.ip || public_ip__WEBPACK_IMPORTED_MODULE_7___default.a.v4().then(function (ip) {\n        return _this2.setState({\n          ip: ip\n        });\n      })[\"catch\"](console.log);\n    }\n  }, {\n    key: \"render\",\n    value: function render() {\n      var _this3 = this;\n\n      var getClientID = this.state.ip || this.getIP();\n      var getClientAvatar = \"https://robohash.org/\".concat(getClientID);\n      var slackChatProps = {\n        botName: getClientID,\n        channels: [{\n          name: \"mac\",\n          icon: \"https://image.flaticon.com/icons/svg/141/141021.svg\"\n        }, {\n          name: \"pc\",\n          icon: \"https://image.flaticon.com/icons/svg/224/224597.svg\"\n        }, {\n          name: \"linux\",\n          icon: \"https://image.flaticon.com/icons/svg/226/226772.svg\"\n        }, {\n          name: \"test\",\n          id: \"\",\n          icon: \"\"\n        }],\n        apiToken: \"eG94Yi0xMTExMjA5MTYwNjUtQVROd20zVTF0WGxURDdLUHdQMmkyQjNI\",\n        helpText: \"Need Help?\",\n        themeColor: \"#856090\",\n        debugMode: true,\n        userImage: getClientAvatar,\n        hooks: [{\n          /* My Custom Hook */\n          id: \"getSystemInfo\",\n          action: function action() {\n            return \"MY SYSTEM INFO!\";\n          }\n        }]\n      };\n\n      var Chat = function Chat(_ref) {\n        var ReactSlackChat = _ref.ReactSlackChat;\n        return !_this3.state.ip ? react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n          className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"loading\"]\n        }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"h2\", null, \"Now Loading...\")) : react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(ReactSlackChat, slackChatProps);\n      };\n\n      var codeHighlight = this.createMarkup(this.syntaxHighlight(slackChatProps));\n      var promisedReactSlackChat =  false ? // local development for library\n      undefined : // deploy mode will consume the generated node module\n      // gotta eat your own dog food\n      System[\"import\"](\n      /* webpackIgnore: true */\n      \"https://unpkg.com/react@16/umd/react.development.js\");\n      !this.state.resolvedReactSlackChat && promisedReactSlackChat.then(function (ReactSlackChat) {\n        console.log(\"Got a promisifed React Slack Chat chunk\", ReactSlackChat);\n        return _this3.setState({\n          resolvedReactSlackChat: ReactSlackChat\n        });\n      });\n\n      var _ref2 = this.state.resolvedReactSlackChat || {},\n          ReactSlackChat = _ref2.ReactSlackChat;\n\n      return react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_6___default.a.Fragment, null, !ReactSlackChat ? react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"loading\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"h2\", null, \"Now Loading...\")) : react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"App\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"App-header\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"img\", {\n        src: \"https://robohash.org/\".concat(new Date()),\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"App-logo\"],\n        alt: \"logo\"\n      }), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"h2\", null, \"Welcome to\", \" \", react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"a\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"gitLink\"],\n        href: \"https://github.com/5punk/react-slack-chat\"\n      }, \"React Slack Chat\")), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"a\", {\n        href: \"https://github.com/5punk/react-slack-chat\"\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"img\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"ribbon\"],\n        src: \"https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67\",\n        alt: \"Fork me on GitHub\",\n        \"data-canonical-src\": \"https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png\"\n      }))), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"p\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"App-intro\"]\n      }, \"Here's an example configuration to load the widget.\"), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"pre\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"codeBlock\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"p\", null, \"<ReactSlackChat\"), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"pre\", {\n        dangerouslySetInnerHTML: codeHighlight\n      }), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"p\", null, \"/>\")), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"div\", {\n        className: _App_scss__WEBPACK_IMPORTED_MODULE_8___default.a[\"welp\"]\n      }, react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"hr\", null), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"h1\", null, \"Welp! How does all this magic work?\"), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"p\", null, \"Easy! Read the TLDR\", \" \", react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(\"a\", {\n        href: \"https://github.com/5punk/react-slack-chat#react-slack-chat\"\n      }, \"setup instructions\"), \".\")), react__WEBPACK_IMPORTED_MODULE_6___default.a.createElement(Chat, {\n        ReactSlackChat: ReactSlackChat\n      })));\n    }\n  }]);\n\n  return App;\n}(react__WEBPACK_IMPORTED_MODULE_6__[\"Component\"]);\n\n/* harmony default export */ __webpack_exports__[\"default\"] = (App);\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../node_modules/webpack/buildin/system.js */ \"./node_modules/webpack/buildin/system.js\")))\n\n//# sourceURL=webpack:///./src/components/App/App.js?");
 
 /***/ }),
 
