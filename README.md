@@ -18,9 +18,8 @@ Throw your website visitors into a Slack Channel Community, where they can searc
 
 ## Pre Requisites
 
-1. [Pollyfill babel](https://babeljs.io/docs/usage/polyfill/). Your app has to do it to avoid multiple instancing errors from `babel-polyfill`.
-2. Setup a [Slack Bot](https://my.slack.com/services/new/bot) for your team. Note your API token.
-3. [Base64 encode](https://www.base64encode.org/) your newly created API token and fasten your seat-belts.
+1. Setup a [Slack Bot](https://my.slack.com/services/new/bot) for your team. Note your API token.
+2. [Base64 encode](https://www.base64encode.org/) your newly created API token and fasten your seat-belts.
 
 ## Installation
 
@@ -33,7 +32,7 @@ Install React Slack Chat by
 Due to the heavy nature of the `getScreenshot` default system hook (Read about hooks below).
 I've split the library into 2 consumables.
 
-- `react-slack-chat.js`: The default import from consuming this library. There are no default system hooks, you are free to supply your own custom hooks (Documented below).
+- `react-slack-chat`: The default import from consuming this library. There are no default system hooks, you are free to supply your own custom hooks (Documented below).
 
 - `react-slack-chat-with-default-hooks.js`: Has all the default sytem hooks [documented below](https://github.com/5punk/react-slack-chat/blob/master/README.md#default-system-hooks), you can still add and pass custom keyword based action hooks.
 
