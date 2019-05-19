@@ -25,6 +25,9 @@
   "homepage": "https://github.com/5punk/react-slack-chat#readme",
   "author": "Avanish Pathak",
   "license": "ISC",
+  "lint-staged": {
+    "*": "your-cmd"
+  },
   "devDependencies": {
     "@babel/core": "^7.4.3",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
@@ -34,6 +37,7 @@
     "css-loader": "^2.1.1",
     "gh-pages": "^2.0.1",
     "html-webpack-plugin": "~3.2.0",
+    "lint-staged": "^8.1.7",
     "node-sass": "^4.12.0",
     "public-ip": "^3.1.0",
     "react-hot-loader": "^4.8.4",
