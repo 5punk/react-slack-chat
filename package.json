@@ -26,7 +26,15 @@
   "author": "Avanish Pathak",
   "license": "ISC",
   "lint-staged": {
-    "*": "your-cmd"
+    "linters": {
+      "*.{js,scss}": [
+        "npm run lint",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "**/dist/*.min.js"
+    ]
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
