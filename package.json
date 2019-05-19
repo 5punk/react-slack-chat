@@ -12,7 +12,8 @@
     "build:withHooks": "SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.prod.js -p --mode production",
     "stats": "npx webpack --config ./build/webpack.config.prod.js -p --json > stats.json",
     "test": "echo \"No test specified\" && exit 0",
-    "lint": "npx prettier --write ./src/**/*.js"
+    "lint": "npx prettier --write ./src/**/*.js",
+    "precommit": "lint-staged"
   },
   "keywords": [],
   "bugs": {
@@ -25,16 +26,15 @@
   "homepage": "https://github.com/5punk/react-slack-chat#readme",
   "author": "Avanish Pathak",
   "license": "ISC",
+  "prettier": {
+      "singleQuote": true,
+      "tabWidth": 2
+  },
   "lint-staged": {
-    "linters": {
-      "*.{js,scss}": [
-        "npm run lint",
-        "git add"
+      "*.{jsx,js,json,scss}": [
+          "prettier --write",
+          "git add"
       ]
-    },
-    "ignore": [
-      "**/dist/*.min.js"
-    ]
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
