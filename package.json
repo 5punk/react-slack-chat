@@ -26,7 +26,9 @@
   "author": "Avanish Pathak",
   "license": "ISC",
   "husky": {
-    "precommit": "lint-staged"
+    "hooks": {
+      "precommit": "lint-staged"
+    }
   },
   "prettier": {
     "singleQuote": true,
