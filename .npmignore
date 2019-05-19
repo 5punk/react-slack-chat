@@ -9,3 +9,6 @@ src
 webpack.config.js
 docs
 webpack
+yarn.lock
+package-lock.json
+.nvmrc
