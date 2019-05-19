@@ -11,7 +11,8 @@
     "build:lite": "npx webpack --config ./build/webpack.config.prod.js -p --mode production",
     "build:withHooks": "SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.prod.js -p --mode production",
     "stats": "npx webpack --config ./build/webpack.config.prod.js -p --json > stats.json",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "lint": "npx prettier --write ./src/**/*.js"
   },
   "keywords": [],
   "bugs": {
