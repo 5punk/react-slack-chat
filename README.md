@@ -2,7 +2,6 @@
 
 ![Build Status](https://travis-ci.org/5punk/react-slack-chat.svg?branch=master)
 ![Node Version](https://img.shields.io/badge/node-v9-blue.svg)
-![Node Version](https://img.shields.io/badge/node-v9-blue.svg)
 ![React](https://img.shields.io/badge/React-v16.8-lightblue.svg)
 ![Babel](https://img.shields.io/badge/Babel-v7-yellow.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/5punk/react-slack-chat/badge.svg)](https://snyk.io/test/github/5punk/react-slack-chat)
