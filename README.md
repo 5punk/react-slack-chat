@@ -4,7 +4,7 @@
 ![Node Version](https://img.shields.io/badge/node-v6-blue.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/5punk/react-slack-chat/badge.svg)](https://snyk.io/test/github/5punk/react-slack-chat)
 
-[DEMO](http://avanishpathak.com/react-slack-chat/)
+[DEMO](https://5punk.github.io/react-slack-chat/)
 
 A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget. This widget can be integrated as a Live Chat / Help Desk / Discussions for Special Interest Sites in **Solo Single Customer Mode (1:1)** or **Community Chat (Shoutbox) Mode**.
 
@@ -33,13 +33,13 @@ I've split the library into 2 consumables.
 
 - `react-slack-chat.js`: The default import from consuming this library. There are no default system hooks, you are free to supply your own custom hooks (Documented below).
 
-- `react-slack-chat-with-default-hooks.js`: Has all the default sytem hooks documented below, you can still add and pass custom keyword based action hooks.
+- `react-slack-chat-with-default-hooks.js`: Has all the default sytem hooks [documented below](https://github.com/5punk/react-slack-chat/blob/master/README.md#default-system-hooks), you can still add and pass custom keyword based action hooks.
 
 Consuming the default import / lite version:
 
 `import { ReactSlackChat } from 'react-slack-chat';`
 
-Consuming the library with default system hooks:
+Consuming the library with [default system hooks](https://github.com/5punk/react-slack-chat/blob/master/README.md#default-system-hooks):
 
 `import { ReactSlackChat } from 'react-slack-chat/dist/react-slack-chat-with-default-hooks';`
 
