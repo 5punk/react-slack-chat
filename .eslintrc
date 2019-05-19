@@ -1,0 +1,59 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["standard", "plugin:react/recommended"],
+  "globals": {
+    "__DEV__": true
+  },
+  "plugins": [
+    "react"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "browser": true,
+    "amd": true,
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "quotes": [ 2, "single" ],
+    "no-undef": 2,
+    "global-strict": 0,
+    "no-extra-semi": 1,
+    "no-underscore-dangle": 2,
+    "no-console": 1,
+    "no-useless-escape": 0,
+    "no-unused-vars": 1,
+    "no-trailing-spaces": 2,
+    "no-tabs": 2,
+    "no-unreachable": 2,
+    "no-alert": 0,
+    "react/jsx-filename-extension": 0,
+    "react/prefer-stateless-function": 0,
+    "no-debugger": 1,
+    "indent": ["error", 2],
+    "semi": [2, "always"],
+    "prefer-template": 2,
+    "import/prefer-default-export": 0,
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/jsx-first-prop-new-line": 0,
+    "react/jsx-closing-bracket-location": 2,
+    "max-len": ["error", 100],
+    "react/forbid-prop-types": 0,
+    "require-jsdoc": ["error", {
+    "require": {
+        "FunctionDeclaration": true,
+        "MethodDefinition": true,
+        "ClassDeclaration": true
+      }
+    }],
+    "valid-jsdoc": "error"
+  }
+}
