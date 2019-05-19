@@ -1,10 +1,13 @@
 # React Slack Chat
 
 ![Build Status](https://travis-ci.org/5punk/react-slack-chat.svg?branch=master)
-![Node Version](https://img.shields.io/badge/node-v6-blue.svg)
+![Node Version](https://img.shields.io/badge/node-v9-blue.svg)
+![Node Version](https://img.shields.io/badge/node-v9-blue.svg)
+![React](https://img.shields.io/badge/React-v16.8-lightblue.svg)
+![Babel](https://img.shields.io/badge/Babel-v7-yellow.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/5punk/react-slack-chat/badge.svg)](https://snyk.io/test/github/5punk/react-slack-chat)
 
-[DEMO](https://5punk.github.io/react-slack-chat/)
+[-> DEMO](https://5punk.github.io/react-slack-chat/)
 
 A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget. This widget can be integrated as a Live Chat / Help Desk / Discussions for Special Interest Sites in **Solo Single Customer Mode (1:1)** or **Community Chat (Shoutbox) Mode**.
 
