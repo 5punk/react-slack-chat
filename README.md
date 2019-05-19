@@ -80,7 +80,7 @@ class App extends Component {
             {
               /* My Custom Hook */
               id: 'getSystemInfo',
-              action: () => 'MY SYSTEM INFO!'
+              action: () => Promise.resolve('MY SYSTEM INFO!')
             }
           ]}
         />
@@ -94,25 +94,28 @@ class App extends Component {
 Below are a list of props the `<ReactSlackChat />` component accepts
 
 - `botname`: [UNIQUE][required] The name of the user / bot. Can be Visitor ID / Email ID / CorpID / IP address etc.
-- `apiToken`: [REQUIRED] The [BASE64 ENCODED](https://www.base64encode.org/) API Token for the bot you created for your team. You can create one [here](https://my.slack.com/services/new/bot).
-- `channels`: [REQUIRED] At least one slack channel object needs to be passed for the first channel view. Refer example above.
-- `userImage`: [REQUIRED] An image URL for the user / bot (Does not need to be unique).
-- `helpText`: [OPTIONAL] The Help Text visible on the minimized view of the chat Widget.
-- `themeColor`: [OPTIONAL] A Hex Color value accent you want the widget to be themed with, stylish stuff.
-- `hooks`: [OPTIONAL] Custom Action Hooks, let's administrators execute commands. In the format `$=>@botName:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
+- `apiToken`: [REQUIRED][String] The [BASE64 ENCODED](https://www.base64encode.org/) API Token for the bot you created for your team. You can create one [here](https://my.slack.com/services/new/bot).
+- `channels`: [REQUIRED][Array] At least one slack channel object needs to be passed for the first channel view. Refer example above.
+- `userImage`: [REQUIRED][String] An image URL for the user / bot (Does not need to be unique).
+- `helpText`: [OPTIONAL][String] The Help Text visible on the minimized view of the chat Widget.
+- `themeColor`: [OPTIONAL][String] A Hex Color value accent you want the widget to be themed with, stylish stuff.
+- `hooks`: [OPTIONAL][Array] Custom Action Hooks, let's administrators execute commands. Executed in Slack with the format `$=>@botName:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
 - `debugMode`: [OPTIONAL] Pass a boolean (`true`/`false`) flag to start debug logs.
-- `defaultChannel`: [OPTIONAL] Channel name to bypass the channel list and go directly to a specific channel.
-- `defaultMessage`: [OPTIONAL] Prepend a default message to the beginning of the message list, such as an automatic greeting when a user first joins the channel.
-- `singleUserMode`: [OPTIONAL] Pass a boolean to filter messages so the user only sees his/her messages and replies directed at the user in threads on the Slack side.
-- `closeChatButton`: [OPTIONAL] Pass a boolean to add an "x" close button in the corner of the chat window instead of going back to channel list and minimizing.
+- `defaultChannel`: [OPTIONAL][String] Channel name to bypass the channel list and go directly to a specific channel.
+- `defaultMessage`: [OPTIONAL][String] Prepend a default message to the beginning of the message list, such as an automatic greeting when a user first joins the channel.
+- `singleUserMode`: [OPTIONAL][Boolean] Pass a boolean to filter messages so the user only sees his/her messages and replies directed at the user in threads on the Slack side.
+- `closeChatButton`: [OPTIONAL][Boolean] Pass a boolean to add an "x" close button in the corner of the chat window instead of going back to channel list and minimizing.
 
 ## Default System Hooks
 
-> All hooks can **ONLY be executed by Administrators**. Admins are usually the **team members** that belong to the Slack Team (Backend).
+> All hooks can **ONLY be executed by Administrators** only if the site customer / visitor has the chat window open. Admins are usually the **team members** that belong to the Slack Team (Backend).
 
 > All responses of hooks, are **only visible** to the backend Administrators (Visible to the members in the Slack App).
 
-ReactSlackChat gives you a few hooks ready to use out of the box.
+ReactSlackChat ships in two flavors. The lite version (default import) ships with **NO** default system hooks.
+
+The package imported from the path `react-slack-chat/dist/react-slack-chat-with-default-hooks` gives you a few hooks ready to use out of the box.
+
 An Admin can call any hook with the following command via the Slack App Backend
 
 `$=>@botName:HOOK_ID`
@@ -126,6 +129,48 @@ They're documented below:
 Feel free to add your own custom hooks. It'll allow you to get any information from the Client or perform any action / function on the Client App.
 
 Submit your ideas for innovative hooks or feature requests.
+
+## Custom Hooks
+
+> All hooks can **ONLY be executed by Administrators** only if the site customer / visitor has the chat window open. Admins are usually the **team members** that belong to the Slack Team (Backend).
+
+> All responses of hooks, are **only visible** to the backend Administrators (Visible to the members in the Slack App).
+
+Adding custom hooks is easy. Just pass an array of actionable custom hooks as a prop to the library. The default lite version and _heavier_ library that ships with some basic default system hooks, both support custom hooks.
+
+You're expected to follow the format: 
+```
+{
+  id: [STRING],
+  action: [PROMISE] // Any action that you want each customer / visitor on your widget / app to execute
+}
+```
+
+The promise has to be resolved to allow you to create async functions and actions on different Action IDs the Slack Admins try to execute.
+
+An example of hooks passed as a prop can be:
+
+```
+hooks={[
+  {
+    /* My Custom Hook */
+    id: 'getIPAddress',
+    action: () => IPAddress.get() // returns a promise
+  },
+  {
+    id: 'showHelpWizard',
+    action: () => {
+       return dispatch(showHelpWizard(true))
+        .then(data => //success)
+        .fail(uILogger.error('FAILED'))
+    } 
+  },
+  .
+  .
+  .
+]}
+```
+
 
 ## Screenshots
 
