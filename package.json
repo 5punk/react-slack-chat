@@ -7,7 +7,7 @@
   "scripts": {
     "start": "SYSTEM_HOOKS=true npx webpack-dev-server --config ./build/webpack.config.js --mode development",
     "build": "npm run build:lite && npm run build:withHooks",
-    "deploy": "SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.deploy.js -p --mode development && gh-pages -d ./dist/example",
+    "deploy": "npm run build && SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.deploy.js --mode development && gh-pages -d ./dist/example",
     "build:lite": "npx webpack --config ./build/webpack.config.prod.js -p --mode production",
     "build:withHooks": "SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.prod.js -p --mode production",
     "stats": "npx webpack --config ./build/webpack.config.prod.js -p --json > stats.json",
@@ -26,7 +26,9 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.4.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",

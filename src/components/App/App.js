@@ -1,8 +1,12 @@
 import React, { Component } from "react";
 import publicIp from "public-ip";
 
-import { ReactSlackChat } from "../ReactSlackChat";
 import styles from "./App.scss";
+
+process.env.DEPLOY_MODE;
+
+// local development mode
+// eat your own dog food!
 
 class App extends Component {
   constructor(props) {
@@ -95,64 +99,95 @@ class App extends Component {
       ]
     };
 
-    const chat = !this.state.ip ? (
-      <div className={styles["loading"]}>
-        <h2>Now Loading...</h2>
-      </div>
-    ) : (
-      <ReactSlackChat {...slackChatProps} />
-    );
+    const Chat = ({ ReactSlackChat }) =>
+      !this.state.ip ? (
+        <div className={styles["loading"]}>
+          <h2>Now Loading...</h2>
+        </div>
+      ) : (
+        <ReactSlackChat {...slackChatProps} />
+      );
     const codeHighlight = this.createMarkup(
       this.syntaxHighlight(slackChatProps)
     );
 
+    const promisedReactSlackChat = !process.env.DEPLOY_MODE
+      ? // local development for library
+        import(
+          /* webpackChunkName: "local-dev-ReactSlackChat" */ "../ReactSlackChat"
+        )
+      : // deploy mode will consume the generated node module
+        // gotta eat your own dog food
+        import(
+          /* webpackChunkName: "node-module-ReactSlackChat" */ "../../../dist/react-slack-chat-with-default-hooks"
+        );
+
+    !this.state.resolvedReactSlackChat &&
+      promisedReactSlackChat.then(ReactSlackChat => {
+        console.log("Got a promisifed React Slack Chat chunk", ReactSlackChat);
+        return this.setState({
+          resolvedReactSlackChat: ReactSlackChat
+        });
+      });
+
+    const { ReactSlackChat } = this.state.resolvedReactSlackChat || {};
+    console.log(this.state.resolvedReactSlackChat);
+
     return (
-      <div className={styles["App"]}>
-        <div className={styles["App-header"]}>
-          <img
-            src={`https://robohash.org/${new Date()}`}
-            className={styles["App-logo"]}
-            alt="logo"
-          />
-          <h2>
-            Welcome to{" "}
-            <a
-              className={styles["gitLink"]}
-              href="https://github.com/5punk/react-slack-chat"
-            >
-              React Slack Chat
-            </a>
-          </h2>
-          <a href="https://github.com/5punk/react-slack-chat">
-            <img
-              className={styles["ribbon"]}
-              src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
-              alt="Fork me on GitHub"
-              data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
-            />
-          </a>
-        </div>
-        <p className={styles["App-intro"]}>
-          Here's an example configuration to load the widget.
-        </p>
-        <pre className={styles["codeBlock"]}>
-          <p>&lt;ReactSlackChat</p>
-          <pre dangerouslySetInnerHTML={codeHighlight} />
-          <p>/&gt;</p>
-        </pre>
-        <div className={styles["welp"]}>
-          <hr />
-          <h1>Welp! How does all this magic work?</h1>
-          <p>
-            Easy! Read the TLDR{" "}
-            <a href="https://github.com/5punk/react-slack-chat#react-slack-chat">
-              setup instructions
-            </a>
-            .
-          </p>
-        </div>
-        {chat}
-      </div>
+      <>
+        {!ReactSlackChat ? (
+          <div className={styles["loading"]}>
+            <h2>Now Loading...</h2>
+          </div>
+        ) : (
+          <div className={styles["App"]}>
+            <div className={styles["App-header"]}>
+              <img
+                src={`https://robohash.org/${new Date()}`}
+                className={styles["App-logo"]}
+                alt="logo"
+              />
+              <h2>
+                Welcome to{" "}
+                <a
+                  className={styles["gitLink"]}
+                  href="https://github.com/5punk/react-slack-chat"
+                >
+                  React Slack Chat
+                </a>
+              </h2>
+              <a href="https://github.com/5punk/react-slack-chat">
+                <img
+                  className={styles["ribbon"]}
+                  src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
+                  alt="Fork me on GitHub"
+                  data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+                />
+              </a>
+            </div>
+            <p className={styles["App-intro"]}>
+              Here's an example configuration to load the widget.
+            </p>
+            <pre className={styles["codeBlock"]}>
+              <p>&lt;ReactSlackChat</p>
+              <pre dangerouslySetInnerHTML={codeHighlight} />
+              <p>/&gt;</p>
+            </pre>
+            <div className={styles["welp"]}>
+              <hr />
+              <h1>Welp! How does all this magic work?</h1>
+              <p>
+                Easy! Read the TLDR{" "}
+                <a href="https://github.com/5punk/react-slack-chat#react-slack-chat">
+                  setup instructions
+                </a>
+                .
+              </p>
+            </div>
+            <Chat ReactSlackChat={ReactSlackChat} />
+          </div>
+        )}
+      </>
     );
   }
 }

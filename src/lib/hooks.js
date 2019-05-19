@@ -42,7 +42,7 @@ export const execHooksIfFound = ({
       // Execute System hooks set by user in this.props.hooks
       // Conditionally import it for the build (lite vs -with-hooks)
       if (process.env.SYSTEM_HOOKS) {
-        const systemHooks = require("./system-default-hooks");
+        const { systemHooks } = require("./system-default-hooks");
         systemHooks.map(hook => {
           if (hook.id === hookFound[2]) {
             executeHook({
@@ -70,18 +70,21 @@ export const execHooksIfFound = ({
   }
 };
 
-const executeHook = async ({ hook, apiToken, channel, username }) => {
+const executeHook = ({ hook, apiToken, channel, username }) => {
   debugLog("Hook trigger found", hook.id);
-  const hookActionResponse = await hook.action({
-    apiToken,
-    channel,
-    username
-  });
-  debugLog("Action executed. Posting response.");
-  return postMessage({
-    text: `$=>@[${hook.id}]:${hookActionResponse}`,
-    apiToken,
-    channel,
-    username
-  });
+  return hook
+    .action({
+      apiToken,
+      channel,
+      username
+    })
+    .then(hookActionResponse => {
+      debugLog("Action executed. Posting response.");
+      return postMessage({
+        text: `$=>@[${hook.id}]:${hookActionResponse}`,
+        apiToken,
+        channel,
+        username
+      });
+    });
 };

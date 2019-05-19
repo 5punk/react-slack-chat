@@ -28,7 +28,24 @@ Install React Slack Chat by
 
 ## Example Usage:
 
+Due to the heavy nature of the `getScreenshot` default system hook (Read about hooks below).
+I've split the library into 2 consumables.
+
+- `react-slack-chat.js`: The default import from consuming this library. There are no default system hooks, you are free to supply your own custom hooks (Documented below).
+
+- `react-slack-chat-with-default-hooks.js`: Has all the default sytem hooks documented below, you can still add and pass custom keyword based action hooks.
+
+Consuming the default import / lite version:
+
+`import { ReactSlackChat } from 'react-slack-chat';`
+
+Consuming the library with default system hooks:
+
+`import { ReactSlackChat } from 'react-slack-chat/dist/react-slack-chat-with-default-hooks';`
+
 ```
+
+
 import { ReactSlackChat } from 'react-slack-chat';
 
 class App extends Component {

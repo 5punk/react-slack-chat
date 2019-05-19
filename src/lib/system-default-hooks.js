@@ -8,11 +8,11 @@ import { postFile } from "./chat-functions";
 export const systemHooks = [
   {
     id: "getCurrentPath",
-    action: () => window.location.href
+    action: () => Promise.resolve(window.location.href)
   },
   {
     id: "getPlatform",
-    action: () => window.navigator.platform
+    action: () => Promise.resolve(window.navigator.platform)
   },
   {
     id: "getScreenshot",
