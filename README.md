@@ -44,6 +44,8 @@ Consuming the library with [default system hooks](https://github.com/5punk/react
 
 `import { ReactSlackChat } from 'react-slack-chat/dist/react-slack-chat-with-default-hooks';`
 
+[Code snippet](https://github.com/5punk/react-slack-chat/blob/master/src/components/App/App.js) from [Demo App](https://5punk.github.io/react-slack-chat/):
+
 ```
 
 
