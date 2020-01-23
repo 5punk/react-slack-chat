@@ -160,7 +160,8 @@ class ReactSlackChat extends Component {
               <div
                 className={classNames(
                   styles.chat__message,
-                  didIPostIt ? styles.mine : styles.notMine
+                  didIPostIt ? styles.mine : styles.notMine,
+                  this.props.stylesChatMessage
                 )}
               >
                 <strong>Sent an Attachment: </strong>
@@ -181,7 +182,7 @@ class ReactSlackChat extends Component {
       return (
         <div className={classNames(styles.chat__msgRow)} key={message.ts}>
           <div
-            className={classNames(styles.chat__message, styles.system__message)}
+            className={classNames(styles.chat__message, styles.system__message, this.props.stylesChatMessage)}
             dangerouslySetInnerHTML={{ __html: messageText }}
           />
         </div>
@@ -222,7 +223,8 @@ class ReactSlackChat extends Component {
           <div
             className={classNames(
               styles.chat__message,
-              mentioned ? styles.mentioned : ""
+              mentioned ? styles.mentioned : "",
+              this.props.stylesChatMessage
             )}
             dangerouslySetInnerHTML={{ __html: messageText }}
           />
@@ -231,7 +233,8 @@ class ReactSlackChat extends Component {
           <div
             className={classNames(
               styles.chat__message,
-              mentioned ? styles.mentioned : ""
+              mentioned ? styles.mentioned : "",
+              this.props.stylesChatMessage
             )}
           >
             {messageText}
@@ -294,7 +297,7 @@ class ReactSlackChat extends Component {
               err
             )}`;
             this.setState({
-              helpText: "Slack Connection Error!"
+              helpText: this.props.helpTextErrorConnect || "Slack Connection Error!"
             });
           }
         });
@@ -664,20 +667,22 @@ class ReactSlackChat extends Component {
             styles.card,
             styles.transition,
             this.state.chatbox.active ? styles.active : "",
-            this.state.chatbox.chatActiveView ? styles.chatActive : ""
+            this.state.chatbox.chatActiveView ? styles.chatActive : "",
+              this.state.chatbox.active ? this.props.stylesCardActive:  this.props.stylesCard,
+
           )}
           onClick={this.openChatBox}
         >
-          <div className={styles.helpHeader}>
+          <div className={classNames(styles.helpHeader,this.props.stylesHelper)}>
             {this.state.newMessageNotification > 0 && (
-              <span className={styles.unreadNotificationsBadge}>
+              <span className={classNames(styles.unreadNotificationsBadge,this.props.stylesNotificationsBadge)}>
                 {this.state.newMessageNotification}
               </span>
             )}
             <h2 className={styles.transition}>
               {this.state.helpText || "Help?"}
             </h2>
-            <h2 className={styles.subText}>Click on a channel to interact.</h2>
+            {!this.props.disabledChangeChannel && <h2 className={styles.subText}> {this.props.helpTextClickToChannel || "Click on a channel to interact."}</h2>}
           </div>
           <div className={classNames(styles.card_circle, styles.transition)} />
           <div
@@ -709,13 +714,13 @@ class ReactSlackChat extends Component {
             ))}
           </div>
           <div className={classNames(styles.chat)}>
-            <div className={classNames(styles.chatHeader)}>
-              <span
+            <div className={classNames(styles.chatHeader,this.props.stylesChatHeader)}>
+              {!this.props.disabledChangeChannel && <span
                 className={styles.chat__back}
                 onClick={this.goToChannelView}
-              />
-              <div className={styles.chat__person}>
-                <span className={styles.chat__status}>status</span>
+              />}
+              <div className={classNames(styles.chat__person,this.props.stylesChatPersonn)}>
+                {!this.props.disabledStatusTextChannel && <span className={styles.chat__status}>status</span>}
                 <span
                   className={classNames(styles.chat__online, styles.active)}
                 />
@@ -730,7 +735,7 @@ class ReactSlackChat extends Component {
                 />
               ) : (
                 <div
-                  dangerouslySetInnerHTML={{ __html: defaultChannelIcon }}
+                  dangerouslySetInnerHTML={{ __html: defaultChannelIcon  }}
                   className={styles.channel__header__photo}
                 />
               )}
@@ -744,7 +749,7 @@ class ReactSlackChat extends Component {
               ) : null}
             </div>
             <div
-              className={styles.chat__messages}
+              className={classNames(styles.chat__messages, this.props.stylesChatMessage)}
               id="widget-reactSlakChatMessages"
             >
               {this.state.messages.map(message =>
@@ -776,9 +781,9 @@ class ReactSlackChat extends Component {
                   <input
                     type="text"
                     id="chat__input__text"
-                    className={styles.chat__input}
+                    className={classNames(styles.chat__input, this.props.stylesChatInputText)}
                     value={this.state.postMyMessage}
-                    placeholder="Enter your message..."
+                    placeholder={this.props.placeholderText || "Enter your message..."}
                     onKeyPress={e =>
                       e.key === "Enter" ? this.postMyMessage() : null
                     }
@@ -801,7 +806,18 @@ ReactSlackChat.propTypes = {
   apiToken: PropTypes.string.isRequired,
   channels: PropTypes.array.isRequired,
   botName: PropTypes.string,
+  placeholderText: PropTypes.string,
   helpText: PropTypes.string,
+  helpTextErrorConnect: PropTypes.string,
+  helpTextClickToChannel: PropTypes.string,
+  stylesCard: PropTypes.style,
+  stylesCardActive: PropTypes.style,
+  stylesHelper: PropTypes.style,
+  stylesNotificationsBadge: PropTypes.style,
+  stylesChatPersonn: PropTypes.style,
+  stylesChatHeader: PropTypes.style,
+  stylesChatInputText: PropTypes.style,
+  stylesChatMessage: PropTypes.style,
   // bypass the channel list and go directly to a specific channel
   defaultChannel: PropTypes.string,
   // prepend a default message to the beginning of the message list, such as an
@@ -810,6 +826,8 @@ ReactSlackChat.propTypes = {
   // filter messages so the user only sees his/her messages and replies
   // directed at the user in threads on the Slack side
   singleUserMode: PropTypes.bool,
+  disabledChangeChannel: PropTypes.bool,
+  disabledStatusTextChannel: PropTypes.bool,
   // add an "x" close button in the corner of the chat window
   closeChatButton: PropTypes.bool,
   themeColor: PropTypes.string,

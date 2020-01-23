@@ -105,6 +105,19 @@ Below are a list of props the `<ReactSlackChat />` component accepts
 - `defaultMessage`: [OPTIONAL][String] Prepend a default message to the beginning of the message list, such as an automatic greeting when a user first joins the channel.
 - `singleUserMode`: [OPTIONAL][Boolean] Pass a boolean to filter messages so the user only sees his/her messages and replies directed at the user in threads on the Slack side.
 - `closeChatButton`: [OPTIONAL][Boolean] Pass a boolean to add an "x" close button in the corner of the chat window instead of going back to channel list and minimizing.
+- `placeholderText`: [OPTIONAL][String] The text "placeholder" into input. Placeholder default is "Enter your message..."
+- `disabledChangeChannel`: [OPTIONAL][Boolean] Pass a boolean for block the channel change
+- `disabledStatusTextChannel`: [OPTIONAL][Boolean] Pass a boolean for hide the text "status" in the toolbar
+- `helpTextErrorConnect`: [OPTIONAL][String] Change the text "Error connection".The text default is "Slack Connection Error!"
+- `helpTextClickToChannel`: [OPTIONAL][String] Change the text "Click on a channel to interact".The text default is "Click on a channel to interact."
+- `stylesCard`: [OPTIONAL][Style] Override or extend the styles applied to the component Card
+- `stylesCardActive`: [OPTIONAL][Style] Override or extend the styles applied to the component Card Active
+- `stylesHelper`: [OPTIONAL][Style] Override or extend the styles applied to the component 
+- `stylesCardActive`: [OPTIONAL][Style] Override or extend the styles applied to the component
+- `stylesChatHeader`: [OPTIONAL][Style] Override or extend the styles applied to the component
+- `stylesChatPersonn`: [OPTIONAL][Style] Override or extend the styles applied to the component
+- `stylesChatInputText`: [OPTIONAL][Style] Override or extend the styles applied to the component Input
+- `stylesChatMessage`: [OPTIONAL][Style] Override or extend the styles applied to the component List message
 
 ## Default System Hooks
 
