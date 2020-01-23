@@ -1,14 +1,14 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import classNames from "classnames";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
-import { rtm, channels } from "slack";
-import { load as emojiLoader, parse as emojiParser } from "gh-emoji";
+import { rtm, channels } from 'slack';
+import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
 
-import { User } from "../User";
-import styles from "./ReactSlackChat.scss";
+import { User } from '../User';
+import styles from './ReactSlackChat.scss';
 
-import defaultChannelIcon from "../../assets/team.svg";
+import defaultChannelIcon from '../../assets/team.svg';
 
 // Chat Functions
 import {
@@ -21,9 +21,9 @@ import {
   hasAttachment,
   isSystemMessage,
   isAdmin
-} from "../../lib/chat-functions";
+} from '../../lib/chat-functions';
 
-import { hooks, themes, utils } from "../../lib";
+import { hooks, themes, utils } from '../../lib';
 
 // Utils
 const { debugLog, arraysIdentical } = utils;
@@ -50,8 +50,8 @@ class ReactSlackChat extends Component {
       messages: [],
       // keep track of user threads for messaging in singleUserMode
       userThreadTss: [],
-      postMyMessage: "",
-      postMyFile: "",
+      postMyMessage: '',
+      postMyFile: '',
       chatbox: {
         active: false,
         channelActiveView: false,
@@ -62,7 +62,7 @@ class ReactSlackChat extends Component {
     // Base64 decode the API Token
     this.apiToken = atob(this.props.apiToken);
     this.refreshTime = 5000;
-    this.chatInitiatedTs = "";
+    this.chatInitiatedTs = '';
     this.activeChannel = [];
     this.activeChannelInterval = null;
     this.messageFormatter = {
@@ -71,7 +71,7 @@ class ReactSlackChat extends Component {
     this.fileUploadTitle = `Posted by ${this.props.botName}`;
 
     // Theme variables
-    this.themeDefaultColor = "#2e7eea"; // Defined as $theme_color sass variable in .scss
+    this.themeDefaultColor = '#2e7eea'; // Defined as $theme_color sass variable in .scss
 
     // Bind Slack Message functions
     this.loadMessages = this.loadMessages.bind(this);
@@ -100,7 +100,7 @@ class ReactSlackChat extends Component {
     // Connect bot
     this.connectBot(this)
       .then(data => {
-        debugLog("CONNECTED!", "got data", data);
+        debugLog('CONNECTED!', 'got data', data);
         if (this.props.defaultChannel) {
           this.activeChannel = data.channels.filter(
             channel => channel.name === this.props.defaultChannel
@@ -112,7 +112,7 @@ class ReactSlackChat extends Component {
         });
       })
       .catch(err => {
-        debugLog("could not intialize slack bot", err);
+        debugLog('could not intialize slack bot', err);
         this.setState({
           failed: true
         });
@@ -140,7 +140,7 @@ class ReactSlackChat extends Component {
         if (attachmentFound[1]) {
           // image file found
           const didIPostIt = message.text.indexOf(this.fileUploadTitle) > -1;
-          const fileNameFromUrl = attachmentFound[1].split("/");
+          const fileNameFromUrl = attachmentFound[1].split('/');
           return (
             <div
               className={classNames(
@@ -182,7 +182,11 @@ class ReactSlackChat extends Component {
       return (
         <div className={classNames(styles.chat__msgRow)} key={message.ts}>
           <div
-            className={classNames(styles.chat__message, styles.system__message, this.props.stylesChatMessage)}
+            className={classNames(
+              styles.chat__message,
+              styles.system__message,
+              this.props.stylesChatMessage
+            )}
             dangerouslySetInnerHTML={{ __html: messageText }}
           />
         </div>
@@ -223,7 +227,7 @@ class ReactSlackChat extends Component {
           <div
             className={classNames(
               styles.chat__message,
-              mentioned ? styles.mentioned : "",
+              mentioned ? styles.mentioned : '',
               this.props.stylesChatMessage
             )}
             dangerouslySetInnerHTML={{ __html: messageText }}
@@ -233,7 +237,7 @@ class ReactSlackChat extends Component {
           <div
             className={classNames(
               styles.chat__message,
-              mentioned ? styles.mentioned : "",
+              mentioned ? styles.mentioned : '',
               this.props.stylesChatMessage
             )}
           >
@@ -297,7 +301,8 @@ class ReactSlackChat extends Component {
               err
             )}`;
             this.setState({
-              helpText: this.props.helpTextErrorConnect || "Slack Connection Error!"
+              helpText:
+                this.props.helpTextErrorConnect || 'Slack Connection Error!'
             });
           }
         });
@@ -320,14 +325,14 @@ class ReactSlackChat extends Component {
       .then(data => {
         this.setState(
           {
-            postMyMessage: "",
+            postMyMessage: '',
             sendingLoader: false
           },
           () => {
             // Adjust scroll height
             setTimeout(() => {
               const chatMessages = document.getElementById(
-                "widget-reactSlakChatMessages"
+                'widget-reactSlakChatMessages'
               );
               chatMessages.scrollTop = chatMessages.scrollHeight;
             }, this.refreshTime);
@@ -337,7 +342,7 @@ class ReactSlackChat extends Component {
       })
       .catch(err => {
         if (err) {
-          return debugLog("failed to post. Err:", err);
+          return debugLog('failed to post. Err:', err);
         }
         return null;
       });
@@ -366,7 +371,7 @@ class ReactSlackChat extends Component {
             });
           }
           // loaded channel history
-          debugLog("got data", data);
+          debugLog('got data', data);
           // Scroll down only if the stored messages and received messages are not the same
           // reverse() mutates the array
           if (!arraysIdentical(this.state.messages, data.messages.reverse())) {
@@ -435,7 +440,7 @@ class ReactSlackChat extends Component {
               () => {
                 // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
                 const chatMessages = document.getElementById(
-                  "widget-reactSlakChatMessages"
+                  'widget-reactSlakChatMessages'
                 );
                 chatMessages.scrollTop =
                   chatMessages.scrollHeight < chatMessages.scrollTop + 600 ||
@@ -507,8 +512,8 @@ class ReactSlackChat extends Component {
   }
 
   handleFileChange(e) {
-    debugLog("Going to upload", e.target.value, e.target);
-    const fileToUpload = document.getElementById("chat__upload").files[0];
+    debugLog('Going to upload', e.target.value, e.target);
+    const fileToUpload = document.getElementById('chat__upload').files[0];
     return this.setState(
       {
         postMyFile: e.target.value,
@@ -527,12 +532,12 @@ class ReactSlackChat extends Component {
             this.setState({
               // Upload is done, once this callback is hit
               // We can take off the value and hide the loader
-              postMyFile: "",
+              postMyFile: '',
               fileUploadLoader: false
             })
           )
           .catch(err => {
-            debugLog("Could not post file", err);
+            debugLog('Could not post file', err);
           })
     );
   }
@@ -580,7 +585,7 @@ class ReactSlackChat extends Component {
           }
 
           // Focus input box
-          const inputTextBox = document.getElementById("chat__input__text");
+          const inputTextBox = document.getElementById('chat__input__text');
           inputTextBox.focus();
 
           this.loadMessages(channel);
@@ -647,7 +652,7 @@ class ReactSlackChat extends Component {
     }
 
     // Attach click listener to dom to close chatbox if clicked outside
-    addEventListener("click", e => {
+    addEventListener('click', e => {
       // Check if chatbox is active
       return this.state.chatbox.active ? this.closeChatBox(e) : null;
     });
@@ -666,30 +671,44 @@ class ReactSlackChat extends Component {
           className={classNames(
             styles.card,
             styles.transition,
-            this.state.chatbox.active ? styles.active : "",
-            this.state.chatbox.chatActiveView ? styles.chatActive : "",
-              this.state.chatbox.active ? this.props.stylesCardActive:  this.props.stylesCard,
-
+            this.state.chatbox.active ? styles.active : '',
+            this.state.chatbox.chatActiveView ? styles.chatActive : '',
+            this.state.chatbox.active
+              ? this.props.stylesCardActive
+              : this.props.stylesCard
           )}
           onClick={this.openChatBox}
         >
-          <div className={classNames(styles.helpHeader,this.props.stylesHelper)}>
+          <div
+            className={classNames(styles.helpHeader, this.props.stylesHelper)}
+          >
             {this.state.newMessageNotification > 0 && (
-              <span className={classNames(styles.unreadNotificationsBadge,this.props.stylesNotificationsBadge)}>
+              <span
+                className={classNames(
+                  styles.unreadNotificationsBadge,
+                  this.props.stylesNotificationsBadge
+                )}
+              >
                 {this.state.newMessageNotification}
               </span>
             )}
             <h2 className={styles.transition}>
-              {this.state.helpText || "Help?"}
+              {this.state.helpText || 'Help?'}
             </h2>
-            {!this.props.disabledChangeChannel && <h2 className={styles.subText}> {this.props.helpTextClickToChannel || "Click on a channel to interact."}</h2>}
+            {!this.props.disabledChangeChannel && (
+              <h2 className={styles.subText}>
+                {' '}
+                {this.props.helpTextClickToChannel ||
+                  'Click on a channel to interact.'}
+              </h2>
+            )}
           </div>
           <div className={classNames(styles.card_circle, styles.transition)} />
           <div
             className={classNames(
               styles.channels,
               styles.transition,
-              this.state.chatbox.channelActiveView ? styles.channelActive : ""
+              this.state.chatbox.channelActiveView ? styles.channelActive : ''
             )}
           >
             {this.state.channels.map(channel => (
@@ -714,13 +733,27 @@ class ReactSlackChat extends Component {
             ))}
           </div>
           <div className={classNames(styles.chat)}>
-            <div className={classNames(styles.chatHeader,this.props.stylesChatHeader)}>
-              {!this.props.disabledChangeChannel && <span
-                className={styles.chat__back}
-                onClick={this.goToChannelView}
-              />}
-              <div className={classNames(styles.chat__person,this.props.stylesChatPersonn)}>
-                {!this.props.disabledStatusTextChannel && <span className={styles.chat__status}>status</span>}
+            <div
+              className={classNames(
+                styles.chatHeader,
+                this.props.stylesChatHeader
+              )}
+            >
+              {!this.props.disabledChangeChannel && (
+                <span
+                  className={styles.chat__back}
+                  onClick={this.goToChannelView}
+                />
+              )}
+              <div
+                className={classNames(
+                  styles.chat__person,
+                  this.props.stylesChatPersonn
+                )}
+              >
+                {!this.props.disabledStatusTextChannel && (
+                  <span className={styles.chat__status}>status</span>
+                )}
                 <span
                   className={classNames(styles.chat__online, styles.active)}
                 />
@@ -735,7 +768,7 @@ class ReactSlackChat extends Component {
                 />
               ) : (
                 <div
-                  dangerouslySetInnerHTML={{ __html: defaultChannelIcon  }}
+                  dangerouslySetInnerHTML={{ __html: defaultChannelIcon }}
                   className={styles.channel__header__photo}
                 />
               )}
@@ -749,7 +782,10 @@ class ReactSlackChat extends Component {
               ) : null}
             </div>
             <div
-              className={classNames(styles.chat__messages, this.props.stylesChatMessage)}
+              className={classNames(
+                styles.chat__messages,
+                this.props.stylesChatMessage
+              )}
               id="widget-reactSlakChatMessages"
             >
               {this.state.messages.map(message =>
@@ -781,11 +817,16 @@ class ReactSlackChat extends Component {
                   <input
                     type="text"
                     id="chat__input__text"
-                    className={classNames(styles.chat__input, this.props.stylesChatInputText)}
+                    className={classNames(
+                      styles.chat__input,
+                      this.props.stylesChatInputText
+                    )}
                     value={this.state.postMyMessage}
-                    placeholder={this.props.placeholderText || "Enter your message..."}
+                    placeholder={
+                      this.props.placeholderText || 'Enter your message...'
+                    }
                     onKeyPress={e =>
-                      e.key === "Enter" ? this.postMyMessage() : null
+                      e.key === 'Enter' ? this.postMyMessage() : null
                     }
                     onChange={e => this.handleChange(e)}
                   />
@@ -810,14 +851,14 @@ ReactSlackChat.propTypes = {
   helpText: PropTypes.string,
   helpTextErrorConnect: PropTypes.string,
   helpTextClickToChannel: PropTypes.string,
-  stylesCard: PropTypes.style,
-  stylesCardActive: PropTypes.style,
-  stylesHelper: PropTypes.style,
-  stylesNotificationsBadge: PropTypes.style,
-  stylesChatPersonn: PropTypes.style,
-  stylesChatHeader: PropTypes.style,
-  stylesChatInputText: PropTypes.style,
-  stylesChatMessage: PropTypes.style,
+  stylesCard: PropTypes.string,
+  stylesCardActive: PropTypes.string,
+  stylesHelper: PropTypes.string,
+  stylesNotificationsBadge: PropTypes.string,
+  stylesChatPersonn: PropTypes.string,
+  stylesChatHeader: PropTypes.string,
+  stylesChatInputText: PropTypes.string,
+  stylesChatMessage: PropTypes.string,
   // bypass the channel list and go directly to a specific channel
   defaultChannel: PropTypes.string,
   // prepend a default message to the beginning of the message list, such as an
