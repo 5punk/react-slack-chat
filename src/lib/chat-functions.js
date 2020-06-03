@@ -6,7 +6,7 @@ export const postMessage = ({
   lastThreadTs,
   apiToken,
   channel,
-  username
+  username,
 }) => {
   return new Promise((resolve, reject) => {
     if (text !== '') {
@@ -16,7 +16,7 @@ export const postMessage = ({
           thread_ts: lastThreadTs,
           channel,
           text,
-          username
+          username,
         },
         (err, data) => {
           return err ? reject(err) : resolve(data);
@@ -34,7 +34,7 @@ export const postFile = ({ file, title, apiToken, channel }) => {
       title,
       filename: file.name,
       filetype: 'auto',
-      channels: channel
+      channels: channel,
     };
     const form = new FormData();
     form.append('token', options.token);
@@ -63,7 +63,7 @@ export const postFile = ({ file, title, apiToken, channel }) => {
 export const getNewMessages = (old, total, botName) => {
   const oldText = JSON.stringify(old);
   // Message Order has to be consistent
-  const differenceInMessages = total.filter(i => {
+  const differenceInMessages = total.filter((i) => {
     if (oldText.indexOf(JSON.stringify(i)) === -1 && i.username !== botName) {
       return i;
     }
@@ -71,7 +71,7 @@ export const getNewMessages = (old, total, botName) => {
   return differenceInMessages;
 };
 
-export const isSystemMessage = message => {
+export const isSystemMessage = (message) => {
   const systemMessageRegex = /<@.[^|]*[|].*>/;
   return (
     systemMessageRegex.test(message.text) &&
@@ -79,7 +79,7 @@ export const isSystemMessage = message => {
   );
 };
 
-export const isAdmin = message => {
+export const isAdmin = (message) => {
   // Any post that has the `user` field is from the backend
   return typeof message.user !== 'undefined';
 };
@@ -89,12 +89,12 @@ export const wasIMentioned = (message, botName) => {
   return !myMessage && message.text.indexOf(`@${botName}`) > -1;
 };
 
-export const hasEmoji = text => {
+export const hasEmoji = (text) => {
   const chatHasEmoji = /(:[:a-zA-Z/_]*:)/;
   return chatHasEmoji.test(text);
 };
 
-export const hasAttachment = text => {
+export const hasAttachment = (text) => {
   // Get image url REGEX: uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*))
   // 1st match will give us full match
   // 2nd match will give us complete attachment URL
@@ -102,7 +102,7 @@ export const hasAttachment = text => {
   return text.match(systemAttachmentAttached);
 };
 
-export const decodeHtml = html => {
+export const decodeHtml = (html) => {
   const txt = document.createElement('textarea');
   txt.innerHTML = html;
   return txt.value;

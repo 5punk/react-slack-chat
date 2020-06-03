@@ -44,7 +44,6 @@ Consuming the library with [default system hooks](https://github.com/5punk/react
 
 `import { ReactSlackChat } from 'react-slack-chat/dist/react-slack-chat-with-default-hooks';`
 
-
 ### [Code snippet](https://github.com/5punk/react-slack-chat/blob/master/src/components/App/App.js) from [Demo App](https://5punk.github.io/react-slack-chat/):
 
 ```
@@ -94,17 +93,31 @@ class App extends Component {
 Below are a list of props the `<ReactSlackChat />` component accepts
 
 - `botname`: [UNIQUE][required] The name of the user / bot. Can be Visitor ID / Email ID / CorpID / IP address etc.
-- `apiToken`: [REQUIRED][String] The [BASE64 ENCODED](https://www.base64encode.org/) API Token for the bot you created for your team. You can create one [here](https://my.slack.com/services/new/bot).
-- `channels`: [REQUIRED][Array] At least one slack channel object needs to be passed for the first channel view. Refer example above.
-- `userImage`: [REQUIRED][String] An image URL for the user / bot (Does not need to be unique).
-- `helpText`: [OPTIONAL][String] The Help Text visible on the minimized view of the chat Widget.
-- `themeColor`: [OPTIONAL][String] A Hex Color value accent you want the widget to be themed with, stylish stuff.
-- `hooks`: [OPTIONAL][Array] Custom Action Hooks, let's administrators execute commands. Executed in Slack with the format `$=>@botName:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
+- `apiToken`: [REQUIRED][string] The [BASE64 ENCODED](https://www.base64encode.org/) API Token for the bot you created for your team. You can create one [here](https://my.slack.com/services/new/bot).
+- `channels`: [REQUIRED][array] At least one slack channel object needs to be passed for the first channel view. Refer example above.
+- `userImage`: [REQUIRED][string] An image URL for the user / bot (Does not need to be unique).
+- `helpText`: [OPTIONAL][string] The Help Text visible on the minimized view of the chat Widget.
+- `themeColor`: [OPTIONAL][string] A Hex Color value accent you want the widget to be themed with, stylish stuff.
+- `hooks`: [OPTIONAL][array] Custom Action Hooks, let's administrators execute commands. Executed in Slack with the format `$=>@botName:HOOK_ID`. Example: `$=>@5punk:getCurrentPath`
 - `debugMode`: [OPTIONAL] Pass a boolean (`true`/`false`) flag to start debug logs.
-- `defaultChannel`: [OPTIONAL][String] Channel name to bypass the channel list and go directly to a specific channel.
-- `defaultMessage`: [OPTIONAL][String] Prepend a default message to the beginning of the message list, such as an automatic greeting when a user first joins the channel.
-- `singleUserMode`: [OPTIONAL][Boolean] Pass a boolean to filter messages so the user only sees his/her messages and replies directed at the user in threads on the Slack side.
-- `closeChatButton`: [OPTIONAL][Boolean] Pass a boolean to add an "x" close button in the corner of the chat window instead of going back to channel list and minimizing.
+- `defaultChannel`: [OPTIONAL][string] Channel name to bypass the channel list and go directly to a specific channel.
+- `defaultMessage`: [OPTIONAL][string] Prepend a default message to the beginning of the message list, such as an automatic greeting when a user first joins the channel.
+- `singleUserMode`: [OPTIONAL][boolean] Pass a boolean to filter messages so the user only sees his/her messages and replies directed at the user in threads on the Slack side.
+- `closeChatButton`: [OPTIONAL][boolean] Pass a boolean to add an "x" close button in the corner of the chat window instead of going back to channel list and minimizing.
+- `placeholderText`: [OPTIONAL][string] The text "placeholder" into input. Placeholder default is "Enter your message..."
+- `disabledChangeChannel`: [OPTIONAL][boolean] Pass a boolean for block the channel change
+- `disabledStatusTextChannel`: [OPTIONAL][boolean] Pass a boolean for hide the text "status" in the toolbar
+- `helpTextErrorConnect`: [OPTIONAL][string] Change the text "Error connection".The text default is "Slack Connection Error!"
+- `helpTextClickToChannel`: [OPTIONAL][string] Change the text "Click on a channel to interact".The text default is "Click on a channel to interact."
+- `stylesCard`: [OPTIONAL][style] Override or extend the styles applied to the component Card
+- `stylesCardActive`: [OPTIONAL][style] Override or extend the styles applied to the component Card Active
+- `stylesHelper`: [OPTIONAL][style] Override or extend the styles applied to the component
+- `stylesCardActive`: [OPTIONAL][style] Override or extend the styles applied to the component
+- `stylesChatHeader`: [OPTIONAL][style] Override or extend the styles applied to the component
+- `stylesChatPersonn`: [OPTIONAL][style] Override or extend the styles applied to the component
+- `stylesChatInputText`: [OPTIONAL][style] Override or extend the styles applied to the component Input
+- `stylesChatMessage`: [OPTIONAL][style] Override or extend the styles applied to the component List message
+- `showNotificationBadge`: [OPTIONAL][boolean, default=true] Disables and enables the notification badge on the chat component.
 
 ## Default System Hooks
 
@@ -138,7 +151,8 @@ Submit your ideas for innovative hooks or feature requests.
 
 Adding custom hooks is easy. Just pass an array of actionable custom hooks as a prop to the library. The default lite version and _heavier_ library that ships with some basic default system hooks, both support custom hooks.
 
-You're expected to follow the format: 
+You're expected to follow the format:
+
 ```
 {
   id: [STRING],
@@ -163,14 +177,13 @@ hooks={[
        return dispatch(showHelpWizard(true))
         .then(data => //success)
         .fail(uILogger.error('FAILED'))
-    } 
+    }
   },
   .
   .
   .
 ]}
 ```
-
 
 ## Screenshots
 
