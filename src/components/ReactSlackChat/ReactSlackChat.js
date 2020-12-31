@@ -20,7 +20,6 @@ import {
   hasAttachment,
   isSystemMessage,
   isAdmin,
-  isValidOnlineUser,
 } from '../../lib/chat-functions';
 
 import { hooks, themes, utils } from '../../lib';
@@ -91,30 +90,6 @@ class ReactSlackChat extends Component {
     this.goToChannelView = this.goToChannelView.bind(this);
     // Utils
     this.displayFormattedMessage = this.displayFormattedMessage.bind(this);
-
-    // Initiate Emoji Library
-    emojiLoader()
-      .then(() => {
-        this.messageFormatter = {
-          emoji: true,
-        };
-      })
-      .catch((err) => debugLog(`Cant initiate emoji library ${err}`));
-    // Connect bot
-    this.connectBot(this)
-      .then((data) => {
-        debugLog('CONNECTED!', 'got data', data);
-        this.setState({
-          onlineUsers: data.onlineUsers,
-          channels: data.channels,
-        });
-      })
-      .catch((err) => {
-        debugLog('could not intialize slack bot', err);
-        this.setState({
-          failed: true,
-        });
-      });
   }
 
   gotNewMessages(newMessages) {
@@ -605,6 +580,30 @@ class ReactSlackChat extends Component {
   }
 
   componentDidMount() {
+    // Initiate Emoji Library
+    emojiLoader()
+      .then(() => {
+        this.messageFormatter = {
+          emoji: true,
+        };
+      })
+      .catch((err) => debugLog(`Cant initiate emoji library ${err}`));
+    // Connect bot
+    this.connectBot(this)
+      .then((data) => {
+        debugLog('CONNECTED!', 'got data', data);
+        this.setState({
+          onlineUsers: data.onlineUsers,
+          channels: data.channels,
+        });
+      })
+      .catch((err) => {
+        debugLog('could not intialize slack bot', err);
+        this.setState({
+          failed: true,
+        });
+      });
+
     // Look if custom color / theme is needed
     // If yes, change backgrounds
     if (this.props.themeColor) {

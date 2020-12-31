@@ -1,9 +1,9 @@
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import React, { Component } from 'react';
 import publicIp from 'public-ip';
 
 import styles from './App.scss';
-
-process.env.DEPLOY_MODE;
 
 // local development mode
 // eat your own dog food!
@@ -85,7 +85,8 @@ class App extends Component {
           icon: '',
         },
       ],
-      apiToken: '==',
+      apiToken:
+        'eG94Yi02MzQ4NjU1MDM1OS0xNjA2MTMzNjc5OTM5LVh6VWZ2ZXR1T3FWYVNKT1V5U2ZvTWRWNg==',
       helpText: 'Need Help?',
       themeColor: '#856090',
       debugMode: true,
@@ -107,6 +108,7 @@ class App extends Component {
       ) : (
         <ReactSlackChat {...slackChatProps} />
       );
+
     const codeHighlight = this.createMarkup(
       this.syntaxHighlight(slackChatProps)
     );
