@@ -85,8 +85,7 @@ class App extends Component {
           icon: '',
         },
       ],
-      apiToken:
-        'eG94Yi02MzQ4NjU1MDM1OS0xNjA2MTMzNjc5OTM5LVh6VWZ2ZXR1T3FWYVNKT1V5U2ZvTWRWNg==',
+      apiToken: '==',
       helpText: 'Need Help?',
       themeColor: '#856090',
       debugMode: true,

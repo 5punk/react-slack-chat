@@ -2,12 +2,12 @@ import {
   postMessage,
   decodeHtml,
   isAdmin,
-  wasIMentioned
+  wasIMentioned,
 } from './chat-functions';
 import { debugLog } from './utils';
 
 // Needs Chat Text
-export const isHookMessage = text => {
+export const isHookMessage = (text) => {
   // Full match 0-20 `$=>@avanish:hookText`
   // Group 1. 3-12 `@avanish`
   // Group 2. 12-20 `hookText`
@@ -17,11 +17,12 @@ export const isHookMessage = text => {
 
 // Needs Message Object
 export const execHooksIfFound = ({
+  bot,
   message,
   customHooks,
   apiToken,
   channel,
-  username
+  username,
 }) => {
   const messageText = decodeHtml(message.text);
   // Check to see if Action Hook is triggered
@@ -43,26 +44,28 @@ export const execHooksIfFound = ({
       // Conditionally import it for the build (lite vs -with-hooks)
       if (process.env.SYSTEM_HOOKS) {
         const { systemHooks } = require('./system-default-hooks');
-        systemHooks.map(hook => {
+        systemHooks.map((hook) => {
           if (hook.id === hookFound[2]) {
             executeHook({
+              bot,
               hook,
               apiToken,
               channel,
-              username
+              username,
             });
           }
         });
       }
 
       // Execute custom hooks set by user in this.props.hooks
-      customHooks.map(hook => {
+      customHooks.map((hook) => {
         if (hook.id === hookFound[2]) {
           executeHook({
+            bot,
             hook,
             apiToken,
             channel,
-            username
+            username,
           });
         }
       });
@@ -70,21 +73,22 @@ export const execHooksIfFound = ({
   }
 };
 
-const executeHook = ({ hook, apiToken, channel, username }) => {
+const executeHook = ({ bot, hook, apiToken, channel, username }) => {
   debugLog('Hook trigger found', hook.id);
   return hook
     .action({
       apiToken,
       channel,
-      username
+      username,
     })
-    .then(hookActionResponse => {
+    .then((hookActionResponse) => {
       debugLog('Action executed. Posting response.');
       return postMessage({
+        bot,
         text: `$=>@[${hook.id}]:${hookActionResponse}`,
         apiToken,
         channel,
-        username
+        username,
       });
     });
 };

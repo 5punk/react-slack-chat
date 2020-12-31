@@ -349,6 +349,7 @@ class ReactSlackChat extends Component {
               newMessages
                 ? newMessages.map((message) =>
                     execHooksIfFound({
+                      bot: this.bot,
                       message,
                       username: this.props.botName,
                       customHooks: this.props.hooks,

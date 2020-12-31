@@ -15,7 +15,7 @@ const changeColorRecursive = (root, oldColor, newColor) => {
   }
 };
 
-const rgb2hex = rgb => {
+const rgb2hex = (rgb) => {
   rgb = rgb.match(
     /^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i
   );
