@@ -1,6 +1,6 @@
 {
   "name": "react-slack-chat",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget.",
   "private": false,
   "main": "./dist/react-slack-chat.js",
