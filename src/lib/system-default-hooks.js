@@ -8,17 +8,17 @@ import { postFile } from './chat-functions';
 export const systemHooks = [
   {
     id: 'getCurrentPath',
-    action: () => Promise.resolve(window.location.href)
+    action: () => Promise.resolve(window.location.href),
   },
   {
     id: 'getPlatform',
-    action: () => Promise.resolve(window.navigator.platform)
+    action: () => Promise.resolve(window.navigator.platform),
   },
   {
     id: 'getScreenshot',
     action: ({ apiToken, channel, username }) => {
       return html2canvas(document.body)
-        .then(canvas => {
+        .then((canvas) => {
           const dataURL = canvas.toDataURL();
           const blobBin = atob(dataURL.split(',')[1]);
           const array = [];
@@ -35,12 +35,12 @@ export const systemHooks = [
             file,
             title: `Posted by ${username}`,
             apiToken,
-            channel
+            channel,
           }).then(() => 'Screenshot sent.');
         })
-        .catch(err => {
+        .catch((err) => {
           debugLog(`Error capturing screenshot. Check browser support. ${err}`);
         });
-    }
-  }
+    },
+  },
 ];

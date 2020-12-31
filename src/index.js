@@ -1,3 +1,3 @@
-import { ReactSlackChat } from "./components/ReactSlackChat";
+import { ReactSlackChat } from './components/ReactSlackChat';
 
 export { ReactSlackChat };

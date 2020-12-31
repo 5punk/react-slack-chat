@@ -1,14 +1,13 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import classNames from "classnames";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
-import { rtm, channels } from "slack";
-import { load as emojiLoader, parse as emojiParser } from "gh-emoji";
+import SlackBot from 'slack';
+import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
 
-import { User } from "../User";
-import styles from "./ReactSlackChat.scss";
+import styles from './ReactSlackChat.scss';
 
-import defaultChannelIcon from "../../assets/team.svg";
+import defaultChannelIcon from '../../assets/team.svg';
 
 // Chat Functions
 import {
@@ -20,10 +19,13 @@ import {
   hasEmoji,
   hasAttachment,
   isSystemMessage,
-  isAdmin
-} from "../../lib/chat-functions";
+  isAdmin,
+} from '../../lib/chat-functions';
 
-import { hooks, themes, utils } from "../../lib";
+import { hooks, themes, utils } from '../../lib';
+
+// Slack API Funcs
+import { getChannels, getUsers } from '../../lib/slack-utils';
 
 // Utils
 const { debugLog, arraysIdentical } = utils;
@@ -37,8 +39,6 @@ const { changeColorRecursive } = themes;
 class ReactSlackChat extends Component {
   constructor(args) {
     super(args);
-    // Create Bot
-    this.bot = rtm.client();
     // setup state
     this.state = {
       // failed flag
@@ -50,28 +50,30 @@ class ReactSlackChat extends Component {
       messages: [],
       // keep track of user threads for messaging in singleUserMode
       userThreadTss: [],
-      postMyMessage: "",
-      postMyFile: "",
+      postMyMessage: '',
+      postMyFile: '',
       chatbox: {
         active: false,
         channelActiveView: false,
-        chatActiveView: false
-      }
+        chatActiveView: false,
+      },
     };
     // Set class variables
     // Base64 decode the API Token
     this.apiToken = atob(this.props.apiToken);
+    // Create Bot
+    this.bot = new SlackBot({ token: this.apiToken });
     this.refreshTime = 5000;
-    this.chatInitiatedTs = "";
+    this.chatInitiatedTs = '';
     this.activeChannel = [];
     this.activeChannelInterval = null;
     this.messageFormatter = {
-      emoji: false // default
+      emoji: false, // default
     };
     this.fileUploadTitle = `Posted by ${this.props.botName}`;
 
     // Theme variables
-    this.themeDefaultColor = "#2e7eea"; // Defined as $theme_color sass variable in .scss
+    this.themeDefaultColor = '#2e7eea'; // Defined as $theme_color sass variable in .scss
 
     // Bind Slack Message functions
     this.loadMessages = this.loadMessages.bind(this);
@@ -88,35 +90,6 @@ class ReactSlackChat extends Component {
     this.goToChannelView = this.goToChannelView.bind(this);
     // Utils
     this.displayFormattedMessage = this.displayFormattedMessage.bind(this);
-
-    // Initiate Emoji Library
-    emojiLoader()
-      .then(() => {
-        this.messageFormatter = {
-          emoji: true
-        };
-      })
-      .catch(err => debugLog(`Cant initiate emoji library ${err}`));
-    // Connect bot
-    this.connectBot(this)
-      .then(data => {
-        debugLog("CONNECTED!", "got data", data);
-        if (this.props.defaultChannel) {
-          this.activeChannel = data.channels.filter(
-            channel => channel.name === this.props.defaultChannel
-          )[0];
-        }
-        this.setState({
-          onlineUsers: data.onlineUsers,
-          channels: data.channels
-        });
-      })
-      .catch(err => {
-        debugLog("could not intialize slack bot", err);
-        this.setState({
-          failed: true
-        });
-      });
   }
 
   gotNewMessages(newMessages) {
@@ -140,7 +113,7 @@ class ReactSlackChat extends Component {
         if (attachmentFound[1]) {
           // image file found
           const didIPostIt = message.text.indexOf(this.fileUploadTitle) > -1;
-          const fileNameFromUrl = attachmentFound[1].split("/");
+          const fileNameFromUrl = attachmentFound[1].split('/');
           return (
             <div
               className={classNames(
@@ -170,8 +143,10 @@ class ReactSlackChat extends Component {
                   <span>Click to Download</span>
                 </a>
               </div>
-              {// Show remote users image only if message isn't customers
-              !didIPostIt ? this.getUserImg(message) : null}
+              {
+                // Show remote users image only if message isn't customers
+                !didIPostIt ? this.getUserImg(message) : null
+              }
             </div>
           );
         }
@@ -222,7 +197,7 @@ class ReactSlackChat extends Component {
           <div
             className={classNames(
               styles.chat__message,
-              mentioned ? styles.mentioned : ""
+              mentioned ? styles.mentioned : ''
             )}
             dangerouslySetInnerHTML={{ __html: messageText }}
           />
@@ -231,100 +206,65 @@ class ReactSlackChat extends Component {
           <div
             className={classNames(
               styles.chat__message,
-              mentioned ? styles.mentioned : ""
+              mentioned ? styles.mentioned : ''
             )}
           >
             {messageText}
           </div>
         )}
-        {// Show remote users image only if message isn't customers
-        !myMessage ? this.getUserImg(message) : null}
+        {
+          // Show remote users image only if message isn't customers
+          !myMessage ? this.getUserImg(message) : null
+        }
       </div>
     );
   }
 
-  isValidOnlineUser(user) {
-    // return true if
-    // user should be active / online
-    // user.presence === 'active' &&
-    return !user.is_bot;
-    // And is NOT a bot
-    // slackbot hack, it thinks its not a bot :/
-    // && user.name.indexOf('slackbot') === -1;
-  }
-
   connectBot() {
-    return new Promise((resolve, reject) => {
-      try {
-        // start the bot, get the initial payload
-        this.bot.started(payload => {
-          debugLog(payload);
-          // Create new User object for each online user found
-          // Add to our list only if the user is valid
-          const onlineUsers = [];
-          // extract and resolve return the users
-          payload.users.map(user =>
-            this.isValidOnlineUser(user)
-              ? onlineUsers.push(new User(user))
-              : null
-          );
-          // get the channels we need
-          const channels = [];
-          payload.channels.map(channel => {
-            this.props.channels.forEach(channelObject => {
-              // If this channel is exactly as requested
-              if (
-                channelObject.name === channel.name ||
-                channelObject.id === channel.id
-              ) {
-                if (this.props.defaultChannel === channel.name) {
-                  this.activeChannel = channelObject;
-                }
-                channel.icon = channelObject.icon; // Add on the icon property to the channel list
-                channels.push(channel);
-              }
-            });
-          });
-          return resolve({ channels, onlineUsers });
-        });
-        // tell the bot to listen
-        this.bot.listen({ token: this.apiToken }, err => {
-          if (err) {
-            debugLog`Could not connect to Slack Server. Reason: ${JSON.stringify(
-              err
-            )}`;
-            this.setState({
-              helpText: "Slack Connection Error!"
-            });
-          }
-        });
-      } catch (err) {
-        return reject(err);
-      }
+    return Promise.all([
+      getChannels({
+        apiToken: this.apiToken,
+        bot: this.bot,
+        channelFilter: this.props.channels,
+        defaultChannel: this.props.defaultChannel,
+      }),
+      getUsers({
+        apiToken: this.apiToken,
+        bot: this.bot,
+      }),
+    ]).then(([channelData, teamData]) => {
+      debugLog('got channel and team data', channelData, teamData);
+      const { channels, activeChannel } = channelData;
+      const { onlineUsers } = teamData;
+
+      this.activeChannel = activeChannel;
+      this.onlineUsers = onlineUsers;
+      return { channels, onlineUsers };
     });
   }
 
   postMyMessage() {
     return postMessage({
+      bot: this.bot,
       text: this.state.postMyMessage,
       lastThreadTs: this.state.userThreadTss[
         this.state.userThreadTss.length - 1
       ],
       apiToken: this.apiToken,
       channel: this.activeChannel.id,
-      username: this.props.botName
+      username: this.props.botName,
     })
-      .then(data => {
+      .then((data) => {
         this.setState(
           {
-            postMyMessage: "",
-            sendingLoader: false
+            postMyMessage: '',
+            sendingLoader: false,
           },
           () => {
             // Adjust scroll height
             setTimeout(() => {
               const chatMessages = document.getElementById(
-                "widget-reactSlakChatMessages"
+                'widget-reactSlakChatMessages'
               );
               chatMessages.scrollTop = chatMessages.scrollHeight;
             }, this.refreshTime);
@@ -332,9 +272,9 @@ class ReactSlackChat extends Component {
         );
         return this.forceUpdate();
       })
-      .catch(err => {
+      .catch((err) => {
         if (err) {
-          return debugLog("failed to post. Err:", err);
+          return debugLog('failed to post. Err:', err);
         }
         return null;
       });
@@ -348,25 +288,24 @@ class ReactSlackChat extends Component {
     // define loadMessages function
     const getMessagesFromSlack = () => {
       const messagesLength = that.state.messages.length;
-      channels.history(
-        {
+
+      this.bot.conversations
+        .history({
           token: this.apiToken,
-          channel: channel.id
-        },
-        (err, data) => {
-          if (err) {
-            debugLog(
-              `There was an error loading messages for ${channel.name}. ${err}`
-            );
-            return this.setState({
-              failed: true
-            });
-          }
+          channel: channel.id,
+        })
+        .then((messagesData) => {
           // loaded channel history
-          debugLog("got data", data);
+          debugLog('got data', messagesData);
+
           // Scroll down only if the stored messages and received messages are not the same
           // reverse() mutates the array
-          if (!arraysIdentical(this.state.messages, data.messages.reverse())) {
+          if (
+            !arraysIdentical(
+              this.state.messages,
+              messagesData.messages.reverse()
+            )
+          ) {
             // Got new messages
             // We dont wish to execute action hooks if user opens chat for the first time
             if (this.state.messages.length !== 0) {
@@ -376,29 +315,30 @@ class ReactSlackChat extends Component {
               // Grab new messages
               const newMessages = getNewMessages(
                 this.state.messages,
-                data.messages,
+                messagesData.messages,
                 this.props.botName
               );
               this.gotNewMessages(newMessages);
 
               // Iterate over the new messages and exec any action hooks if found
               newMessages
-                ? newMessages.map(message =>
+                ? newMessages.map((message) =>
                     execHooksIfFound({
+                      bot: this.bot,
                       message,
                       username: this.props.botName,
                       customHooks: this.props.hooks,
                       apiToken: this.apiToken,
-                      channel: this.activeChannel.id
+                      channel: this.activeChannel.id,
                     })
                   )
                 : null;
             }
             // set the state with new messages
-            that.messages = data.messages;
+            that.messages = messagesData.messages;
             if (this.props.singleUserMode) {
               if (that.messages.length > 0) {
-                that.messages = that.messages.filter(message => {
+                that.messages = that.messages.filter((message) => {
                   if (message.username === that.props.botName) {
                     if (message.thread_ts) {
                       this.state.userThreadTss.indexOf(message.thread_ts) === -1
@@ -422,17 +362,17 @@ class ReactSlackChat extends Component {
               // add timestamp so list item will have unique key
               that.messages.unshift({
                 text: this.props.defaultMessage,
-                ts: this.chatInitiatedTs
+                ts: this.chatInitiatedTs,
               });
             }
             return this.setState(
               {
-                messages: that.messages
+                messages: that.messages,
               },
               () => {
                 // if div is already scrolled to bottom, scroll down again just incase a new message has arrived
                 const chatMessages = document.getElementById(
-                  "widget-reactSlakChatMessages"
+                  'widget-reactSlakChatMessages'
                 );
                 chatMessages.scrollTop =
                   chatMessages.scrollHeight < chatMessages.scrollTop + 600 ||
@@ -442,10 +382,17 @@ class ReactSlackChat extends Component {
               }
             );
           }
-          return;
-        }
-      );
+        })
+        .catch((err) => {
+          debugLog(
+            `There was an error loading messages for ${channel.name}. ${err}`
+          );
+          return this.setState({
+            failed: true,
+          });
+        });
     };
+
     // Call it once
     getMessagesFromSlack();
     // Set the function to be called at regular intervals
@@ -459,7 +406,7 @@ class ReactSlackChat extends Component {
   getUserImg(message) {
     const userId = message.user || message.username;
     let image;
-    this.state.onlineUsers.map(user => {
+    this.state.onlineUsers.map((user) => {
       if (user.id === userId) {
         image = user.image;
       }
@@ -498,19 +445,19 @@ class ReactSlackChat extends Component {
 
   handleChange(e) {
     this.setState({
-      postMyMessage: e.target.value
+      postMyMessage: e.target.value,
     });
     return;
   }
 
   handleFileChange(e) {
-    debugLog("Going to upload", e.target.value, e.target);
-    const fileToUpload = document.getElementById("chat__upload").files[0];
+    debugLog('Going to upload', e.target.value, e.target);
+    const fileToUpload = document.getElementById('chat__upload').files[0];
     return this.setState(
       {
         postMyFile: e.target.value,
         // show the loader
-        fileUploadLoader: true
+        fileUploadLoader: true,
         // Upload file in callback of this setstate
       },
       () =>
@@ -518,18 +465,18 @@ class ReactSlackChat extends Component {
           file: fileToUpload,
           title: this.fileUploadTitle,
           apiToken: this.apiToken,
-          channel: this.activeChannel.id
+          channel: this.activeChannel.id,
         })
           .then(() =>
             this.setState({
               // Upload is done, once this callback is hit
               // We can take off the value and hide the loader
-              postMyFile: "",
-              fileUploadLoader: false
+              postMyFile: '',
+              fileUploadLoader: false,
             })
           )
-          .catch(err => {
-            debugLog("Could not post file", err);
+          .catch((err) => {
+            debugLog('Could not post file', err);
           })
     );
   }
@@ -543,9 +490,9 @@ class ReactSlackChat extends Component {
         chatbox: {
           active: true,
           channelActiveView: true,
-          chatActiveView: false
+          chatActiveView: false,
         },
-        messages: []
+        messages: [],
       });
       this.activeChannel = [];
       // Clear load messages time interval
@@ -568,8 +515,8 @@ class ReactSlackChat extends Component {
           chatbox: {
             active: true,
             channelActiveView: false,
-            chatActiveView: true
-          }
+            chatActiveView: true,
+          },
         },
         () => {
           if (this.activeChannelInterval) {
@@ -577,7 +524,7 @@ class ReactSlackChat extends Component {
           }
 
           // Focus input box
-          const inputTextBox = document.getElementById("chat__input__text");
+          const inputTextBox = document.getElementById('chat__input__text');
           inputTextBox.focus();
 
           this.loadMessages(channel);
@@ -600,9 +547,9 @@ class ReactSlackChat extends Component {
           chatbox: {
             active: true,
             channelActiveView: true,
-            chatActiveView: false
+            chatActiveView: false,
           },
-          newMessageNotification: 0
+          newMessageNotification: 0,
         },
         () => {
           // Look to see if an active channel was already chosen...
@@ -625,14 +572,38 @@ class ReactSlackChat extends Component {
         chatbox: {
           active: false,
           channelActiveView: false,
-          chatActiveView: false
-        }
+          chatActiveView: false,
+        },
       });
     }
     return false;
   }
 
   componentDidMount() {
+    // Initiate Emoji Library
+    emojiLoader()
+      .then(() => {
+        this.messageFormatter = {
+          emoji: true,
+        };
+      })
+      .catch((err) => debugLog(`Cant initiate emoji library ${err}`));
+    // Connect bot
+    this.connectBot(this)
+      .then((data) => {
+        debugLog('CONNECTED!', 'got data', data);
+        this.setState({
+          onlineUsers: data.onlineUsers,
+          channels: data.channels,
+        });
+      })
+      .catch((err) => {
+        debugLog('could not intialize slack bot', err);
+        this.setState({
+          failed: true,
+        });
+      });
+
     // Look if custom color / theme is needed
     // If yes, change backgrounds
     if (this.props.themeColor) {
@@ -644,7 +615,7 @@ class ReactSlackChat extends Component {
     }
 
     // Attach click listener to dom to close chatbox if clicked outside
-    addEventListener("click", e => {
+    addEventListener('click', (e) => {
       // Check if chatbox is active
       return this.state.chatbox.active ? this.closeChatBox(e) : null;
     });
@@ -663,8 +634,8 @@ class ReactSlackChat extends Component {
           className={classNames(
             styles.card,
             styles.transition,
-            this.state.chatbox.active ? styles.active : "",
-            this.state.chatbox.chatActiveView ? styles.chatActive : ""
+            this.state.chatbox.active ? styles.active : '',
+            this.state.chatbox.chatActiveView ? styles.chatActive : ''
           )}
           onClick={this.openChatBox}
         >
@@ -675,7 +646,7 @@ class ReactSlackChat extends Component {
               </span>
             )}
             <h2 className={styles.transition}>
-              {this.state.helpText || "Help?"}
+              {this.state.helpText || 'Help?'}
             </h2>
             <h2 className={styles.subText}>Click on a channel to interact.</h2>
           </div>
@@ -684,14 +655,14 @@ class ReactSlackChat extends Component {
             className={classNames(
               styles.channels,
               styles.transition,
-              this.state.chatbox.channelActiveView ? styles.channelActive : ""
+              this.state.chatbox.channelActiveView ? styles.channelActive : ''
             )}
           >
-            {this.state.channels.map(channel => (
+            {this.state.channels.map((channel) => (
               <div
                 className={styles.contact}
                 key={channel.id}
-                onClick={e => this.goToChatView(e, channel)}
+                onClick={(e) => this.goToChatView(e, channel)}
               >
                 {channel.icon ? (
                   <img src={channel.icon} className={styles.contact__photo} />
@@ -747,7 +718,7 @@ class ReactSlackChat extends Component {
               className={styles.chat__messages}
               id="widget-reactSlakChatMessages"
             >
-              {this.state.messages.map(message =>
+              {this.state.messages.map((message) =>
                 this.displayFormattedMessage(message)
               )}
             </div>
@@ -769,7 +740,7 @@ class ReactSlackChat extends Component {
                         id="chat__upload"
                         className={styles.chat__upload}
                         value={this.state.postMyFile}
-                        onChange={e => this.handleFileChange(e)}
+                        onChange={(e) => this.handleFileChange(e)}
                       />
                     </label>
                   </div>
@@ -779,10 +750,10 @@ class ReactSlackChat extends Component {
                     className={styles.chat__input}
                     value={this.state.postMyMessage}
                     placeholder="Enter your message..."
-                    onKeyPress={e =>
-                      e.key === "Enter" ? this.postMyMessage() : null
+                    onKeyPress={(e) =>
+                      e.key === 'Enter' ? this.postMyMessage() : null
                     }
-                    onChange={e => this.handleChange(e)}
+                    onChange={(e) => this.handleChange(e)}
                   />
                 </div>
               ) : null}
@@ -815,7 +786,7 @@ ReactSlackChat.propTypes = {
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,
-  debugMode: PropTypes.bool
+  debugMode: PropTypes.bool,
 };
 
 export default ReactSlackChat;

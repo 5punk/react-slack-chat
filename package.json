@@ -1,15 +1,15 @@
 {
   "name": "react-slack-chat",
-  "version": "1.12.0",
+  "version": "1.14.0",
   "description": "A Beautiful Gooey / Material Design Slack Chat Web Integrating Widget.",
   "private": false,
   "main": "./dist/react-slack-chat.js",
   "scripts": {
-    "start": "SYSTEM_HOOKS=true npx webpack-dev-server --config ./build/webpack.config.js --mode development",
+    "start": "cross-env SYSTEM_HOOKS=true npx webpack-dev-server --config ./build/webpack.config.js --mode development",
     "build": "npm run build:lite && npm run build:withHooks",
-    "deploy": "npm run build && SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.deploy.js --mode development && gh-pages -d ./dist/example",
+    "deploy": "npm run build && cross-env SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.deploy.js --mode development && gh-pages -d ./dist/example",
     "build:lite": "npx webpack --config ./build/webpack.config.prod.js -p --mode production",
-    "build:withHooks": "SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.prod.js -p --mode production",
+    "build:withHooks": "cross-env SYSTEM_HOOKS=true npx webpack --config ./build/webpack.config.prod.js -p --mode production",
     "stats": "npx webpack --config ./build/webpack.config.prod.js -p --json > stats.json",
     "test": "echo \"No test specified\" && exit 0",
     "lint": "npx prettier --write ./src/**/*.js"
@@ -47,21 +47,24 @@
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
+    "core-js": "^3.8.1",
+    "cross-env": "^7.0.3",
     "css-loader": "^2.1.1",
     "gh-pages": "^2.0.1",
     "html-webpack-plugin": "~3.2.0",
     "husky": "^2.3.0",
     "lint-staged": "^8.1.7",
-    "node-sass": "^4.12.0",
-    "public-ip": "^3.1.0",
+    "node-sass": "^4.14.1",
+    "public-ip": "^4.0.3",
     "react-hot-loader": "^4.8.4",
+    "regenerator-runtime": "^0.13.7",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "svg-inline-loader": "^0.8.0",
     "webpack": "^4.31.0",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-cli": "^3.3.1",
-    "webpack-dev-server": "^3.3.1"
+    "webpack-dev-server": "^3.11.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.4.4",
@@ -71,6 +74,6 @@
     "prop-types": "15.6.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "slack": "^7.7.3"
+    "slack": "^11.0.2"
   }
 }
