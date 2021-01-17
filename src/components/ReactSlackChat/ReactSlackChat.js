@@ -13,7 +13,6 @@ import defaultChannelIcon from '../../assets/team.svg';
 import {
   wasIMentioned,
   decodeHtml,
-  postMessage,
   postFile,
   getNewMessages,
   hasEmoji,
@@ -22,10 +21,15 @@ import {
   isAdmin,
 } from '../../lib/chat-functions';
 
-import { hooks, themes, utils } from '../../lib';
+import { hooks, themes, utils, cacheChannelMap } from '../../lib';
 
 // Slack API Funcs
-import { getChannels, getUsers } from '../../lib/slack-utils';
+import {
+  getChannels,
+  getUsers,
+  getMessages,
+  postMessage,
+} from '../../lib/slack-utils';
 
 // Utils
 const { debugLog, arraysIdentical } = utils;
@@ -35,6 +39,9 @@ const { isHookMessage, execHooksIfFound } = hooks;
 
 // Themes
 const { changeColorRecursive } = themes;
+
+// Cached Channel Map
+const { getCachedChannelMap, saveChannelMap } = cacheChannelMap;
 
 class ReactSlackChat extends Component {
   constructor(args) {
@@ -90,6 +97,8 @@ class ReactSlackChat extends Component {
     this.goToChannelView = this.goToChannelView.bind(this);
     // Utils
     this.displayFormattedMessage = this.displayFormattedMessage.bind(this);
+    // Single user mode, TS (Thread) map
+    this.TS_MAP = getCachedChannelMap({ channels: this.props.channels });
   }
 
   gotNewMessages(newMessages) {
@@ -247,14 +256,23 @@ class ReactSlackChat extends Component {
     return postMessage({
       bot: this.bot,
       text: this.state.postMyMessage,
-      lastThreadTs: this.state.userThreadTss[
-        this.state.userThreadTss.length - 1
-      ],
+      singleUserMode: this.props.singleUserMode,
+      ts: this.TS_MAP[this.activeChannel.name || this.activeChannel.name],
       apiToken: this.apiToken,
       channel: this.activeChannel.id,
       username: this.props.botName,
     })
       .then((data) => {
+        // single user and no ts thread info stored
+        if (
+          this.props.singleUserMode &&
+          !this.TS_MAP[this.activeChannel.name || this.activeChannel.id]
+        ) {
+          this.TS_MAP[this.activeChannel.name || this.activeChannel.id] =
+            data.message.thread_ts || data.ts;
+          // update cache map
+          saveChannelMap({ TS_MAP: this.TS_MAP });
+        }
         this.setState(
           {
             postMyMessage: '',
@@ -289,11 +307,13 @@ class ReactSlackChat extends Component {
     const getMessagesFromSlack = () => {
       const messagesLength = that.state.messages.length;
 
-      this.bot.conversations
-        .history({
-          token: this.apiToken,
-          channel: channel.id,
-        })
+      getMessages({
+        bot: this.bot,
+        apiToken: this.apiToken,
+        channelId: channel.id,
+        singleUserMode: this.props.singleUserMode,
+        ts: this.TS_MAP[channel.name || channel.id],
+      })
         .then((messagesData) => {
           // loaded channel history
           debugLog('got data', messagesData);
@@ -336,28 +356,7 @@ class ReactSlackChat extends Component {
             }
             // set the state with new messages
             that.messages = messagesData.messages;
-            if (this.props.singleUserMode) {
-              if (that.messages.length > 0) {
-                that.messages = that.messages.filter((message) => {
-                  if (message.username === that.props.botName) {
-                    if (message.thread_ts) {
-                      this.state.userThreadTss.indexOf(message.thread_ts) === -1
-                        ? this.state.userThreadTss.push(message.thread_ts)
-                        : null;
-                    }
-                    return true;
-                  }
-                  if (
-                    this.state.userThreadTss.indexOf(message.thread_ts) !== -1
-                  ) {
-                    return true;
-                  }
-                  return false;
-                });
-              } else {
-                that.messages = [];
-              }
-            }
+
             if (this.props.defaultMessage) {
               // add timestamp so list item will have unique key
               that.messages.unshift({

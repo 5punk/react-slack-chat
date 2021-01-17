@@ -1,33 +1,5 @@
 import { debugLog } from './utils';
 
-export const postMessage = ({
-  bot,
-  text,
-  lastThreadTs,
-  apiToken,
-  channel,
-  username,
-}) => {
-  if (text) {
-    const postMessageArgs = {
-      token: apiToken,
-      channel,
-      text,
-      username,
-    };
-    if (lastThreadTs) {
-      return bot.chat.postMessage({
-        ...postMessageArgs,
-        thread_ts: lastThreadTs,
-      });
-    } else {
-      return bot.chat.postMessage(postMessageArgs);
-    }
-  } else {
-    return Promise.reject('Empty text is not permitted.');
-  }
-};
-
 export const postFile = ({ file, title, apiToken, channel }) => {
   return new Promise((resolve, reject) => {
     debugLog('UPLOADING', file);
