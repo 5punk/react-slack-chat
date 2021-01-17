@@ -17,10 +17,14 @@ class App extends Component {
       ip: undefined,
     };
   }
-  syntaxHighlight(json) {
-    if (typeof json !== 'string') {
-      json = JSON.stringify(json, undefined, 4);
-    }
+  syntaxHighlight(data) {
+    // strip secret
+    let json = {
+      ...data,
+      apiToken: 'xxxxx',
+    };
+    json = JSON.stringify(json, undefined, 4);
+
     json = json
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -85,8 +89,11 @@ class App extends Component {
           icon: '',
         },
       ],
-      apiToken: '==',
+      apiToken:
+        'eG94Yi02MzQ4NjU1MDM1OS0xNjA2MTMzNjc5OTM5LVh6VWZ2ZXR1T3FWYVNKT1V5U2ZvTWRWNg==',
       helpText: 'Need Help?',
+      singleUserMode: false,
+      defaultMessage: 'Welcome! Someone will help shortly.',
       themeColor: '#856090',
       debugMode: true,
       userImage: getClientAvatar,

@@ -1,9 +1,5 @@
-import {
-  postMessage,
-  decodeHtml,
-  isAdmin,
-  wasIMentioned,
-} from './chat-functions';
+import { decodeHtml, isAdmin, wasIMentioned } from './chat-functions';
+import { postMessage } from './slack-utils';
 import { debugLog } from './utils';
 
 // Needs Chat Text
