@@ -17,3 +17,7 @@ npm-debug.log
 stats.json
 
 .env.development.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
