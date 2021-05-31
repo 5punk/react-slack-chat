@@ -15,3 +15,5 @@ dist
 npm-debug.log
 
 stats.json
+
+.env.development.local
