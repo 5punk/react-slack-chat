@@ -124,7 +124,6 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
   }
   h2 {
     color: $white;
-    font-family: Poppins-Medium;
     font-size: 18px;
     color: #5ad6ff;
     border-radius: 14px;
@@ -184,7 +183,6 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
   border-radius: 50%;
 }
 .chat__name {
-  font-family: Poppins-Medium;
   font-size: 14px;
   top: 15px;
   right: 12px;
@@ -278,7 +276,6 @@ $attachmentIcon: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAA
 .chat__status {
   position: relative;
   left: 40px;
-  font-family: Poppins-Medium;
   font-size: 16px;
   text-transform: uppercase;
   color: $white;
