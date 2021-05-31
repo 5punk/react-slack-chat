@@ -113,6 +113,7 @@ class App extends Component {
     !this.state.resolvedReactSlackChat &&
       promisedReactSlackChat.then((ReactSlackChat) => {
         console.log('Got a promisifed React Slack Chat chunk', ReactSlackChat);
+
         return this.setState({
           resolvedReactSlackChat: ReactSlackChat,
         });
