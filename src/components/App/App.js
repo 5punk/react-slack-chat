@@ -68,51 +68,32 @@ class App extends Component {
     const getClientID = this.state.ip || this.getIP();
     const getClientAvatar = `https://robohash.org/${getClientID}`;
 
-    const slackChatProps = {
-      botName: getClientID,
-      channels: [
-        {
-          name: 'mac',
-          icon: 'https://image.flaticon.com/icons/svg/141/141021.svg',
-        },
-        {
-          name: 'pc',
-          icon: 'https://image.flaticon.com/icons/svg/224/224597.svg',
-        },
-        {
-          name: 'linux',
-          icon: 'https://image.flaticon.com/icons/svg/226/226772.svg',
-        },
-        {
-          name: 'test',
-          id: '',
-          icon: '',
-        },
-      ],
-      apiToken: '==',
-      helpText: 'Need Help?',
-      singleUserMode: false,
-      defaultMessage: 'Welcome! Someone will help shortly.',
-      themeColor: '#856090',
-      debugMode: true,
-      userImage: getClientAvatar,
-      hooks: [
-        {
-          /* My Custom Hook */
-          id: 'getSystemInfo',
-          action: () => 'MY SYSTEM INFO!',
-        },
-      ],
-    };
+    const slackChatProps = {};
 
-    const Chat = ({ ReactSlackChat }) =>
-      !this.state.ip ? (
-        <div className={styles['loading']}>
-          <h2>Now Loading...</h2>
-        </div>
-      ) : (
-        <ReactSlackChat {...slackChatProps} />
-      );
+    const Chat = ({ ReactSlackChat }) => (
+      <ReactSlackChat
+        botName="5punk-unique-id" // VisitorID, CorpID, Email, IP address etc.
+        apiToken={process.env.REACT_APP_SLACK_BOT}
+        singleUserMode
+        closeChatButton
+        channels={[
+          {
+            name: 'online-support',
+          },
+        ]}
+        helpText="Optional Help Text"
+        themeColor="#856090"
+        userImage="http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg"
+        debugMode
+        hooks={[
+          {
+            /* My Custom Hook */
+            id: 'getSystemInfo',
+            action: () => Promise.resolve('MY SYSTEM INFO!'),
+          },
+        ]}
+      />
+    );
 
     const codeHighlight = this.createMarkup(
       this.syntaxHighlight(slackChatProps)
