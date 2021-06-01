@@ -15,14 +15,11 @@
     "lint": "npx prettier --write ./src/**/*.js"
   },
   "keywords": [],
-  "bugs": {
-    "url": "https://github.com/5punk/react-slack-chat/issues"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/5punk/react-slack-chat.git"
+    "url": "https://github.com/rzilient-club/react-slack-chat.git"
   },
-  "homepage": "https://github.com/5punk/react-slack-chat#readme",
+  "homepage": "https://rzilient-club.github.io/react-slack-chat",
   "author": "Avanish Pathak",
   "license": "ISC",
   "husky": {
@@ -68,6 +65,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.4.4",
+    "@fortawesome/fontawesome": "^1.1.8",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-regular-svg-icons": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "classnames": "^2.2.6",
     "gh-emoji": "^0.2.5",
     "html2canvas": "^1.0.0-rc.1",
