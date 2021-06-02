@@ -24,35 +24,40 @@ $font_1: Helvetica;
 $font_2: Arial;
 $font_3: sans-serif;
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import url(https://fonts.googleapis.com/css?family=Raleway:400,200);
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&display=swap');
+
+//icons
 @import './attachmentIcon.scss';
 @import './staricon.scss';
 
 .transition {
   //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
   transition: 0.8s cubic-bezier(0.3, 0, 0, 1.3);
+  color: $white;
 }
 .card {
   background-color: $color_athens_gray_approx;
+  font-family: Poppins;
   //Instead of the line below you could use @include box-shadow($shadow-1, $shadow-2, $shadow-3, $shadow-4, $shadow-5, $shadow-6, $shadow-7, $shadow-8, $shadow-9, $shadow-10)
   box-shadow: 0 0 10px 2px $black_30;
-  border-radius: 25px;
-  bottom: 10px;
+  border-radius: 25px 25px 0 0;
+  bottom: 0px;
   width: 150px;
-  height: 60px;
+  height: 80px;
   position: fixed;
   right: 40px;
   cursor: pointer;
   > div {
-    height: 60px;
     min-height: 0px;
   }
   &.active {
     border-radius: 25px;
     cursor: default;
     height: 500px;
-    width: 640px;
-    z-index: 99999;
+    width: 500px;
+    z-index: 2;
     .card_circle {
       background-size: cover;
       //Instead of the line below you could use @include border-radius($radius, $vertical-radius)
@@ -60,6 +65,11 @@ $font_3: sans-serif;
     }
     h2 {
       color: $white;
+      visibility: visible;
+      height: auto;
+      //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+      transition: visibility 0s, opacity 0.5s linear;
+      opacity: 1;
       small {
         color: $white;
       }
@@ -86,9 +96,14 @@ $font_3: sans-serif;
       }
     }
     .subText {
-      visibility: hidden;
-      height: 0px;
+      visibility: visible;
+      height: auto;
       //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+      transition: visibility 0s, opacity 0.5s linear;
+      opacity: 1;
+    }
+    .channel__close__button {
+      visibility: visible;
       transition: visibility 0s, opacity 0.5s linear;
       opacity: 1;
     }
@@ -103,6 +118,7 @@ $font_3: sans-serif;
       opacity: 1;
       overflow-x: hidden;
     }
+
     &.channelActive .helpHeader {
       visibility: visible;
       opacity: 1;
@@ -123,24 +139,62 @@ $font_3: sans-serif;
     transition: visibility 0s, opacity 0.5s linear;
   }
   .subText {
-    visibility: hidden;
     //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+    visibility: hidden;
+    height: 0;
     transition: visibility 0s, opacity 0.5s linear;
     opacity: 0;
   }
-  h2 {
-    font-size: 18px;
-    color: #5ad6ff;
-    border-radius: 14px;
-    font-weight: 200;
-    margin-top: 0;
-    text-align: center;
+  .h2 {
+    //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
+    visibility: hidden;
+    height: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+    opacity: 0;
+  }
+  .channel__close__button {
+    height: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+    opacity: 0;
+    visibility: hidden;
+  }
+  h2,
+  h3 {
+    margin: 0;
+    text-align: left;
     width: 100%;
-    z-index: 9999;
+    z-index: 1;
+    color: $white;
+  }
+  h2 {
+    font-size: 24px;
+    font-family: 'Bree Serif', serif;
+  }
+  h3 {
+    font-weight: 400;
+    font-size: 12px;
+  }
+}
+.header__text {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 60px;
+  svg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 15px;
+    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    background-color: #00b570;
+    border-radius: 50%;
   }
 }
 .contact {
   position: relative;
+  color: $color_port_gore_approx;
   width: 95%;
   height: 50px;
   margin-top: 10px;
@@ -216,6 +270,7 @@ $font_3: sans-serif;
 }
 .channel__close__button {
   position: absolute;
+  z-index: 2;
   top: calc(50% - 1em);
   margin-right: 30px;
   right: 0;
@@ -226,9 +281,7 @@ $font_3: sans-serif;
   border: none;
   cursor: pointer;
 }
-.contact__name {
-  font-family: $font_0, $font_1, $font_2, $font_3;
-}
+
 .contact__status {
   position: absolute;
   top: 20px;
@@ -247,12 +300,13 @@ $font_3: sans-serif;
 }
 .chatHeader {
   position: absolute;
-  border-radius: 25px;
+  border-radius: 25px 25px 5px 5px;
   top: 0px;
-  z-index: 9999;
+  z-index: 1;
+  box-sizing: border-box;
   left: 0rem;
   width: 100%;
-  height: 6rem;
+  height: 140px;
   background: $theme_color;
 }
 
@@ -291,7 +345,6 @@ $font_3: sans-serif;
   position: absolute;
   top: 2rem;
   left: 3rem;
-  font-family: $font_0, $font_1, $font_2, $font_3;
   color: $white;
 }
 .chat__online {
@@ -354,7 +407,6 @@ $font_3: sans-serif;
   max-width: 60%;
   word-wrap: break-word;
   padding: 0.8rem;
-  font-family: $font_0, $font_1, $font_2, $font_3;
   img {
     width: 20px;
   }
@@ -372,7 +424,7 @@ $font_3: sans-serif;
   left: 10px;
   width: 25px;
   height: 25px;
-  z-index: 9999;
+  z-index: 1;
   cursor: pointer;
   background: $attachmentIcon no-repeat;
   background-size: 22px;
@@ -420,31 +472,33 @@ $font_3: sans-serif;
   }
 }
 .chat__input {
+  box-sizing: border-box;
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100%;
   height: 45px;
+  width: 100%;
   padding: 0.5rem 0.5rem 0.5rem 2.5rem;
   border: 0;
   background-repeat: no-repeat;
   background-position: 1rem 1rem;
-  background-color: $color_athens_gray_approx;
+  background-color: $white;
   font-size: 14px;
   color: $color_ebony_clay_approx;
-  font-family: $font_0, $font_1, $font_2, $font_3;
 }
 .helpHeader {
   background: $theme_color;
   position: relative;
   padding: 20px;
-  border-radius: 25px;
+  height: 140px;
+  box-sizing: border-box;
+  border-radius: 25px 25px 5px 5px;
 }
 .chat-header {
   position: absolute;
   border-radius: 25px;
   top: 0;
-  z-index: 9999;
+  z-index: 1;
   left: 0;
   width: 100%;
   height: 6rem;
