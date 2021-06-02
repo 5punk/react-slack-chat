@@ -642,15 +642,15 @@ class ReactSlackChat extends Component {
           onClick={this.openChatBox}
         >
           <div className={styles.helpHeader}>
-            <span className={styles.unreadNotificationsBadge}>
+            {/* <span className={styles.unreadNotificationsBadge}>
               {this.state.newMessageNotification}
-            </span>
-            {/* MAKE SURE TO UNCOMMENT THIS AND DELETE THE UPPER */}
-            {/* {this.state.newMessageNotification > 0 && (
-              <span className={styles.unreadNotificationsBadge}>
-                {this.state.newMessageNotification}
-              </span>
-            )} */}
+            </span> */}
+            {!this.state.chatbox.active &&
+              this.state.newMessageNotification > 0 && (
+                <span className={styles.unreadNotificationsBadge}>
+                  {this.state.newMessageNotification}
+                </span>
+              )}
             <div className={styles.header__text}>
               <div>
                 <FontAwesomeIcon icon={faCommentDots} />
@@ -707,10 +707,13 @@ class ReactSlackChat extends Component {
                 onClick={this.goToChannelView}
               />
               <div className={styles.chat__person}>
-                <span className={styles.chat__status}>status</span>
-                <span
-                  className={classNames(styles.chat__online, styles.active)}
-                />
+                <span className={styles.chat__status}>
+                  <span
+                    className={classNames(styles.chat__online, styles.active)}
+                  />
+                  status
+                </span>
+
                 <span className={styles.chat__name}>
                   {this.activeChannel.name}
                 </span>

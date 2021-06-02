@@ -72,7 +72,8 @@ export const hasAttachment = (text) => {
   // Get image url REGEX: uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*))
   // 1st match will give us full match
   // 2nd match will give us complete attachment URL
-  const systemAttachmentAttached = /uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*))/;
+  const systemAttachmentAttached =
+    /uploaded a file: <(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*))/;
   return text.match(systemAttachmentAttached);
 };
 
