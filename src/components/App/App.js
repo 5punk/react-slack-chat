@@ -73,7 +73,7 @@ class App extends Component {
     const Chat = ({ ReactSlackChat }) => (
       <ReactSlackChat
         botName="Rzilio"
-        helpText="🤙 ️Support"
+        helpText="Rzilient Support"
         apiToken={process.env.REACT_APP_SLACK_BOT}
         singleUserMode
         closeChatButton
@@ -82,7 +82,7 @@ class App extends Component {
             name: 'online-support',
           },
         ]}
-        themeColor="#04034c"
+        themeColor="#172b58"
         userImage="http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg"
         debugMode
         hooks={[
