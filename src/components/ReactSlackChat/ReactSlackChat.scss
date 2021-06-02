@@ -53,7 +53,7 @@ $font_3: sans-serif;
     min-height: 0px;
   }
   &.active {
-    border-radius: 25px;
+    border-radius: 25px 25px 0 0;
     cursor: default;
     height: 500px;
     width: 500px;
@@ -125,6 +125,9 @@ $font_3: sans-serif;
       //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
       transition: visibility 0s, opacity 0.5s linear;
     }
+    .header__text {
+      flex-direction: row;
+    }
   }
   .channels {
     visibility: hidden;
@@ -145,12 +148,16 @@ $font_3: sans-serif;
     transition: visibility 0s, opacity 0.5s linear;
     opacity: 0;
   }
-  .h2 {
+  h2 {
     //Instead of the line below you could use @include transition($transition-1, $transition-2, $transition-3, $transition-4, $transition-5, $transition-6, $transition-7, $transition-8, $transition-9, $transition-10)
     visibility: hidden;
     height: 0;
+    width: 0;
     transition: visibility 0s, opacity 0.5s linear;
     opacity: 0;
+  }
+  .header__text {
+    flex-direction: column;
   }
   .channel__close__button {
     height: 0;
@@ -177,7 +184,6 @@ $font_3: sans-serif;
 }
 .header__text {
   display: flex;
-  flex-direction: row;
   justify-content: center;
   align-items: center;
   font-size: 60px;
@@ -306,7 +312,7 @@ $font_3: sans-serif;
   box-sizing: border-box;
   left: 0rem;
   width: 100%;
-  height: 140px;
+  height: 120px;
   background: $theme_color;
 }
 
@@ -490,7 +496,7 @@ $font_3: sans-serif;
   background: $theme_color;
   position: relative;
   padding: 20px;
-  height: 140px;
+  height: 120px;
   box-sizing: border-box;
   border-radius: 25px 25px 5px 5px;
 }
