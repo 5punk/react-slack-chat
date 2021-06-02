@@ -79,6 +79,9 @@ class App extends Component {
         closeChatButton
         channels={[
           {
+            name: 'rzilient',
+          },
+          {
             name: 'online-support',
           },
         ]}
