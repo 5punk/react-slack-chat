@@ -645,7 +645,7 @@ class ReactSlackChat extends Component {
             <span className={styles.unreadNotificationsBadge}>
               {this.state.newMessageNotification}
             </span>
-            {/* MAKE SURE TO UNCOMMENT THIS AND DELETE THE UPPER NOTIFICATIONS */}
+            {/* MAKE SURE TO UNCOMMENT THIS AND DELETE THE UPPER */}
             {/* {this.state.newMessageNotification > 0 && (
               <span className={styles.unreadNotificationsBadge}>
                 {this.state.newMessageNotification}
