@@ -294,6 +294,8 @@ $font_3: sans-serif;
   border-radius: 25px 25px 5px 5px;
   top: 0px;
   z-index: 1;
+  padding: 20px;
+
   box-sizing: border-box;
   left: 0rem;
   width: 100%;
@@ -301,11 +303,21 @@ $font_3: sans-serif;
   background: $theme_color;
 }
 
+.helpHeader {
+  background: $theme_color;
+  position: relative;
+  padding: 20px;
+  height: 120px;
+  box-sizing: border-box;
+  border-radius: 25px 25px 5px 5px;
+}
+
 .header__text {
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 60px;
+  height: 100%;
   svg {
     display: flex;
     justify-content: center;
@@ -324,7 +336,7 @@ $font_3: sans-serif;
     position: absolute;
     display: block;
     cursor: pointer;
-    top: 2.4rem;
+    top: 3rem;
     left: 1.6rem;
     width: 1.5rem;
     height: 1.5rem;
@@ -493,14 +505,6 @@ $font_3: sans-serif;
   background-color: $white;
   font-size: 14px;
   color: $color_ebony_clay_approx;
-}
-.helpHeader {
-  background: $theme_color;
-  position: relative;
-  padding: 20px;
-  height: 120px;
-  box-sizing: border-box;
-  border-radius: 25px 25px 5px 5px;
 }
 
 .gh-emoji {
