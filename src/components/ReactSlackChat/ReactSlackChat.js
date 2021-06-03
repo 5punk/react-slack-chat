@@ -632,6 +632,9 @@ class ReactSlackChat extends Component {
     // Looks like nothing failed, let's start to render our chatbox
     const chatbox = (
       <div>
+        {console.log(this.state.chatbox)}
+        {console.log(this.props)}
+        {console.log(this.state.newMessageNotification)}
         <div
           className={classNames(
             styles.card,
@@ -706,29 +709,15 @@ class ReactSlackChat extends Component {
                 className={styles.chat__back}
                 onClick={this.goToChannelView}
               />
-              <div className={styles.chat__person}>
-                <span className={styles.chat__status}>
-                  <span
-                    className={classNames(styles.chat__online, styles.active)}
-                  />
-                  status
-                </span>
-
-                <span className={styles.chat__name}>
-                  {this.activeChannel.name}
-                </span>
+              <div className={styles.header__text}>
+                <div>
+                  <FontAwesomeIcon icon={faCommentDots} />
+                </div>
+                <h2 className={styles.transition}>
+                  {this.activeChannel.name || 'Help?'}
+                  <h3 className={styles.subText}>INSERT HERE SOME TEXT</h3>
+                </h2>
               </div>
-              {this.activeChannel.icon ? (
-                <img
-                  src={this.activeChannel.icon}
-                  className={styles.channel__header__photo}
-                />
-              ) : (
-                <div
-                  dangerouslySetInnerHTML={{ __html: defaultChannelIcon }}
-                  className={styles.channel__header__photo}
-                />
-              )}
               {this.props.closeChatButton ? (
                 <button
                   className={styles.channel__close__button}
