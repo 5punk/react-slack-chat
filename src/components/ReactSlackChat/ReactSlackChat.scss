@@ -11,9 +11,9 @@ $color_bon_jour_approx: #dfdfdf;
 $color_port_gore_approx: #23244e;
 $color_athens_gray_approx: #e9eaf3;
 $color_curious_blue_approx: #22a2e4;
-$primary: #dca1fc;
+$primary: #f7fafc;
 $secondary: #33ff00;
-$tertiary: #76d4ff;
+$tertiary: white;
 $dark-blue: #04034c;
 $light-grey: #f7fafc;
 $green-carbon: #1a866c;
@@ -420,7 +420,7 @@ $font_3: sans-serif;
   }
 }
 .chat__message {
-  // border: 1px solid $color_bon_jour_approx;
+  border: 1px solid $color_bon_jour_approx;
   display: inline-block;
   max-width: 60%;
   word-wrap: break-word;
