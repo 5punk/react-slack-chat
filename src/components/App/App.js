@@ -72,17 +72,20 @@ class App extends Component {
 
     const Chat = ({ ReactSlackChat }) => (
       <ReactSlackChat
-        botName="5punk-unique-id" // VisitorID, CorpID, Email, IP address etc.
+        botName="Rzilio"
+        helpText="Rzilient Support"
         apiToken={process.env.REACT_APP_SLACK_BOT}
         singleUserMode
         closeChatButton
         channels={[
           {
+            name: 'rzilient',
+          },
+          {
             name: 'online-support',
           },
         ]}
-        helpText="Optional Help Text"
-        themeColor="#856090"
+        themeColor="#172b58"
         userImage="http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg"
         debugMode
         hooks={[
@@ -113,6 +116,7 @@ class App extends Component {
     !this.state.resolvedReactSlackChat &&
       promisedReactSlackChat.then((ReactSlackChat) => {
         console.log('Got a promisifed React Slack Chat chunk', ReactSlackChat);
+
         return this.setState({
           resolvedReactSlackChat: ReactSlackChat,
         });

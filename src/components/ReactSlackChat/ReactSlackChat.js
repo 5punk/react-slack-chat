@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCommentDots } from '@fortawesome/free-regular-svg-icons/faCommentDots';
+
 import SlackBot from 'slack';
 import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
 
@@ -629,6 +632,9 @@ class ReactSlackChat extends Component {
     // Looks like nothing failed, let's start to render our chatbox
     const chatbox = (
       <div>
+        {console.log(this.state.chatbox)}
+        {console.log(this.props)}
+        {console.log(this.state.newMessageNotification)}
         <div
           className={classNames(
             styles.card,
@@ -639,15 +645,34 @@ class ReactSlackChat extends Component {
           onClick={this.openChatBox}
         >
           <div className={styles.helpHeader}>
-            {this.state.newMessageNotification > 0 && (
-              <span className={styles.unreadNotificationsBadge}>
-                {this.state.newMessageNotification}
-              </span>
-            )}
-            <h2 className={styles.transition}>
-              {this.state.helpText || 'Help?'}
-            </h2>
-            <h2 className={styles.subText}>Click on a channel to interact.</h2>
+            {/* <span className={styles.unreadNotificationsBadge}>
+              {this.state.newMessageNotification}
+            </span> */}
+            {!this.state.chatbox.active &&
+              this.state.newMessageNotification > 0 && (
+                <span className={styles.unreadNotificationsBadge}>
+                  {this.state.newMessageNotification}
+                </span>
+              )}
+            <div className={styles.header__text}>
+              <div>
+                <FontAwesomeIcon icon={faCommentDots} />
+              </div>
+              <h2 className={styles.transition}>
+                {this.state.helpText || 'Help?'}
+                <h3 className={styles.subText}>
+                  Click on a channel to interact with.
+                </h3>
+              </h2>
+            </div>
+            {this.props.closeChatButton ? (
+              <button
+                className={styles.channel__close__button}
+                onClick={this.closeChatBox}
+              >
+                ×
+              </button>
+            ) : null}
           </div>
           <div className={classNames(styles.card_circle, styles.transition)} />
           <div
@@ -684,26 +709,15 @@ class ReactSlackChat extends Component {
                 className={styles.chat__back}
                 onClick={this.goToChannelView}
               />
-              <div className={styles.chat__person}>
-                <span className={styles.chat__status}>status</span>
-                <span
-                  className={classNames(styles.chat__online, styles.active)}
-                />
-                <span className={styles.chat__name}>
-                  {this.activeChannel.name}
-                </span>
+              <div className={styles.header__text}>
+                <div>
+                  <FontAwesomeIcon icon={faCommentDots} />
+                </div>
+                <h2 className={styles.transition}>
+                  {this.activeChannel.name || 'Help?'}
+                  <h3 className={styles.subText}>INSERT HERE SOME TEXT</h3>
+                </h2>
               </div>
-              {this.activeChannel.icon ? (
-                <img
-                  src={this.activeChannel.icon}
-                  className={styles.channel__header__photo}
-                />
-              ) : (
-                <div
-                  dangerouslySetInnerHTML={{ __html: defaultChannelIcon }}
-                  className={styles.channel__header__photo}
-                />
-              )}
               {this.props.closeChatButton ? (
                 <button
                   className={styles.channel__close__button}
@@ -746,6 +760,7 @@ class ReactSlackChat extends Component {
                   <input
                     type="text"
                     id="chat__input__text"
+                    autocomplete="off"
                     className={styles.chat__input}
                     value={this.state.postMyMessage}
                     placeholder="Enter your message..."

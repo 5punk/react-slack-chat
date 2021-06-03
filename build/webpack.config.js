@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const dotenv = require('dotenv').config({ path: '.env' });
 var WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 
 const defaults = require('./defaults');
@@ -26,6 +27,7 @@ module.exports = {
           NODE_ENV: JSON.stringify('development'), // use 'development' unless process.env.NODE_ENV is defined
           DEPLOY_MODE: false,
           SYSTEM_HOOKS: JSON.stringify(defaults.withSystemHooks),
+          REACT_APP_SLACK_BOT: JSON.stringify(process.env.REACT_APP_SLACK_BOT),
         },
       },
     }),
