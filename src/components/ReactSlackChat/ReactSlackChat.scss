@@ -182,22 +182,7 @@ $font_3: sans-serif;
     font-size: 12px;
   }
 }
-.header__text {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 60px;
-  svg {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 15px;
-    padding: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    background-color: #00b570;
-    border-radius: 50%;
-  }
-}
+
 .contact {
   position: relative;
   color: $color_port_gore_approx;
@@ -314,6 +299,23 @@ $font_3: sans-serif;
   width: 100%;
   height: 120px;
   background: $theme_color;
+}
+
+.header__text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 60px;
+  svg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 15px;
+    padding: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    background-color: #00b570;
+    border-radius: 50%;
+  }
 }
 
 .chat__back {
@@ -500,16 +502,7 @@ $font_3: sans-serif;
   box-sizing: border-box;
   border-radius: 25px 25px 5px 5px;
 }
-.chat-header {
-  position: absolute;
-  border-radius: 25px;
-  top: 0;
-  z-index: 1;
-  left: 0;
-  width: 100%;
-  height: 6rem;
-  background: $theme_color;
-}
+
 .gh-emoji {
   height: 24px;
 }
