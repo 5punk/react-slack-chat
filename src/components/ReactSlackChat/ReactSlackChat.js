@@ -632,9 +632,6 @@ class ReactSlackChat extends Component {
     // Looks like nothing failed, let's start to render our chatbox
     const chatbox = (
       <div>
-        {console.log(this.state.chatbox)}
-        {console.log(this.props)}
-        {console.log(this.state.newMessageNotification)}
         <div
           className={classNames(
             styles.card,
