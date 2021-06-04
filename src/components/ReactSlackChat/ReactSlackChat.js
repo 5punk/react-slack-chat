@@ -245,7 +245,6 @@ class ReactSlackChat extends Component {
         bot: this.bot,
       }),
     ]).then(([channelData, teamData]) => {
-      debugLog('got channel and team data', channelData, teamData);
       const { channels, activeChannel } = channelData;
       const { onlineUsers } = teamData;
 
@@ -319,8 +318,6 @@ class ReactSlackChat extends Component {
       })
         .then((messagesData) => {
           // loaded channel history
-          debugLog('got data', messagesData);
-
           // Scroll down only if the stored messages and received messages are not the same
           // reverse() mutates the array
           if (
@@ -453,7 +450,6 @@ class ReactSlackChat extends Component {
   }
 
   handleFileChange(e) {
-    debugLog('Going to upload', e.target.value, e.target);
     const fileToUpload = document.getElementById('chat__upload').files[0];
     return this.setState(
       {
@@ -593,7 +589,6 @@ class ReactSlackChat extends Component {
     // Connect bot
     this.connectBot(this)
       .then((data) => {
-        debugLog('CONNECTED!', 'got data', data);
         this.setState({
           onlineUsers: data.onlineUsers,
           channels: data.channels,

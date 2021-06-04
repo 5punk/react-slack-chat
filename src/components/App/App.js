@@ -87,7 +87,6 @@ class App extends Component {
         ]}
         themeColor="#172b58"
         userImage="http://www.iconshock.com/img_vista/FLAT/mail/jpg/robot_icon.jpg"
-        debugMode
         hooks={[
           {
             /* My Custom Hook */
