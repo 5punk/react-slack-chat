@@ -19,6 +19,7 @@ function App() {
         apiToken={process.env.REACT_APP_SLACK_BOT}
         singleUserMode
         closeChatButton
+        messageSupportChat=""
         openSupportChat={open}
         channels={[
           {
