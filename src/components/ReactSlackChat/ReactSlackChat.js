@@ -73,7 +73,7 @@ class ReactSlackChat extends Component {
     this.apiToken = atob(this.props.apiToken);
     // Create Bot
     this.bot = new SlackBot({ token: this.apiToken });
-    this.refreshTime = 1000;
+    this.refreshTime = 5000;
     this.chatInitiatedTs = '';
     this.activeChannel = [];
     this.activeChannelInterval = null;
