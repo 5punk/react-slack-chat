@@ -730,7 +730,9 @@ class ReactSlackChat extends Component {
                 </div>
                 <h2 className={styles.transition}>
                   {this.activeChannel.name || 'Help?'}
-                  <h3 className={styles.subText}>INSERT HERE SOME TEXT</h3>
+                  <h3 className={styles.subText}>
+                    Online support for ♻️ rzilient
+                  </h3>
                 </h2>
               </div>
               {this.props.closeChatButton ? (
