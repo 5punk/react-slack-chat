@@ -73,7 +73,7 @@ class ReactSlackChat extends Component {
     this.apiToken = atob(this.props.apiToken);
     // Create Bot
     this.bot = new SlackBot({ token: this.apiToken });
-    this.refreshTime = 5000;
+    this.refreshTime = 1000;
     this.chatInitiatedTs = '';
     this.activeChannel = [];
     this.activeChannelInterval = null;
@@ -577,6 +577,27 @@ class ReactSlackChat extends Component {
     return false;
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.openSupportChat !== prevProps.openSupportChat) {
+      this.activeChannel = this.state.channels[0];
+      this.setState(
+        {
+          postMyMessage: 'Hey, I need help with my computer',
+          chatbox: {
+            active: true,
+            channelActiveView: false,
+            chatActiveView: true,
+          },
+        },
+        () => {
+          setTimeout(() => {
+            document.getElementById('chat_helpHeader').click();
+          }, 500);
+        }
+      );
+    }
+  }
+
   componentDidMount() {
     // Initiate Emoji Library
     emojiLoader()
@@ -636,7 +657,7 @@ class ReactSlackChat extends Component {
           )}
           onClick={this.openChatBox}
         >
-          <div className={styles.helpHeader}>
+          <div className={styles.helpHeader} id="chat_helpHeader">
             {/* <span className={styles.unreadNotificationsBadge}>
               {this.state.newMessageNotification}
             </span> */}
@@ -752,7 +773,7 @@ class ReactSlackChat extends Component {
                   <input
                     type="text"
                     id="chat__input__text"
-                    autocomplete="off"
+                    autoComplete="off"
                     className={styles.chat__input}
                     value={this.state.postMyMessage}
                     placeholder="Enter your message..."
@@ -789,6 +810,7 @@ ReactSlackChat.propTypes = {
   singleUserMode: PropTypes.bool,
   // add an "x" close button in the corner of the chat window
   closeChatButton: PropTypes.bool,
+  openSupportChat: PropTypes.bool,
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,
