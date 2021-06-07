@@ -582,7 +582,9 @@ class ReactSlackChat extends Component {
       this.activeChannel = this.state.channels[0];
       this.setState(
         {
-          postMyMessage: 'Hey, I need help with my computer',
+          postMyMessage: `Hey, I need help with my device ${
+            this.props.messageSupportChat || ''
+          }`,
           chatbox: {
             active: true,
             channelActiveView: false,
@@ -811,6 +813,7 @@ ReactSlackChat.propTypes = {
   // add an "x" close button in the corner of the chat window
   closeChatButton: PropTypes.bool,
   openSupportChat: PropTypes.bool,
+  messageSupportChat: PropTypes.bool,
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,
