@@ -595,7 +595,8 @@ class ReactSlackChat extends Component {
           setTimeout(() => {
             document.getElementById('chat_helpHeader').click();
           }, 500);
-          this.prevProps.openSupportChat && this.postMyMessage();
+          !this.props.openSupportChat && this.postMyMessage();
+          console.log('opensuportchat!!!!!!!!!!', this.props.openSupportChat);
         }
       );
     }
