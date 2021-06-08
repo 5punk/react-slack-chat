@@ -579,26 +579,28 @@ class ReactSlackChat extends Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.openSupportChat !== prevProps.openSupportChat) {
-      this.activeChannel = this.state.channels[0];
-      this.setState(
-        {
-          postMyMessage: `Hey, I need help with my device ${
-            this.props.messageSupportChat || ''
-          }`,
-          chatbox: {
-            active: true,
-            channelActiveView: false,
-            chatActiveView: true,
+      if (this.props.openSupportChat) {
+        this.activeChannel = this.state.channels[0];
+        this.setState(
+          {
+            postMyMessage: `Hey, I need help with my device ${
+              this.props.messageSupportChat || ''
+            }`,
+            chatbox: {
+              active: true,
+              channelActiveView: false,
+              chatActiveView: true,
+            },
           },
-        },
-        () => {
-          setTimeout(() => {
-            document.getElementById('chat_helpHeader').click();
-          }, 500);
-          !this.props.openSupportChat && this.postMyMessage();
-          console.log('opensuportchat!!!!!!!!!!', this.props.openSupportChat);
-        }
-      );
+          () => {
+            setTimeout(() => {
+              document.getElementById('chat_helpHeader').click();
+            }, 500);
+            this.postMyMessage();
+            console.log('opensuportchat!!!!!!!!!!', this.props.openSupportChat);
+          }
+        );
+      }
     }
   }
 
