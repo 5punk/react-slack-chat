@@ -245,7 +245,6 @@ class ReactSlackChat extends Component {
         bot: this.bot,
       }),
     ]).then(([channelData, teamData]) => {
-      debugLog('got channel and team data', channelData, teamData);
       const { channels, activeChannel } = channelData;
       const { onlineUsers } = teamData;
 
@@ -319,8 +318,6 @@ class ReactSlackChat extends Component {
       })
         .then((messagesData) => {
           // loaded channel history
-          debugLog('got data', messagesData);
-
           // Scroll down only if the stored messages and received messages are not the same
           // reverse() mutates the array
           if (
@@ -453,7 +450,6 @@ class ReactSlackChat extends Component {
   }
 
   handleFileChange(e) {
-    debugLog('Going to upload', e.target.value, e.target);
     const fileToUpload = document.getElementById('chat__upload').files[0];
     return this.setState(
       {
@@ -581,6 +577,30 @@ class ReactSlackChat extends Component {
     return false;
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.openSupportChat !== prevProps.openSupportChat) {
+      this.activeChannel = this.state.channels[0];
+      this.setState(
+        {
+          postMyMessage: `Hey, I need help with my device ${
+            this.props.messageSupportChat || ''
+          }`,
+          chatbox: {
+            active: true,
+            channelActiveView: false,
+            chatActiveView: true,
+          },
+        },
+        () => {
+          setTimeout(() => {
+            document.getElementById('chat_helpHeader').click();
+          }, 500);
+          this.postMyMessage();
+        }
+      );
+    }
+  }
+
   componentDidMount() {
     // Initiate Emoji Library
     emojiLoader()
@@ -593,7 +613,6 @@ class ReactSlackChat extends Component {
     // Connect bot
     this.connectBot(this)
       .then((data) => {
-        debugLog('CONNECTED!', 'got data', data);
         this.setState({
           onlineUsers: data.onlineUsers,
           channels: data.channels,
@@ -632,9 +651,6 @@ class ReactSlackChat extends Component {
     // Looks like nothing failed, let's start to render our chatbox
     const chatbox = (
       <div>
-        {console.log(this.state.chatbox)}
-        {console.log(this.props)}
-        {console.log(this.state.newMessageNotification)}
         <div
           className={classNames(
             styles.card,
@@ -644,7 +660,7 @@ class ReactSlackChat extends Component {
           )}
           onClick={this.openChatBox}
         >
-          <div className={styles.helpHeader}>
+          <div className={styles.helpHeader} id="chat_helpHeader">
             {/* <span className={styles.unreadNotificationsBadge}>
               {this.state.newMessageNotification}
             </span> */}
@@ -715,7 +731,9 @@ class ReactSlackChat extends Component {
                 </div>
                 <h2 className={styles.transition}>
                   {this.activeChannel.name || 'Help?'}
-                  <h3 className={styles.subText}>INSERT HERE SOME TEXT</h3>
+                  <h3 className={styles.subText}>
+                    Online support for ♻️ rzilient
+                  </h3>
                 </h2>
               </div>
               {this.props.closeChatButton ? (
@@ -760,7 +778,7 @@ class ReactSlackChat extends Component {
                   <input
                     type="text"
                     id="chat__input__text"
-                    autocomplete="off"
+                    autoComplete="off"
                     className={styles.chat__input}
                     value={this.state.postMyMessage}
                     placeholder="Enter your message..."
@@ -797,6 +815,8 @@ ReactSlackChat.propTypes = {
   singleUserMode: PropTypes.bool,
   // add an "x" close button in the corner of the chat window
   closeChatButton: PropTypes.bool,
+  openSupportChat: PropTypes.bool,
+  messageSupportChat: PropTypes.bool,
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,
