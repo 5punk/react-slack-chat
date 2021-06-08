@@ -597,7 +597,6 @@ class ReactSlackChat extends Component {
               document.getElementById('chat_helpHeader').click();
             }, 500);
             this.postMyMessage();
-            console.log('opensuportchat!!!!!!!!!!', this.props.openSupportChat);
           }
         );
       }
