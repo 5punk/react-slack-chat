@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCommentDots } from '@fortawesome/free-regular-svg-icons/faCommentDots';
+
 import SlackBot from 'slack';
 import { load as emojiLoader, parse as emojiParser } from 'gh-emoji';
 
 import styles from './ReactSlackChat.scss';
 
 import defaultChannelIcon from '../../assets/team.svg';
-import bubble from '../../assets/bubble.svg';
 
 // Chat Functions
 import {
@@ -671,10 +674,7 @@ class ReactSlackChat extends Component {
               )}
             <div className={styles.header__text}>
               <div>
-                <div
-                  dangerouslySetInnerHTML={{ __html: bubble }}
-                  className={styles.contact__photo}
-                />
+                <FontAwesomeIcon icon={faCommentDots} />
               </div>
               <h2 className={styles.transition}>
                 {this.state.helpText || 'Help?'}
@@ -729,10 +729,7 @@ class ReactSlackChat extends Component {
               />
               <div className={styles.header__text}>
                 <div>
-                  <div
-                    dangerouslySetInnerHTML={{ __html: bubble }}
-                    className={styles.contact__photo}
-                  />{' '}
+                  <FontAwesomeIcon icon={faCommentDots} />
                 </div>
                 <h2 className={styles.transition}>
                   {this.activeChannel.name || 'Help?'}
