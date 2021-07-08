@@ -821,7 +821,7 @@ ReactSlackChat.propTypes = {
   // add an "x" close button in the corner of the chat window
   closeChatButton: PropTypes.bool,
   openSupportChat: PropTypes.bool,
-  messageSupportChat: PropTypes.bool,
+  messageSupportChat: PropTypes.string,
   themeColor: PropTypes.string,
   userImage: PropTypes.string,
   hooks: PropTypes.array,
